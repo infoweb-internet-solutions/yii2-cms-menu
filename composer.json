@@ -1,0 +1,33 @@
+{
+	"name": "infoweb-internet-solutions/yii2-cms-menu",
+	"description": "Menu module for Yii2",
+	"keywords": ["yii2", "yii2-cms-menu", "menu", "infoweb"],
+	"type": "yii2-extension",
+    "license": "MIT",
+    "support": {
+        "issues": "https://github.com/infoweb-internet-solutions/yii2-cms-menu/issues?state=open",
+        "source": "https://github.com/infoweb-internet-solutions/yii2-cms-menu"
+    },
+    "authors": [
+        {
+            "name": "Fabio Maggio",
+            "email": "fabio@infoweb.be",
+            "homepage": "http://www.infoweb.be/"
+        },
+        {
+            "name": "Ruben Heymans",
+            "email": "ruben@infoweb.be",
+            "homepage": "http://www.infoweb.be/"
+        }
+    ],
+    "minimum-stability": "dev",
+	"require": {
+	   "yiisoft/yii2": "*",
+	   "infoweb-internet-solutions/yii2-cms-pages": "*"
+	},
+	"autoload": {
+		"psr-4": {
+            "infoweb\\menu\\": ""
+        }
+	}
+}
