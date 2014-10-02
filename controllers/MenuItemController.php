@@ -39,15 +39,6 @@ class MenuItemController extends Controller
             ],
         ];
     }
-    /*
-    public function beforeAction($action){
-        if(YII_DEBUG){
-            $m = new AssetManager;
-            $m->publish('js/main.js', ['forceCopy' => true]);
-        }
-        return parent::beforeAction($action);
-    }
-    */
 
     /**
      * Lists all MenuItem models.
@@ -186,13 +177,13 @@ class MenuItemController extends Controller
             }
         }
 
-        // @todo Move to page class
-        // @todo Use variable for 'nl-BE'
+        // @todo Rewrite Query
         $q = new Query();
         $results =  $q->select('`p`.`id`, `pl`.`title`')
             ->from('`pages` AS `p`')
             ->innerjoin('`pages_lang` AS `pl`', '`p`.`id` = `pl`.`page_id`')
-            ->where('`pl`.`language` = \'nl-BE\'')
+            ->where("`pl`.`language` = '" . Yii::$app->language . "'")
+            ->orderBy('`pl`.`title`')
             ->all();
 
         foreach ($results as $result)
@@ -312,13 +303,13 @@ class MenuItemController extends Controller
 
         }
 
-        // #todo Move to page class
-        // @todo Use variable for 'nl-BE'
+        // @todo Rewrite Query
         $q = new Query();
         $results =  $q->select('`p`.`id`, `pl`.`title`')
             ->from('`pages` AS `p`')
             ->innerjoin('`pages_lang` AS `pl`', '`p`.`id` = `pl`.`page_id`')
-            ->where('`pl`.`language` = \'nl-BE\'')
+            ->where("`pl`.`language` = '" . Yii::$app->language . "'")
+            ->orderBy('`pl`.`title`')
             ->all();
 
         foreach ($results as $result)

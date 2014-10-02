@@ -1,7 +1,11 @@
-
 /**
  * Nested sortable
  */
+
+.sortable .fa {
+    font-size: 18px;
+}
+
 .placeholder {
     background-color: #cfcfcf;
 }

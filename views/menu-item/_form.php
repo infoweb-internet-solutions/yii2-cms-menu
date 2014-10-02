@@ -17,8 +17,6 @@ $this->render('_growl_messages');
 
 <div class="menu-item-form">
 
-    <div class="form-group">&nbsp;</div>
-
     <?= Html::hiddenInput('MenuItem[menu_id]', $menu_id); ?>
 
     <div class="form-group field-menuitem-parent_id">

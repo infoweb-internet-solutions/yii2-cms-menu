@@ -10,8 +10,6 @@ use yii\helpers\Url;
 use infoweb\menu\AppAsset;
 AppAsset::register($this);
 
-$this->registerJsFile(Yii::$app->homeUrl . 'js/main.js', [JqueryAsset::className()]);
-
 /* @var $this yii\web\View */
 /* @var $searchModel infoweb\menu\models\MenuItemSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -49,7 +47,7 @@ $this->registerJs("var maxLevels = {$max_level};", View::POS_HEAD);
         <thead>
             <tr>
                 <th>Naam</th>
-                <th style="width:135px;" >
+                <th style="width:150px;" >
                     Acties
                 </th>
             </tr>
@@ -59,6 +57,3 @@ $this->registerJs("var maxLevels = {$max_level};", View::POS_HEAD);
     <?php echo Menu::sortable_tree(['menu-id' => $menu->id]); ?>
 
 </div>
-
-<?php // @todo Move this to a better place
-Yii::$app->assetManager->publish('@infoweb/menu/assets'); ?>

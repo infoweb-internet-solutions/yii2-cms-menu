@@ -37,8 +37,7 @@ $(function(){
         $.ajax({
             url: 'active',
             type: 'POST',
-            data: {'id': id, _csrf: yii.getCsrfToken()},
-            contentType: "application/json; charset=utf-8",
+            data: {'id': id},
             dataType: "json",
             success: function(data) {
                 if (data.active == 1)

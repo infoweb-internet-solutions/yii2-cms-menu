@@ -1,5 +1,3 @@
-<div class="form-group">&nbsp;</div>
-
 <input type="hidden" name="<?php echo $language; ?>[MenuItemLang][language]" value="<?php echo $language; ?>">
 
 <?php // @todo autofocus ?>
