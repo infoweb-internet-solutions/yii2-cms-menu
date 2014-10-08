@@ -22,8 +22,8 @@
     ],
     "minimum-stability": "dev",
 	"require": {
-	   "yiisoft/yii2": "*",
-	   "infoweb-internet-solutions/yii2-cms-pages": "*"
+	    "yiisoft/yii2": "*",
+        "infoweb-internet-solutions/yii2-cms": "*"
 	},
 	"autoload": {
 		"psr-4": {

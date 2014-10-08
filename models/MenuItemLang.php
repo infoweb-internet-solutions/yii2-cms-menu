@@ -5,10 +5,10 @@ namespace infoweb\menu\models;
 use Yii;
 
 /**
- * This is the model class for table "menu_items_lang".
+ * This is the model class for table "menu_item_lang".
  *
  * @property string $id
- * @property string $menu_id
+ * @property string $menu_item_id
  * @property string $language
  * @property string $name
  *
@@ -21,7 +21,7 @@ class MenuItemLang extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'menu_items_lang';
+        return 'menu_item_lang';
     }
 
     /**
@@ -30,8 +30,8 @@ class MenuItemLang extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [[/*'menu_id', 'language', 'name'*/], 'required'],
-            //[['menu_id'], 'integer'],
+            [[/*'menu_item_id', 'language', 'name'*/], 'required'],
+            //[['menu_item_id'], 'integer'],
             //[['language'], 'string'],
             [['name'], 'string', 'max' => 255]
         ];
@@ -44,7 +44,7 @@ class MenuItemLang extends \yii\db\ActiveRecord
     {
         return [
             'id' => Yii::t('app', 'ID'),
-            'menu_id' => Yii::t('app', 'Menu ID'),
+            'menu_item_id' => Yii::t('app', 'Menu ID'),
             'language' => Yii::t('app', 'Language'),
             'name' => Yii::t('app', 'Name'),
         ];
@@ -55,6 +55,6 @@ class MenuItemLang extends \yii\db\ActiveRecord
      */
     public function getMenu()
     {
-        return $this->hasOne(MenuItem::className(), ['id' => 'menu_id']);
+        return $this->hasOne(MenuItem::className(), ['id' => 'menu_item_id']);
     }
 }

@@ -153,7 +153,7 @@ class MenuItemController extends Controller
                     $modelLang = new MenuItemLang;
                 }
 
-                $modelLang->menu_id = $model->id;
+                $modelLang->menu_item_id = $model->id;
                 $modelLang->load($post[$k]);
                 // @todo Remove this
                 $modelLang->language = $post[$k]['MenuItemLang']['language'];
@@ -280,7 +280,7 @@ class MenuItemController extends Controller
                 //$tour->saveTranslation();
 
                 $modelLang = $model->getTranslation($k);
-                $modelLang->menu_id = $model->id;
+                $modelLang->menu_item_id = $model->id;
                 $modelLang->load($post[$k]);
 
                 if (!$modelLang->save()) {

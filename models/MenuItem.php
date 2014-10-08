@@ -10,7 +10,7 @@ use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 
 /**
- * This is the model class for table "menu_items".
+ * This is the model class for table "menu_item".
  *
  * @property string $id
  * @property string $menu_id
@@ -38,7 +38,7 @@ class MenuItem extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'menu_items';
+        return 'menu_item';
     }
 
     public function behaviors()
@@ -125,7 +125,7 @@ class MenuItem extends \yii\db\ActiveRecord
      */
     public function getTranslations()
     {
-        return $this->hasMany(MenuItemLang::className(), ['menu_id' => 'id']);
+        return $this->hasMany(MenuItemLang::className(), ['menu_item_id' => 'id']);
     }
 
 }

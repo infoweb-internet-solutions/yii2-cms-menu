@@ -11,7 +11,7 @@ use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 
 /**
- * This is the model class for table "menus".
+ * This is the model class for table "menu".
  *
  * @property string $id
  * @property string $name
@@ -25,7 +25,7 @@ class Menu extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'menus';
+        return 'menu';
     }
 
     /**
