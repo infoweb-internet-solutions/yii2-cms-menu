@@ -29,13 +29,20 @@ class m141008_091012_init extends Migration
             'parent_id'             => Schema::TYPE_INTEGER . ' UNSIGNED NOT NULL',
             'entity'                => "ENUM('page','menu-item', 'url') NOT NULL DEFAULT 'page'",
             'entity_id'             => Schema::TYPE_INTEGER . ' UNSIGNED NOT NULL',
-            'level'                 => Schema::TYPE_INTEGER . ' UNSIGNED NOT NULL',
+            'level'                 => 'TINYINT(3) UNSIGNED NOT NULL DEFAULT \'0\'',
             'url'                   => Schema::TYPE_STRING . '(255) NOT NULL',
             'position'              => 'TINYINT(3) UNSIGNED NOT NULL DEFAULT \'0\'',
             'active'                => 'TINYINT(3) UNSIGNED NOT NULL DEFAULT \'1\'',
             'created_at'            => Schema::TYPE_INTEGER . ' UNSIGNED NOT NULL',
             'updated_at'            => Schema::TYPE_INTEGER . ' UNSIGNED NOT NULL',
         ], $tableOptions);
+        
+        // Create indexes on the 'menu_item' table
+        $this->createIndex('menu_id', '{{%menu_item}}', 'menu_id');
+        $this->createIndex('parent_id', '{{%menu_item}}', 'parent_id');
+        $this->createIndex('entity', '{{%menu_item}}', 'entity');
+        $this->createIndex('entity_id', '{{%menu_item}}', 'entity_id');
+        $this->addForeignKey('FK_MENU_ITEM_MENU_ID', '{{%menu_item}}', 'menu_id', '{{%menu}}', 'id', 'CASCADE', 'RESTRICT');
 
         // Create 'menu_item_lang' table
         $this->createTable('{{%menu_item_lang}}', [
@@ -45,11 +52,8 @@ class m141008_091012_init extends Migration
             'created_at'            => Schema::TYPE_INTEGER . ' UNSIGNED NOT NULL',
             'updated_at'            => Schema::TYPE_INTEGER . ' UNSIGNED NOT NULL'
         ], $tableOptions);
-
-        // menu_item
-        $this->addForeignKey('FK_MENU_ITEM_MENU_ID', '{{%menu_item}}', 'menu_id', '{{%menu}}', 'id', 'CASCADE', 'RESTRICT');
-
-        // menu_item_lang
+       
+        // Create indexes on the 'menu_item_lang' table
         $this->addPrimaryKey('menu_item_menu_id_language', '{{%menu_item_lang}}', ['menu_item_id', 'language']);
         $this->createIndex('language', '{{%menu_item_lang}}', 'language');
         $this->addForeignKey('FK_MENU_ITEM_LANG_MENU_ITEM_ID', '{{%menu_item_lang}}', 'menu_item_id', '{{%menu_item}}', 'id', 'CASCADE', 'RESTRICT');
