@@ -2,7 +2,7 @@
 
 namespace infoweb\menu;
 
-class Menu extends \yii\base\Module
+class Module extends \yii\base\Module
 {
     public $controllerNamespace = 'infoweb\menu\controllers';
 

@@ -17,7 +17,7 @@ class m141008_091012_init extends Migration
         $this->createTable('{{%menu}}', [
             'id'                    => Schema::TYPE_PK,
             'name'                  => Schema::TYPE_STRING . '(255) NOT NULL',
-            'max_level'             => 'TINYINT(3) UNSIGNED NOT NULL DEFAULT \'4\''
+            'max_level'             => 'TINYINT(3) UNSIGNED NOT NULL DEFAULT \'4\'',
             'created_at'            => Schema::TYPE_INTEGER . ' UNSIGNED NOT NULL',
             'updated_at'            => Schema::TYPE_INTEGER . ' UNSIGNED NOT NULL',
         ], $tableOptions);
@@ -31,8 +31,8 @@ class m141008_091012_init extends Migration
             'entity_id'             => Schema::TYPE_INTEGER . ' UNSIGNED NOT NULL',
             'level'                 => Schema::TYPE_INTEGER . ' UNSIGNED NOT NULL',
             'url'                   => Schema::TYPE_STRING . '(255) NOT NULL',
-            'position'              => 'TINYINT(3) UNSIGNED NOT NULL DEFAULT \'0\''
-            'active'                => 'TINYINT(3) UNSIGNED NOT NULL DEFAULT \'1\''
+            'position'              => 'TINYINT(3) UNSIGNED NOT NULL DEFAULT \'0\'',
+            'active'                => 'TINYINT(3) UNSIGNED NOT NULL DEFAULT \'1\'',
             'created_at'            => Schema::TYPE_INTEGER . ' UNSIGNED NOT NULL',
             'updated_at'            => Schema::TYPE_INTEGER . ' UNSIGNED NOT NULL',
         ], $tableOptions);
