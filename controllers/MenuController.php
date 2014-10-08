@@ -3,13 +3,13 @@
 namespace infoweb\menu\controllers;
 
 use Yii;
-use infoweb\menu\models\Menu;
-use infoweb\menu\models\MenuSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\helpers\Html;
 use yii\helpers\Url;
+use infoweb\menu\models\Menu;
+use infoweb\menu\models\MenuSearch;
 
 /**
  * MenuController implements the CRUD actions for Menu model.
@@ -36,71 +36,10 @@ class MenuController extends Controller
     {
         $searchModel = new MenuSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
-        // Create button settings
-        $createButton = Html::a(Yii::t('app', 'Create {modelClass}', [
-            'modelClass' => 'Menu',
-        ]), ['create'], ['class' => 'btn btn-success']);
-        
-        // Gridview settings
-        $gridView = [
-            'dataProvider' => $dataProvider,
-            'filterModel' => $searchModel,
-            'layout' => "{items}{pager}",
-            'columns' => [
-                [
-                    'class' => '\kartik\grid\DataColumn',
-                    'attribute' => 'name',
-                    'format' => 'raw',
-                    'value'=>function ($model) {
-                        return Html::a(Html::encode($model->name), Url::toRoute(['update', 'id' => $model->id]), [
-                            'title' => Yii::t('app', 'Update'),
-                            'data-pjax' => '0',
-                            'data-toggle' => 'tooltip',
-                            'class' => 'edit-model',
-                        ]);
-                    },
-                ],
-                [
-                    'class' => 'kartik\grid\ActionColumn',
-                    'template' => (Yii::$app->user->can('superAdmin')) ? '{update} {delete} {menu-item}' : '{update} {menu-item}',
-                    'buttons' => [
-                        'menu-item' => function ($url, $model) {
-                            return Html::a('<span class="glyphicon glyphicon-list-alt"></span>', $url, [
-                                'title' => Yii::t('app', 'Menu Items'),
-                                'data-pjax' => '0',
-                                'data-toggle' => 'tooltip',
-                                //'data-placement' => 'left',
-                            ]);
-                        },
-                    ],
-                    'updateOptions'=>['title'=> 'Update', 'data-toggle'=>'tooltip'],
-                    'deleteOptions'=>['title'=> 'Delete', 'data-toggle'=>'tooltip'],
-                    'urlCreator' => function($action, $model, $key, $index) {
-        
-                        if ($action == 'menu-item')
-                        {
-                            $params = is_array($key) ? $key : ['menu-id' => (int) $key];
-                            $params[0] = $action . '/index';
-                        } else {
-                            $params = is_array($key) ? $key : ['id' => (int) $key];
-                            $params[0] = 'menu' . '/' . $action;
-                        }
-        
-                        return Url::toRoute($params);
-                    },
-                    'width' => '100px',
-                ]
-            ],
-            'responsive' => true,
-            'floatHeader' => true,
-            'floatHeaderOptions' => ['scrollingTop' => 88],
-            'hover' => true
-        ];
         
         return $this->render('index', [
-            'gridView' => $gridView,
-            'createButton' => $createButton,
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
         ]);
     }
 
@@ -130,6 +69,9 @@ class MenuController extends Controller
 
         if ($model->load($post) && $model->save()) {
 
+            // Set flash message
+            Yii::$app->getSession()->setFlash('menu', Yii::t('app', '{item} has been created', ['item' => $model->name]));
+                
             if (isset($post['close'])) {
                 return $this->redirect(['index']);
             } elseif (isset($post['new'])) {
@@ -158,6 +100,9 @@ class MenuController extends Controller
 
         if ($model->load($post) && $model->save()) {
 
+            // Set flash message
+            Yii::$app->getSession()->setFlash('menu', Yii::t('app', '{item} has been updated', ['item' => $model->name]));
+            
             if (isset($post['close'])) {
                 return $this->redirect(['index']);
             } elseif (isset($post['new'])) {
@@ -181,7 +126,11 @@ class MenuController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        $model = $this->findModel($id);
+        $model->delete();
+        
+        // Set flash message
+        Yii::$app->getSession()->setFlash('menu', Yii::t('app', '{item} has been deleted', ['item' => $model->name]));
 
         return $this->redirect(['index']);
     }
