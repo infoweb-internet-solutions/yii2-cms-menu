@@ -30,6 +30,10 @@ ol.sortable ol {
     padding-left: 30px;
 }
 
+ol.sortable li {
+    /*border-bottom: solid 1px #ddd;*/
+}
+
 ol.sortable li div {
     line-height: 40px;
     margin: 0 0 1px;

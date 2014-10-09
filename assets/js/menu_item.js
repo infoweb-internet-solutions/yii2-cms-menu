@@ -7,7 +7,7 @@
     var menu_item = {};
     
     menu_item.init = function() {
-        menu_item.set_eventhandlers();            
+        menu_item.set_eventhandlers();          
     };
     
     menu_item.set_eventhandlers = function() {

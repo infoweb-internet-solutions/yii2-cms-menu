@@ -24,7 +24,8 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= $this->render('_form', [
         'model' => $model,
         'menu'  => $menu,
-        'pages' => $pages
+        'pages' => $pages,
+        'levelSelect' => $levelSelect
     ]) ?>
     
 </div>

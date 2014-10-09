@@ -27,7 +27,8 @@ use yii\bootstrap\Tabs;
             'content'   => $this->render('_default_tab', [
                 'model' => $model,
                 'form'  => $form,
-                'pages' => $pages
+                'pages' => $pages,
+                'levelSelect' => $levelSelect
             ]),
         ]
     ];

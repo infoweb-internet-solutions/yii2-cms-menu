@@ -79,6 +79,11 @@ class MenuItem extends \yii\db\ActiveRecord
             }],*/
             // Trim
             [['url'], 'trim'],
+            [['url'], 'required', 'when' => function($model) {
+                return $model->entity == self::ENTITY_URL;
+            }],
+            [['url'], 'url', 'defaultScheme' => 'http'],
+            [['entity_id'], 'default', 'value' => 0]
         ];
     }
 

@@ -97,6 +97,17 @@ class MenuItemController extends Controller
         // Get the active menu
         $menu = Menu::findone(Yii::$app->session->get('menu-items.menu-id'));
         
+        // Get the html for the level select
+        $levelSelect = Menu::level_select(['menu-id' => Yii::$app->session->get('menu-items.menu-id')]);
+        
+        // Get all pages
+        $pages = (new Query())
+                    ->select('page.id, page_lang.name')
+                    ->from(['page' => 'pages'])
+                    ->innerJoin(['page_lang' => 'pages_lang'], "page.id = page_lang.page_id AND page_lang.language = '".Yii::$app->language."'")
+                    ->orderBy(['page_lang.name' => SORT_ASC])
+                    ->all();
+        
         // Initialize the menu-item with default values
         $model = new MenuItem(['menu_id' => $menu->id, 'active' => 1]);
         
@@ -154,7 +165,10 @@ class MenuItemController extends Controller
                 // Save the main model
                 if (!$model->load($post) || !$model->save()) {
                     return $this->render('create', [
-                        'model' => $model
+                        'model'         => $model,
+                        'levelSelect'   => $levelSelect,
+                        'menu'          => $menu,
+                        'pages'         => $pages,
                     ]);
                 }
                 
@@ -169,7 +183,10 @@ class MenuItemController extends Controller
                     
                     if (!$model->saveTranslation()) {
                         return $this->render('create', [
-                            'model' => $model
+                            'model'         => $model,
+                            'levelSelect'   => $levelSelect,
+                            'menu'          => $menu,
+                            'pages'         => $pages,
                         ]);    
                     }                      
                 }
@@ -193,19 +210,11 @@ class MenuItemController extends Controller
             }    
         }
 
-        // Get all pages
-        $pages = (new Query())
-                    ->select('page.id, page_lang.name')
-                    ->from(['page' => 'pages'])
-                    ->innerJoin(['page_lang' => 'pages_lang'], "page.id = page_lang.page_id AND page_lang.language = '".Yii::$app->language."'")
-                    ->orderBy(['page_lang.name' => SORT_ASC])
-                    ->all();
-        
         return $this->render('create', [
-            'model' => $model,
-            'levelSelect' => $menu->level_select(['menu-id' => Yii::$app->request->get('menu-id')]),
-            'menu' => $menu,
-            'pages' => $pages,
+            'model'         => $model,
+            'levelSelect'   => $levelSelect,
+            'menu'          => $menu,
+            'pages'         => $pages,
         ]);       
     }
 
@@ -221,6 +230,17 @@ class MenuItemController extends Controller
         
         // Get the active menu
         $menu = Menu::findone(Yii::$app->session->get('menu-items.menu-id'));
+        
+        // Get the html for the level select
+        $levelSelect = Menu::level_select(['menu-id' => Yii::$app->session->get('menu-items.menu-id')]);
+        
+        // Get all pages
+        $pages = (new Query())
+                    ->select('page.id, page_lang.name')
+                    ->from(['page' => 'pages'])
+                    ->innerJoin(['page_lang' => 'pages_lang'], "page.id = page_lang.page_id AND page_lang.language = '".Yii::$app->language."'")
+                    ->orderBy(['page_lang.name' => SORT_ASC])
+                    ->all();
         
         $model = $this->findModel($id);
         
@@ -285,7 +305,10 @@ class MenuItemController extends Controller
                 // Save the main model
                 if (!$model->load($post) || !$model->save()) {
                     return $this->render('update', [
-                        'model' => $model
+                        'model'         => $model,
+                        'levelSelect'   => $levelSelect,
+                        'menu'          => $menu,
+                        'pages'         => $pages,
                     ]);
                 }
                 
@@ -300,7 +323,10 @@ class MenuItemController extends Controller
                     
                     if (!$model->saveTranslation()) {
                         return $this->render('update', [
-                            'model' => $model
+                            'model'         => $model,
+                            'levelSelect'   => $levelSelect,
+                            'menu'          => $menu,
+                            'pages'         => $pages,
                         ]);    
                     }                      
                 }
@@ -323,18 +349,10 @@ class MenuItemController extends Controller
                 }    
             }    
         }
-
-        // Get all pages
-        $pages = (new Query())
-                    ->select('page.id, page_lang.name')
-                    ->from(['page' => 'pages'])
-                    ->innerJoin(['page_lang' => 'pages_lang'], "page.id = page_lang.page_id AND page_lang.language = '".Yii::$app->language."'")
-                    ->orderBy(['page_lang.name' => SORT_ASC])
-                    ->all();
         
         return $this->render('update', [
             'model' => $model,
-            'levelSelect' => $menu->level_select(['menu-id' => Yii::$app->request->get('menu-id')]),
+            'levelSelect' => $menu->level_select(['menu-id' => Yii::$app->session->get('menu-items.menu-id')]),
             'menu' => $menu,
             'pages' => $pages,
         ]);       

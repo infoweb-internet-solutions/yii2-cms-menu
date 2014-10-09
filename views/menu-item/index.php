@@ -47,8 +47,12 @@ $this->registerJs("var maxLevels = {$maxLevel};", View::POS_HEAD);
                 </th>
             </tr>
         </thead>
+        <tbody>
+            <tr>
+                <td colspan="2">
+                    <?php echo Menu::sortableTree(['menu-id' => $menu->id]); ?>    
+                </td>
+            </tr>
+        </tbody>
     </table>
-
-    <?php echo Menu::sortableTree(['menu-id' => $menu->id]); ?>
-
 </div>

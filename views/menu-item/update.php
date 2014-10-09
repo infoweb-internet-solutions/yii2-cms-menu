@@ -25,7 +25,8 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Update')];
     <?= $this->render('_form', [
         'model' => $model,
         'menu'  => $menu,
-        'pages' => $pages
+        'pages' => $pages,
+        'levelSelect' => $levelSelect
     ]) ?>
     
 </div>
