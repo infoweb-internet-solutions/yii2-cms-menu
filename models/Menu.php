@@ -122,7 +122,7 @@ class Menu extends \yii\db\ActiveRecord
                             </a>
                             */ ?> 
                             <?php if ($item->entity == MenuItem::ENTITY_PAGE): ?>
-                            <a href="<?= Url::toRoute(['/pages/page/update', 'id' => $item->entity_id]) ?>" data-toggle="tooltip" title="<?= Yii::t('app', 'Edit page') ?>">
+                            <a href="<?= Url::toRoute(['/pages/page/update', 'id' => $item->entity_id, 'referrer' => 'menu-items']) ?>" data-toggle="tooltip" title="<?= Yii::t('app', 'Edit page') ?>">
                                 <span class="glyphicon glyphicon-book"></span>
                             </a>
                             <?php endif; ?>
