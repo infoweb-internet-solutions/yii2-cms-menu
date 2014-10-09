@@ -4,7 +4,7 @@ namespace infoweb\menu;
 
 use yii\web\AssetBundle as AssetBundle;
 
-class AppAsset extends AssetBundle
+class MenuAsset extends AssetBundle
 {
     public $sourcePath = '@infoweb/menu/assets/';
     public $css = [

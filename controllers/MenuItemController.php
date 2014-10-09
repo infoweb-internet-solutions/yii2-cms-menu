@@ -3,17 +3,20 @@
 namespace infoweb\menu\controllers;
 
 use Yii;
-use infoweb\menu\models\MenuItem;
-use infoweb\menu\models\MenuItemLang;
-use infoweb\menu\models\MenuItemSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use infoweb\menu\models\Menu;
-use infoweb\pages\models\Page;
 use yii\db\Query;
 use yii\web\session;
 use yii\web\AssetManager;
+use yii\web\Response;
+use yii\widgets\ActiveForm;
+use yii\base\Model;
+use infoweb\menu\models\MenuItem;
+use infoweb\menu\models\MenuItemLang;
+use infoweb\menu\models\MenuItemSearch;
+use infoweb\menu\models\Menu;
+use infoweb\pages\models\Page;
 
 /**
  * MenuItemController implements the CRUD actions for MenuItem model.
@@ -32,7 +35,7 @@ class MenuItemController extends Controller
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
-                    'delete' => ['get'],
+                    'delete' => ['post'],
                     'position' => ['post'],
                     'active' => ['post'],
                 ],
@@ -46,16 +49,27 @@ class MenuItemController extends Controller
      */
     public function actionIndex()
     {
+        // Store the active menu-id in a session var if it is provided through the url
+        if (Yii::$app->request->get('menu-id') != null)
+            Yii::$app->session->set('menu-items.menu-id', Yii::$app->request->get('menu-id'));
+        
+        // If no valid active menu-id is set, search the first menu and use it's id
+        if (in_array(Yii::$app->session->get('menu-items.menu-id'), [0, null])) {
+            $menu = Menu::findone();
+            
+            Yii::$app->session->set('menu-items.menu-id', $menu->id); 
+        } else {
+            $menu = Menu::findone(Yii::$app->session->get('menu-items.menu-id'));    
+        }
+        
         $searchModel = new MenuItemSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
-        $menu = Menu::findone(Yii::$app->request->get('menu-id'));
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
             'menu' => $menu,
-            'max_level' => json_encode($menu->max_level),
+            'maxLevel' => json_encode($menu->max_level),
         ]);
     }
 
@@ -78,126 +92,121 @@ class MenuItemController extends Controller
      */
     public function actionCreate()
     {
-        $model = new MenuItem();
-
+        $languages = Yii::$app->params['languages'];
+        
         // Get the active menu
-        $menu = Menu::findone(Yii::$app->request->get('menu-id'));
-
-        if (Yii::$app->request->getIsPost())
-        {
+        $menu = Menu::findone(Yii::$app->session->get('menu-items.menu-id'));
+        
+        // Initialize the menu-item with default values
+        $model = new MenuItem(['menu_id' => $menu->id, 'active' => 1]);
+        
+        if (Yii::$app->request->getIsPost()) {
+            
             $post = Yii::$app->request->post();
-
-            if (!$model->load($post)) {
-                echo 'Model not loaded';
-                exit();
-            }
-
-            if ($post['type'] == MenuItem::ENTITY_PAGE)
-            {
-                $model->entity = MenuItem::ENTITY_PAGE;
-                $model->entity_id = $post['page_id'];
-                $model->url = '';
-            }
-            elseif ($_POST['type'] == MenuItem::ENTITY_URL)
-            {
-                $model->entity = MenuItem::ENTITY_URL;
-                $model->entity_id = 0;
-                $model->url = $post['url'];
-            }
-            elseif ($_POST['type'] == MenuItem::ENTITY_MENU_ITEM)
-            {
-                $model->entity = MenuItem::ENTITY_MENU_ITEM;
-                $model->entity_id = $post['menu_id'];
-                $model->url = '';
-            }
-
-            // Parent is root
-            if (empty($post['MenuItem']['parent_id']))
-            {
-                // Set parent and level
-                $model->parent_id = 0;
-                $model->level = 0;
-            }
-            else
-            {
-                // Load parent
-                $parent = MenuItem::findOne($post['MenuItem']['parent_id']);
-
-                // Set parent and level
-                $model->parent_id	= $parent->id;
-                $model->level		= $parent->level + 1;
-            }
-
-            // Set rest of attributes and save
-            $model->position = $model->next_position();
-
-            if (!$model->save()) {
-                echo 'Model not saved';
-                exit();
-            }
-
-            foreach (Yii::$app->params['languages'] as $k => $v) {
-
-                // @todo Replace this code with:
-
-                // change language
-                // $model->language = 'fr';
-                // $model->title = "French title";
-                // save translation only
-                //$tour->saveTranslation();
-
-                $modelLang = $model->getTranslation($k);
-
-                // nl-BE already exists after saving the model
-                if (!isset($modelLang)) {
-                    $modelLang = new MenuItemLang;
+            
+            // Ajax request, validate the models
+            if (Yii::$app->request->isAjax) {
+                               
+                // Populate the model with the POST data
+                $model->load($post);
+                
+                // Create an array of translation models
+                $translationModels = [];
+                
+                foreach ($languages as $languageId => $languageName) {
+                    $translationModels[$languageId] = new MenuItemLang(['language' => $languageId]);
                 }
+                
+                // Populate the translation models
+                Model::loadMultiple($translationModels, $post);
 
-                $modelLang->menu_item_id = $model->id;
-                $modelLang->load($post[$k]);
-                // @todo Remove this
-                $modelLang->language = $post[$k]['MenuItemLang']['language'];
-
-                if (!$modelLang->save()) {
-                    echo 'Model lang not saved';
-                    exit();
-                }
-            }
-
-            // Set flash message
-            $session = new Session;
-            $session->setFlash('menu-item-success', "Menu item <strong>{$model->name}</strong> successfully created");
-
-            if (isset($post['close'])) {
-                return $this->redirect(['index', 'menu-id' => $model->menu_id]);
-            } elseif (isset($post['new'])) {
-                return $this->redirect(['create', 'menu-id' => $model->menu_id]);
+                // Validate the model and translation models
+                $response = array_merge(ActiveForm::validate($model), ActiveForm::validateMultiple($translationModels));
+                
+                // Return validation in JSON format
+                Yii::$app->response->format = Response::FORMAT_JSON;
+                return $response;
+            
+            // Normal request, save models
             } else {
-                return $this->redirect(['update', 'id' => $model->id, 'menu-id' => $model->menu_id]);
-            }
+                // Wrap the everything in a database transaction
+                $transaction = Yii::$app->db->beginTransaction();                
+                
+                // Parent is root
+                if (empty($post['MenuItem']['parent_id'])) {
+                    // Set parent and level
+                    $model->parent_id = 0;
+                    $model->level = 0;
+                } else {
+                    // Load parent
+                    $parent = MenuItem::findOne($post['MenuItem']['parent_id']);
+    
+                    // Set parent and level
+                    $model->parent_id   = $parent->id;
+                    $model->level       = $parent->level + 1;
+                }
+    
+                // Set rest of attributes and save
+                $model->position = $model->nextPosition();
+                $model->entity_id = $post['MenuItem']['entity_id'];
+                $model->active = 1;
+                
+                // Save the main model
+                if (!$model->load($post) || !$model->save()) {
+                    return $this->render('create', [
+                        'model' => $model
+                    ]);
+                }
+                
+                // Save the translations
+                foreach ($languages as $languageId => $languageName) {
+                    
+                    $data = $post['MenuItemLang'][$languageId];
+                    
+                    // Set the translation language and attributes                    
+                    $model->language    = $languageId;
+                    $model->name        = $data['name'];
+                    
+                    if (!$model->saveTranslation()) {
+                        return $this->render('create', [
+                            'model' => $model
+                        ]);    
+                    }                      
+                }
+                
+                $transaction->commit();
+                
+                // Switch back to the main language
+                $model->language = Yii::$app->language;
+                
+                // Set flash message
+                Yii::$app->getSession()->setFlash('menu-item', Yii::t('app', '{item} has been created', ['item' => $model->name]));
+              
+                // Take appropriate action based on the pushed button
+                if (isset($post['close'])) {
+                    return $this->redirect(['index']);
+                } elseif (isset($post['new'])) {
+                    return $this->redirect(['create']);
+                } else {
+                    return $this->redirect(['update', 'id' => $model->id]);
+                }    
+            }    
         }
 
-        // @todo Rewrite Query
-        $q = new Query();
-        $results =  $q->select('`p`.`id`, `pl`.`title`')
-            ->from('`pages` AS `p`')
-            ->innerjoin('`pages_lang` AS `pl`', '`p`.`id` = `pl`.`page_id`')
-            ->where("`pl`.`language` = '" . Yii::$app->language . "'")
-            ->orderBy('`pl`.`title`')
-            ->all();
-
-        foreach ($results as $result)
-        {
-            $pages[$result['id']] = $result['title'];
-        }
-
+        // Get all pages
+        $pages = (new Query())
+                    ->select('page.id, page_lang.name')
+                    ->from(['page' => 'pages'])
+                    ->innerJoin(['page_lang' => 'pages_lang'], "page.id = page_lang.page_id AND page_lang.language = '".Yii::$app->language."'")
+                    ->orderBy(['page_lang.name' => SORT_ASC])
+                    ->all();
+        
         return $this->render('create', [
             'model' => $model,
-            'level_select' => Menu::findOne($menu->id)->level_select(['menu-id' => Yii::$app->request->get('menu-id')]),
+            'levelSelect' => $menu->level_select(['menu-id' => Yii::$app->request->get('menu-id')]),
             'menu' => $menu,
             'pages' => $pages,
-        ]);
-
+        ]);       
     }
 
     /**
@@ -208,121 +217,127 @@ class MenuItemController extends Controller
      */
     public function actionUpdate($id)
     {
-        $model = $this->findModel($id);
-
+        $languages = Yii::$app->params['languages'];
+        
         // Get the active menu
-        $menu = Menu::findone(Yii::$app->request->get('menu-id'));
-
-        if (Yii::$app->request->getIsPost())
-        {
+        $menu = Menu::findone(Yii::$app->session->get('menu-items.menu-id'));
+        
+        $model = $this->findModel($id);
+        
+        if (Yii::$app->request->getIsPost()) {
+            
             $post = Yii::$app->request->post();
-
-            if (!$model->load($post)) {
-                echo 'Model not loaded';
-                exit();
-            }
-
-            if ($post['type'] == MenuItem::ENTITY_PAGE)
-            {
-                $model->entity = MenuItem::ENTITY_PAGE;
-                $model->entity_id = $post['page_id'];
-                $model->url = '';
-            }
-            elseif ($_POST['type'] == MenuItem::ENTITY_URL)
-            {
-                $model->entity = MenuItem::ENTITY_URL;
-                $model->entity_id = 0;
-                $model->url = $post['url'];
-            }
-            elseif ($_POST['type'] == MenuItem::ENTITY_MENU_ITEM)
-            {
-                $model->entity = MenuItem::ENTITY_MENU_ITEM;
-                $model->entity_id = $post['menu_id'];
-                $model->url = '';
-            }
-
-            $current_parent = $model->parent_id;
-
-            // Parent is root
-            if (empty($post['MenuItem']['parent_id']))
-            {
-                // Set parent and level
-                $model->parent_id = 0;
-                $model->level = 0;
-            }
-            else
-            {
-                // Load parent
-                $parent = MenuItem::findOne($post['MenuItem']['parent_id']);
-
-                // Set parent and level
-                $model->parent_id	= $parent->id;
-                $model->level		= $parent->level + 1;
-            }
-
-            // Set rest of attributes and save
-            if ($current_parent != $model->parent_id)
-                $model->position = $model->next_position();
-
-            if (!$model->save()) {
-                echo 'Model not updated';
-                exit();
-            }
-
-            foreach (Yii::$app->params['languages'] as $k => $v) {
-
-                // @todo Replace this code with:
-
-                // change language
-                // $model->language = 'fr';
-                // $model->title = "French title";
-                // save translation only
-                //$tour->saveTranslation();
-
-                $modelLang = $model->getTranslation($k);
-                $modelLang->menu_item_id = $model->id;
-                $modelLang->load($post[$k]);
-
-                if (!$modelLang->save()) {
-                    echo 'ModelLang not updated';
-                    exit();
+            
+            // Ajax request, validate the models
+            if (Yii::$app->request->isAjax) {
+                               
+                // Populate the model with the POST data
+                $model->load($post);
+                
+                // Create an array of translation models
+                $translationModels = [];
+                
+                foreach ($languages as $languageId => $languageName) {
+                    $translationModels[$languageId] = new MenuItemLang(['language' => $languageId]);
                 }
-            }
+                
+                // Populate the translation models
+                Model::loadMultiple($translationModels, $post);
 
-            // Set flash message
-            $session = new Session;
-            $session->setFlash('menu-item-success', "Menu item <strong>{$model->name}</strong> successfully updated");
-
-            if (isset($post['close'])) {
-                return $this->redirect(['index', 'menu-id' => $model->menu_id, 'anchor' => 'list-' . $model->id]);
-            } elseif (isset($post['new'])) {
-                return $this->redirect(['create', 'menu-id' => $model->menu_id]);
+                // Validate the model and translation models
+                $response = array_merge(ActiveForm::validate($model), ActiveForm::validateMultiple($translationModels));
+                
+                // Return validation in JSON format
+                Yii::$app->response->format = Response::FORMAT_JSON;
+                return $response;
+            
+            // Normal request, save models
             } else {
-                return $this->redirect(['update', 'id' => $model->id, 'menu-id' => $model->menu_id]);
-            }
-
+                // Wrap the everything in a database transaction
+                $transaction = Yii::$app->db->beginTransaction(); 
+                                
+                $currentParentId = $model->parent_id;
+                
+                // Check if the parent has changed
+                if ($currentParentId != $post['MenuItem']['parent_id'])
+                {
+                    // Change parent, level and position
+                    // Parent is root
+                    if (empty($post['MenuItem']['parent_id'])) {
+                        // Set parent and level
+                        $model->parent_id = 0;
+                        $model->level = 0;
+                    } else {
+                        // Load parent
+                        $parent = MenuItem::findOne($post['MenuItem']['parent_id']);
+        
+                        // Set parent and level
+                        $model->parent_id   = $parent->id;
+                        $model->level       = $parent->level + 1;
+                    }
+        
+                    // Set rest of attributes and save
+                    $model->position = $model->nextPosition();
+                }             
+                
+                $model->entity_id = $post['MenuItem']['entity_id'];
+                
+                // Save the main model
+                if (!$model->load($post) || !$model->save()) {
+                    return $this->render('update', [
+                        'model' => $model
+                    ]);
+                }
+                
+                // Save the translations
+                foreach ($languages as $languageId => $languageName) {
+                    
+                    $data = $post['MenuItemLang'][$languageId];
+                    
+                    // Set the translation language and attributes                    
+                    $model->language    = $languageId;
+                    $model->name        = $data['name'];
+                    
+                    if (!$model->saveTranslation()) {
+                        return $this->render('update', [
+                            'model' => $model
+                        ]);    
+                    }                      
+                }
+                
+                $transaction->commit();
+                
+                // Switch back to the main language
+                $model->language = Yii::$app->language;
+                
+                // Set flash message
+                Yii::$app->getSession()->setFlash('menu-item', Yii::t('app', '{item} has been updated', ['item' => $model->name]));
+              
+                // Take appropriate action based on the pushed button
+                if (isset($post['close'])) {
+                    return $this->redirect(['index']);
+                } elseif (isset($post['new'])) {
+                    return $this->redirect(['create']);
+                } else {
+                    return $this->redirect(['update', 'id' => $model->id]);
+                }    
+            }    
         }
 
-        // @todo Rewrite Query
-        $q = new Query();
-        $results =  $q->select('`p`.`id`, `pl`.`title`')
-            ->from('`pages` AS `p`')
-            ->innerjoin('`pages_lang` AS `pl`', '`p`.`id` = `pl`.`page_id`')
-            ->where("`pl`.`language` = '" . Yii::$app->language . "'")
-            ->orderBy('`pl`.`title`')
-            ->all();
-
-        foreach ($results as $result)
-        {
-            $pages[$result['id']] = $result['title'];
-        }
-
+        // Get all pages
+        $pages = (new Query())
+                    ->select('page.id, page_lang.name')
+                    ->from(['page' => 'pages'])
+                    ->innerJoin(['page_lang' => 'pages_lang'], "page.id = page_lang.page_id AND page_lang.language = '".Yii::$app->language."'")
+                    ->orderBy(['page_lang.name' => SORT_ASC])
+                    ->all();
+        
         return $this->render('update', [
             'model' => $model,
-            'level_select' => Menu::findOne($menu->id)->level_select(['selected' => $model->parent_id, 'active-ancestor' => $model->id, 'menu-id' => Yii::$app->request->get('menu-id')]),
+            'levelSelect' => $menu->level_select(['menu-id' => Yii::$app->request->get('menu-id')]),
             'menu' => $menu,
             'pages' => $pages,
-        ]);
+        ]);       
     }
 
     /**
@@ -333,21 +348,14 @@ class MenuItemController extends Controller
      */
     public function actionDelete($id)
     {
-        //return $this->redirect(['index', 'menu-id' => Yii::$app->request->get('menu-id')]);
-
         $model = $this->findModel($id);
-
+        $model->delete();
+        
         // Set flash message
-        $session = new Session;
+        $model->language = Yii::$app->language;
+        Yii::$app->getSession()->setFlash('menu-item', Yii::t('app', '{item} has been deleted', ['item' => $model->name]));
 
-        if (!$model->delete())
-        {
-            $session->setFlash('menu-item-error', "Menu item <strong>{$model->name}</strong> not deleted");
-        } else {
-            $session->setFlash('menu-item-success', "Menu item <strong>{$model->name}</strong> successfully deleted");
-        }
-
-        return $this->redirect(['index', 'menu-id' => Yii::$app->request->get('menu-id')]);
+        return $this->redirect(['index']);
     }
 
     /**
@@ -361,7 +369,7 @@ class MenuItemController extends Controller
             $post = Yii::$app->request->post();
 
             if(!isset($post['ids']))
-                throw new Exception('Ongeldige menu items');
+                throw new \Exception('Ongeldige menu items');
 
             // Delete first item because of bug in nestedsortable
             array_shift($post['ids']);
@@ -375,15 +383,7 @@ class MenuItemController extends Controller
 
                 // Create menu item
                 $menu_item = MenuItem::findOne($item_id);
-
-                // Parent is root menu item
-                if($parent_id == 'root')
-                {
-                    $menu_item->parent_id = 0;
-                } else {
-                    $menu_item->parent_id = $parent_id;
-                }
-
+                $menu_item->parent_id = (int) $v['parent_id'];
                 $menu_item->level = $v['depth'] - 1;
 
                 if (!isset($positions["{$menu_item->parent_id}-{$menu_item->level}"]))
@@ -393,11 +393,13 @@ class MenuItemController extends Controller
                 $menu_item->position = $positions["{$menu_item->parent_id}-{$menu_item->level}"] + 1;
                 $positions["{$menu_item->parent_id}-{$menu_item->level}"]++;
 
-                if (!$menu_item->save())
-                    throw new Exception("Fout bij het opslaan");
+                if (!$menu_item->save()) {
+                    throw new \Exception("Fout bij het opslaan");
+                }
             }
-        } catch (ErrorException $e) {
+        } catch (\Exception $e) {
             Yii::error($e->getMessage());
+            exit();
         }
 
         $data['status'] = 1;
@@ -418,7 +420,7 @@ class MenuItemController extends Controller
         if (($model = MenuItem::findOne($id)) !== null) {
             return $model;
         } else {
-            throw new NotFoundHttpException('The requested page does not exist.');
+            throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
         }
     }
 

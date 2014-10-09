@@ -29,6 +29,7 @@ use yii\db\ActiveRecord;
  */
 class MenuItem extends \yii\db\ActiveRecord
 {
+    // Entity types
     const ENTITY_PAGE = 'page';
     const ENTITY_URL = 'url';
     const ENTITY_MENU_ITEM = 'menu-item';
@@ -67,10 +68,17 @@ class MenuItem extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['menu_id', 'parent_id', 'position'], 'integer'],
-            //[['entity'], 'string'],
-            //[['name', 'url', 'position'], 'required'],
-            [['name', 'url'], 'string', 'max' => 255]
+            [['menu_id', 'parent_id', 'level', 'position'], 'integer'],
+            [['url'], 'string', 'max' => 255],
+            // Required
+            [['menu_id', 'parent_id', 'entity'], 'required'],
+            // Only required when the entity is no url
+            // @todo: Re-activate this
+            /*[['entity_id'], 'required', 'when' => function($model) {
+                return $model->entity != self::ENTITY_URL;
+            }],*/
+            // Trim
+            [['url'], 'trim'],
         ];
     }
 
@@ -108,7 +116,7 @@ class MenuItem extends \yii\db\ActiveRecord
      *
      * @return int
      */
-    public function next_position()
+    public function nextPosition()
     {
         $query = new Query;
 

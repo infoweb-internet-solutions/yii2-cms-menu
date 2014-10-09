@@ -30,9 +30,21 @@ class MenuItemLang extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [[/*'menu_item_id', 'language', 'name'*/], 'required'],
-            //[['menu_item_id'], 'integer'],
-            //[['language'], 'string'],
+            // Required
+            [['language'], 'required'],
+            // Only required for existing records
+            [['menu_item_id'], 'required', 'when' => function($model) {
+                return !$model->isNewRecord;
+            }],
+            // Only required for the app language
+            [['name'], 'required', 'when' => function($model) {
+                return $model->language == Yii::$app->language;
+            }],
+            // Trim
+            [['name'], 'trim'],
+            // Types
+            [['menu_item_id', 'created_at', 'updated_at'], 'integer'],
+            [['language'], 'string', 'max' => 2],
             [['name'], 'string', 'max' => 255]
         ];
     }

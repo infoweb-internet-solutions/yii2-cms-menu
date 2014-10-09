@@ -86,7 +86,11 @@
         
         // Show the attributes that belong to the selected type
         if (val)
-            $('.'+val+'-attribute').show();  
+            $('.'+val+'-attribute').show();
+            
+        // Only enable the 'menuitem-entity_id' field that is visible
+        $('.attribute select').prop('disabled', true);
+        $('.attribute select:visible').prop('disabled', false); 
     };
     
     return menu_item;

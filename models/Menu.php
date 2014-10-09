@@ -67,7 +67,7 @@ class Menu extends \yii\db\ActiveRecord
     /**
      * Sortable tree
      */
-    public static function sortable_tree($settings = [])
+    public static function sortableTree($settings = [])
     {
         $default_settings = array(
             'parent'    => NULL,
@@ -102,10 +102,10 @@ class Menu extends \yii\db\ActiveRecord
                     </span>
                     <?php echo $item->name; ?>
                     <span class="action-buttons">
-                            <a href="<?= URL::to(['update', 'id' => $item->id, 'menu-id' => $settings['menu-id']]) ?>" data-toggle="tooltip" title="<?= Yii::t('app', 'Update') ?>" data-pjax="0">
+                            <a href="<?= URL::to(['update', 'id' => $item->id]) ?>" data-toggle="tooltip" title="<?= Yii::t('app', 'Update') ?>" data-pjax="0">
                                 <span class="glyphicon glyphicon-pencil"></span>
                             </a>
-                            <a href="<?= Url::to(['delete', 'id' => $item->id, 'menu-id' => $settings['menu-id']]) ?>" id="delete-<?php echo $item->id; ?>" data-toggle="tooltip" title="<?= Yii::t('app', 'Delete') ?>" data-method="post" data-confirm="Are you sure to delete this item?" data-pjax="0">
+                            <a href="<?= Url::to(['delete', 'id' => $item->id]) ?>" id="delete-<?php echo $item->id; ?>" data-toggle="tooltip" title="<?= Yii::t('app', 'Delete') ?>" data-method="post" data-confirm="Are you sure to delete this item?" data-pjax="0">
                                 <span class="glyphicon glyphicon-trash"></span>
                             </a>                            
                             <a href="#" data-toggle-active-menu-items="<?php echo $item->id; ?>" data-toggle="tooltip" data-pjax="0" title="<?= Yii::t('app', 'Toggle active') ?>">
@@ -115,27 +115,25 @@ class Menu extends \yii\db\ActiveRecord
                                     <span class="glyphicon glyphicon-eye-close"></span>
                                 <?php endif; ?>
                             </a>
+                            <?php // @todo: Re-enable this ?>
+                            <?php /*
                             <a href="#" data-toggle="tooltip" title="<?= Yii::t('app', 'View page') ?>">
                                 <span class="glyphicon glyphicon-globe"></span>
                             </a>
+                            */ ?> 
                             <?php if ($item->entity == MenuItem::ENTITY_PAGE): ?>
-                            <a href="<?= Url::toRoute(['/pages/page/update', 'id' => $item->entity_id /*, 'from' => Url::toRoute(['/menu/menu-item/index', 'menu_id' => $item->menu_id, '#' => "list-{$item->entity_id}"]) */]) ?>" data-toggle="tooltip" title="<?= Yii::t('app', 'Edit page') ?>">
+                            <a href="<?= Url::toRoute(['/pages/page/update', 'id' => $item->entity_id]) ?>" data-toggle="tooltip" title="<?= Yii::t('app', 'Edit page') ?>">
                                 <span class="glyphicon glyphicon-book"></span>
                             </a>
                             <?php endif; ?>
                         </span>
                 </div>
-                <?php /*
-                    <div id="dialog-confirm-<?php echo $item->id; ?>" title="Verwijderen" style="display:none;">
-                        <p>U staat op het punt om menu item <b><?php echo $item->name; ?></b> en alle onderliggende menu items te verwijderen.<br /><br />Deze actie kan niet ongedaan gemaakt worden.</p>
-                    </div>
-                     */ ?>
 
                 <?php
                 $result .= ob_get_clean();
 
                 if (Menu::has_children($item->id))
-                    $result .= Menu::sortable_tree([
+                    $result .= Menu::sortableTree([
                         'parent'    => $item->id,
                         'items'     => $settings['items'],
                         'menu-id'   => $settings['menu-id'],
