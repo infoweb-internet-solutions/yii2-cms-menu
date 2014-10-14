@@ -31,7 +31,7 @@ return [
     'modules' => [
         ...
         'menu' => [
-            'class' => 'infoweb\menu\Menu',
+            'class' => 'infoweb\menu\Module',
         ],
     ],
 ];
