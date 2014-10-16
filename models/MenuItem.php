@@ -4,10 +4,12 @@ namespace infoweb\menu\models;
 
 use Yii;
 use yii\validators;
-use yii\db\Query;
-use dosamigos\translateable\TranslateableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
+use yii\db\Query;
+use yii\helpers\Url;
+use dosamigos\translateable\TranslateableBehavior;
+use infoweb\pages\models\Page;
 
 /**
  * This is the model class for table "menu_item".
@@ -141,4 +143,47 @@ class MenuItem extends \yii\db\ActiveRecord
         return $this->hasMany(MenuItemLang::className(), ['menu_item_id' => 'id']);
     }
 
+    /**
+     * Returns the model of the entity that is associated with the item
+     * 
+     * @return  mixed
+     */
+    public function getEntityModel()
+    {
+        switch ($this->entity) {
+            case self::ENTITY_PAGE:
+            default:
+                return Page::findOne($this->entity_id);
+                break;
+           
+            case self::ENTITY_MENU_ITEM:  
+                return MenuItem::findOne($this->entity_id);
+                break;
+                
+            case self::ENTITY_URL:  
+                return MenuItem::findOne($thid->id);
+                break;     
+        }            
+    }
+    
+    /**
+     * Returns the url for the item
+     * 
+     * @return  string
+     */
+    public function getUrl()
+    {
+        if ($this->entity == self::ENTITY_URL) {
+            return $this->url;  
+        } elseif ($this->entity == self::ENTITY_PAGE) {
+            $page = $this->getEntityModel();
+            
+            return Url::to("@web/{$this->language}/{$page->alias->url}");
+        } else {
+            $menuItem = $this->getEntityModel();
+            $page = $menuItem->getEntityModel();
+            
+            return Url::to("@web/{$this->language}/{$page->alias->url}");
+        }  
+    }
 }

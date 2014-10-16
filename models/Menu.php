@@ -307,4 +307,11 @@ class Menu extends \yii\db\ActiveRecord
         return $result;
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getItems()
+    {
+        return $this->hasMany(MenuItem::className(), ['menu_id' => 'id']);
+    }
 }
