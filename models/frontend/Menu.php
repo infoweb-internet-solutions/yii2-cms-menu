@@ -25,8 +25,8 @@ class Menu extends \infoweb\menu\models\Menu
         $items = parent::getItems()->where(['active' => 1]);
         
         // Filter by parent
-        if (isset($options['parent-id']))
-            $items = $items->andWhere(['parent_id' => $options['parent-id']]);
+        if (isset($options['parentId']))
+            $items = $items->andWhere(['parent_id' => $options['parentId']]);
         
         // Filter by level
         if (isset($options['level']))
@@ -41,14 +41,15 @@ class Menu extends \infoweb\menu\models\Menu
      * @param   array   $settings       A settings array that holds the parent-id and level
      * @return  array
      */
-    public function getTree($settings = ['parent-id' => 0, 'level' => 0])
+    public function getTree($settings = ['parentId' => 0, 'level' => 0, 'includeLanguage' => true])
     {
         $items = [];
         $menuItems = $this->getItems($settings)->all();
-        
+
         foreach ($menuItems as $menuItem) {
             $menuItem->language = Yii::$app->language;
-            $url = $menuItem->getUrl();
+            
+            $url = $menuItem->getUrl($settings['includeLanguage']);
             
             $item = [
                 'label'     => $menuItem->name,
@@ -57,7 +58,11 @@ class Menu extends \infoweb\menu\models\Menu
             ];
             
             // Get the item's children
-            $children = $this->getTree(['parent-id' => $menuItem->id, 'level' => $menuItem->level + 1]);
+            $children = $this->getTree([
+                'parentId'          => $menuItem->id,
+                'level'             => $menuItem->level + 1,
+                'includeLanguage'   => $settings['includeLanguage']
+            ]);
             
             if ($children)
                 $item['items'] = $children;

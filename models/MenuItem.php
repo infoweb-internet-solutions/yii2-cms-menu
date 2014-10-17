@@ -169,21 +169,25 @@ class MenuItem extends \yii\db\ActiveRecord
     /**
      * Returns the url for the item
      * 
+     * @param   boolean     A flag to determin if the language parameter should 
+     *                      be added to the url 
      * @return  string
      */
-    public function getUrl()
+    public function getUrl($includeLanguage = true)
     {
         if ($this->entity == self::ENTITY_URL) {
-            return $this->url;  
-        } elseif ($this->entity == self::ENTITY_PAGE) {
-            $page = $this->getEntityModel();
-            
-            return Url::to("@web/{$this->language}/{$page->alias->url}");
+            return $this->url;
         } else {
-            $menuItem = $this->getEntityModel();
-            $page = $menuItem->getEntityModel();
+            $language = ($includeLanguage) ? "{$this->language}/" : '';
             
-            return Url::to("@web/{$this->language}/{$page->alias->url}");
+            if ($this->entity == self::ENTITY_PAGE) {
+                $page = $this->getEntityModel();
+            } else {
+                $menuItem = $this->getEntityModel();
+                $page = $menuItem->getEntityModel();
+            }
+            
+            return Url::to("@web/{$language}{$page->alias->url}");
         }  
     }
 }
