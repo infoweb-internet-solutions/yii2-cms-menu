@@ -228,11 +228,16 @@ class MenuItemController extends Controller
     {
         $languages = Yii::$app->params['languages'];
         
+        $model = $this->findModel($id);
+        
         // Get the active menu
         $menu = Menu::findone(Yii::$app->session->get('menu-items.menu-id'));
         
         // Get the html for the level select
-        $levelSelect = Menu::level_select(['menu-id' => Yii::$app->session->get('menu-items.menu-id')]);
+        $levelSelect = Menu::level_select([
+            'menu-id'   => Yii::$app->session->get('menu-items.menu-id'),
+            'selected'  => $model->parent_id
+        ]);
         
         // Get all pages
         $pages = (new Query())
@@ -241,8 +246,6 @@ class MenuItemController extends Controller
                     ->innerJoin(['page_lang' => 'pages_lang'], "page.id = page_lang.page_id AND page_lang.language = '".Yii::$app->language."'")
                     ->orderBy(['page_lang.name' => SORT_ASC])
                     ->all();
-        
-        $model = $this->findModel($id);
         
         if (Yii::$app->request->getIsPost()) {
             
@@ -352,7 +355,7 @@ class MenuItemController extends Controller
         
         return $this->render('update', [
             'model' => $model,
-            'levelSelect' => $menu->level_select(['menu-id' => Yii::$app->session->get('menu-items.menu-id')]),
+            'levelSelect' => $levelSelect,
             'menu' => $menu,
             'pages' => $pages,
         ]);       
