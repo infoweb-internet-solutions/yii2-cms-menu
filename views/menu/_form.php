@@ -18,7 +18,7 @@ use kartik\widgets\TouchSpin
 
     <?= $form->field($model, 'name')->textInput(['maxlength' => 255]) ?>
 
-    <?php if (Yii::$app->user->can('superAdmin')): ?>
+    <?php if (Yii::$app->user->can('Superadmin')): ?>
     <?= $form->field($model, 'max_level')->widget(TouchSpin::classname()); ?>
     <?php endif; ?>
     

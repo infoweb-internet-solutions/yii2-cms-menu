@@ -56,7 +56,7 @@ class MenuItemLang extends \yii\db\ActiveRecord
     {
         return [
             'id' => Yii::t('app', 'ID'),
-            'menu_item_id' => Yii::t('app', 'Menu ID'),
+            'menu_item_id' => Yii::t('infoweb/menu', 'Menu ID'),
             'language' => Yii::t('app', 'Language'),
             'name' => Yii::t('app', 'Name'),
         ];

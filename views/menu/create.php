@@ -7,9 +7,9 @@ use yii\helpers\Html;
 /* @var $model infoweb\menu\models\Menu */
 
 $this->title = Yii::t('app', 'Create {modelClass}', [
-    'modelClass' => 'Menu',
+    'modelClass' => Yii::t('infoweb/menu', 'Menu'),
 ]);
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Menus'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('infoweb/menu', 'Menus'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="menu-create">

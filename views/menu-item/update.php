@@ -11,9 +11,9 @@ MenuAsset::register($this);
 /* @var $model infoweb\menu\models\MenuItem */
 
 $this->title = Yii::t('app', 'Update {modelClass}: ', [
-    'modelClass' => 'Menu Item',
+    'modelClass' => Yii::t('infoweb/menu', 'Menu item'),
 ]) . ' ' . $model->name;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Menus'), 'url' => ['menu/index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('infoweb/menu', 'Menus'), 'url' => ['menu/index']];
 $this->params['breadcrumbs'][] = ['label' => $menu->name, 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['update', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Update')];

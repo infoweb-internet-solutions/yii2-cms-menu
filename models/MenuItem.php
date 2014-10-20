@@ -96,11 +96,11 @@ class MenuItem extends \yii\db\ActiveRecord
     {
         return [
             'id' => Yii::t('app', 'ID'),
-            'menu_id' => Yii::t('app', 'Menu ID'),
-            'parent_id' => Yii::t('app', 'Parent ID'),
+            'menu_id' => Yii::t('infoweb/menu', 'Menu ID'),
+            'parent_id' => Yii::t('infoweb/menu', 'Parent ID'),
             'entity' => Yii::t('app', 'Entity'),
             'entity_id' => Yii::t('app', 'Entity ID'),
-            'level' => Yii::t('app', 'Level'),
+            'level' => Yii::t('infoweb/menu', 'Level'),
             'name' => Yii::t('app', 'Name'),
             'url' => Yii::t('app', 'Url'),
             'position' => Yii::t('app', 'Position'),
@@ -173,12 +173,13 @@ class MenuItem extends \yii\db\ActiveRecord
      *                      be added to the url 
      * @return  string
      */
-    public function getUrl($includeLanguage = true)
+    public function getUrl($includeLanguage = true, $excludeWebPath = false)
     {
         if ($this->entity == self::ENTITY_URL) {
             return $this->url;
         } else {
-            $language = ($includeLanguage) ? "{$this->language}/" : '';
+            $prefix = (!$excludeWebPath) ? '@web/' : '';
+            $prefix .= ($includeLanguage) ? "{$this->language}/" : '';
             
             if ($this->entity == self::ENTITY_PAGE) {
                 $page = $this->getEntityModel();
@@ -187,7 +188,7 @@ class MenuItem extends \yii\db\ActiveRecord
                 $page = $menuItem->getEntityModel();
             }
             
-            return Url::to("@web/{$language}{$page->alias->url}");
+            return Url::to("{$prefix}{$page->alias->url}");
         }  
     }
 }

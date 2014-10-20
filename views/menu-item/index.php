@@ -15,7 +15,7 @@ MenuAsset::register($this);
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = $menu->name;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Menus'), 'url' => ['menu/index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('infoweb/menu', 'Menus'), 'url' => ['menu/index']];
 $this->params['breadcrumbs'][] = $this->title;
 
 // Nested sortable max level
@@ -34,7 +34,7 @@ $this->registerJs("var maxLevels = {$maxLevel};", View::POS_HEAD);
 
     <p>
         <?= Html::a(Yii::t('app', 'Create {modelClass}', [
-            'modelClass' => 'Menu Item',
+            'modelClass' => Yii::t('infoweb/menu', 'Menu item'),
         ]), ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 

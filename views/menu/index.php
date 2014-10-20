@@ -9,7 +9,7 @@ use kartik\grid\GridView;
 /* @var $searchModel infoweb\menu\models\MenuSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = Yii::t('app', 'Menus');
+$this->title = Yii::t('infoweb/menu', 'Menus');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="menu-index">
@@ -26,7 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php if (Yii::$app->user->can('createMenu')): ?>
     <p>
         <?= Html::a(Yii::t('app', 'Create {modelClass}', [
-            'modelClass' => 'Menu',
+            'modelClass' => Yii::t('infoweb/menu', 'Menu'),
         ]), ['create'], ['class' => 'btn btn-success']); ?>
     </p>
     <?php endif; ?>
@@ -57,15 +57,15 @@ $this->params['breadcrumbs'][] = $this->title;
                 'buttons' => [
                     'menu-item' => function ($url, $model) {
                         return Html::a('<span class="glyphicon glyphicon-list-alt"></span>', $url, [
-                            'title' => Yii::t('app', 'Menu Items'),
+                            'title' => Yii::t('infoweb/menu', 'Menu items'),
                             'data-pjax' => '0',
                             'data-toggle' => 'tooltip',
                             //'data-placement' => 'left',
                         ]);
                     },
                 ],
-                'updateOptions'=>['title'=> 'Update', 'data-toggle'=>'tooltip'],
-                'deleteOptions'=>['title'=> 'Delete', 'data-toggle'=>'tooltip'],
+                'updateOptions'=>['title'=> Yii::t('app', 'Update'), 'data-toggle'=>'tooltip'],
+                'deleteOptions'=>['title'=> Yii::t('app', 'Delete'), 'data-toggle'=>'tooltip'],
                 'urlCreator' => function($action, $model, $key, $index) {
     
                     if ($action == 'menu-item')

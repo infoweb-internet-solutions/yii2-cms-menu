@@ -115,14 +115,11 @@ class Menu extends \yii\db\ActiveRecord
                                     <span class="glyphicon glyphicon-eye-close"></span>
                                 <?php endif; ?>
                             </a>
-                            <?php // @todo: Re-enable this ?>
-                            <?php /*
-                            <a href="#" data-toggle="tooltip" title="<?= Yii::t('app', 'View page') ?>">
+                            <a href="<?php echo '../../../' . MenuItem::findOne($item->id)->getUrl(true, true); ?>" data-toggle="tooltip" target="_blank" title="<?= Yii::t('app', 'View') ?>">
                                 <span class="glyphicon glyphicon-globe"></span>
                             </a>
-                            */ ?> 
                             <?php if ($item->entity == MenuItem::ENTITY_PAGE): ?>
-                            <a href="<?= Url::toRoute(['/pages/page/update', 'id' => $item->entity_id, 'referrer' => 'menu-items']) ?>" data-toggle="tooltip" title="<?= Yii::t('app', 'Edit page') ?>">
+                            <a href="<?= Url::toRoute(['/pages/page/update', 'id' => $item->entity_id, 'referrer' => 'menu-items']) ?>" data-toggle="tooltip" title="<?= Yii::t('app', 'Edit {modelClass}', ['modelClass' => strtolower(Yii::t('infoweb/pages', 'Page'))]) ?>">
                                 <span class="glyphicon glyphicon-book"></span>
                             </a>
                             <?php endif; ?>

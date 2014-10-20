@@ -390,7 +390,7 @@ class MenuItemController extends Controller
             $post = Yii::$app->request->post();
 
             if(!isset($post['ids']))
-                throw new \Exception('Ongeldige menu items');
+                throw new \Exception(Yii::t('infoweb/menu', 'Invalid items'));
 
             // Delete first item because of bug in nestedsortable
             array_shift($post['ids']);
@@ -415,7 +415,7 @@ class MenuItemController extends Controller
                 $positions["{$menu_item->parent_id}-{$menu_item->level}"]++;
 
                 if (!$menu_item->save()) {
-                    throw new \Exception("Fout bij het opslaan");
+                    throw new \Exception(Yii::t('app', 'Error while saving'));
                 }
             }
         } catch (\Exception $e) {
@@ -441,7 +441,7 @@ class MenuItemController extends Controller
         if (($model = MenuItem::findOne($id)) !== null) {
             return $model;
         } else {
-            throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
+            throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist'));
         }
     }
 
