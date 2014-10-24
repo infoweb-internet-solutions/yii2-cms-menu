@@ -197,7 +197,7 @@ class MenuItemController extends Controller
                 $model->language = Yii::$app->language;
                 
                 // Set flash message
-                Yii::$app->getSession()->setFlash('menu-item', Yii::t('app', '{item} has been created', ['item' => $model->name]));
+                Yii::$app->getSession()->setFlash('menu-item', Yii::t('app', '"{item}" has been created', ['item' => $model->name]));
               
                 // Take appropriate action based on the pushed button
                 if (isset($post['close'])) {
