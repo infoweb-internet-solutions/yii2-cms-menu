@@ -296,6 +296,7 @@ class MenuItemController extends Controller
             
             // Normal request, save models
             } else {
+
                 // Wrap the everything in a database transaction
                 $transaction = Yii::$app->db->beginTransaction(); 
                                 
