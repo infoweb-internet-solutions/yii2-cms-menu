@@ -169,8 +169,10 @@ class MenuItem extends \yii\db\ActiveRecord
     /**
      * Returns the url for the item
      * 
-     * @param   boolean     A flag to determin if the language parameter should 
-     *                      be added to the url 
+     * @param   boolean     A flag to determine if the language parameter should 
+     *                      be added to the url
+     * @param   boolean     A flag to determine if the url should be prefixed with
+     *                      the webpath 
      * @return  string
      */
     public function getUrl($includeLanguage = true, $excludeWebPath = false)
