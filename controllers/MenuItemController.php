@@ -121,6 +121,16 @@ class MenuItemController extends Controller
                 // Populate the model with the POST data
                 $model->load($post);
                 
+                // Set model level
+                // Parent is root
+                if (empty($post['MenuItem']['parent_id'])) {
+                    $model->level = 0;
+                } else {
+                    // Load parent
+                    $parent = MenuItem::findOne($post['MenuItem']['parent_id']);
+                    $model->level       = $parent->level + 1;
+                }
+                
                 // Create an array of translation models
                 $translationModels = [];
                 
@@ -257,6 +267,16 @@ class MenuItemController extends Controller
                 // Populate the model with the POST data
                 $model->load($post);
                 
+                // Set model level
+                // Parent is root
+                if (empty($post['MenuItem']['parent_id'])) {
+                    $model->level = 0;
+                } else {
+                    // Load parent
+                    $parent = MenuItem::findOne($post['MenuItem']['parent_id']);
+                    $model->level       = $parent->level + 1;
+                }
+                
                 // Create an array of translation models
                 $translationModels = [];
                 
@@ -374,15 +394,15 @@ class MenuItemController extends Controller
             
             $transaction = Yii::$app->db->beginTransaction();
             $model->delete();
-            $transaction->commit();
-            
-            // Set flash message
-            $model->language = Yii::$app->language;
-            Yii::$app->getSession()->setFlash('menu-item', Yii::t('app', '{item} has been deleted', ['item' => $model->name]));    
+            $transaction->commit();   
         } catch(\yii\base\Exception $e) {
             // Set flash message
-            Yii::$app->getSession()->setFlash('menu-item', $e->getMessage());    
-        }        
+            Yii::$app->getSession()->setFlash('menu-item-error', $e->getMessage());    
+        } 
+        
+        // Set flash message
+        $model->language = Yii::$app->language;
+        Yii::$app->getSession()->setFlash('menu-item', Yii::t('app', '{item} has been deleted', ['item' => $model->name]));       
 
         return $this->redirect(['index']);
     }

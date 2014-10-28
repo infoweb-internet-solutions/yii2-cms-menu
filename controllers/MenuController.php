@@ -126,6 +126,10 @@ class MenuController extends Controller
     public function actionDelete($id)
     {
         try {
+            // Only the superadmin can delete menu's
+            if (!Yii::$app->user->can('Superadmin'))
+                throw new \yii\base\Exception(Yii::t('app', 'You do not have the right permissions to delete this item'));
+            
             $model = $this->findModel($id);
             
             $transaction = Yii::$app->db->beginTransaction();

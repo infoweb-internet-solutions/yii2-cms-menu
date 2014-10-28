@@ -23,26 +23,26 @@ $this->registerJs("var maxLevels = {$maxLevel};", View::POS_HEAD);
 ?>
 <div class="menu-item-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <?php // Title ?>
+    <h1>
+        <?= Html::encode($this->title) ?>
+        <?php // Buttons ?>
+        <div class="pull-right">
+            <?= Html::a(Yii::t('app', 'Create {modelClass}', [
+                'modelClass' => Yii::t('infoweb/menu', 'Menu item'),
+            ]), ['create'], ['class' => 'btn btn-success']) ?>    
+        </div>
+    </h1>
     
-    <?php // Flash message ?>
-    <?php if (Yii::$app->getSession()->hasFlash('menu-item')): ?>
-    <div class="alert alert-success">
-        <p><?= Yii::$app->getSession()->getFlash('menu-item') ?></p>
-    </div>
-    <?php endif; ?>
+    <?php // Flash messages ?>
+    <?php echo $this->render('_flash_messages'); ?>
 
-    <p>
-        <?= Html::a(Yii::t('app', 'Create {modelClass}', [
-            'modelClass' => Yii::t('infoweb/menu', 'Menu item'),
-        ]), ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
-
+    <?php // Gridview ?>
     <table class="table table-bordered" style="margin: 20px 0 0 0;">
         <thead>
             <tr>
                 <th>Naam</th>
-                <th style="width:150px;" >
+                <th style="width:150px;">
                     Acties
                 </th>
             </tr>

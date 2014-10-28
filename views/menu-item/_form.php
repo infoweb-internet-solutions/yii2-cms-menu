@@ -10,7 +10,10 @@ use yii\bootstrap\Tabs;
 ?>
 
 <div class="menu-item-form">
-
+    
+    <?php // Flash messages ?>
+    <?php echo $this->render('_flash_messages'); ?>
+    
     <?php
     // Init the form
     $form = ActiveForm::begin([

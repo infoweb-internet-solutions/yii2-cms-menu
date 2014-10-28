@@ -85,7 +85,12 @@ class MenuItem extends \yii\db\ActiveRecord
                 return $model->entity == self::ENTITY_URL;
             }],
             [['url'], 'url', 'defaultScheme' => 'http'],
-            [['entity_id'], 'default', 'value' => 0]
+            [['entity_id'], 'default', 'value' => 0],
+            /*['parent_id', function($attribute, $params) {
+                mail('fabio@infoweb.be', __FILE__.' => '.__LINE__, '');
+                if ($this->level > $model->menu->max_level - 1)
+                    $this->addError($attribute, Yii::t('infoweb/menu', 'The maximum level has been reached'));    
+            }]*/
         ];
     }
 
