@@ -296,7 +296,7 @@ class MenuItemController extends Controller
             
             // Normal request, save models
             } else {
-                mail('fabio@infoweb.be', __FILE__.' => '.__LINE__, var_export($post,true));
+
                 // Wrap the everything in a database transaction
                 $transaction = Yii::$app->db->beginTransaction(); 
                                 
