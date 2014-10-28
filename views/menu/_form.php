@@ -2,7 +2,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
-use kartik\widgets\TouchSpin
+use kartik\widgets\TouchSpin;
 
 //$auth = Yii::$app->authManager;
 
@@ -21,7 +21,7 @@ use kartik\widgets\TouchSpin
     <?php if (Yii::$app->user->can('Superadmin')): ?>
     <?= $form->field($model, 'max_level')->widget(TouchSpin::classname(), ['pluginOptions' => [
         'initval'   => 2,
-        'min'       => 1
+        'min'       => ($model->isNewRecord) ? 1 : $model->getCurrentMaxLevel()
     ]]); ?>
     <?php endif; ?>
     

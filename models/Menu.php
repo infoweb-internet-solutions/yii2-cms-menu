@@ -334,4 +334,18 @@ class Menu extends \yii\db\ActiveRecord
     {
         return $this->hasMany(MenuItem::className(), ['menu_id' => 'id']);
     }
+    
+    /**
+     * Returns the current max level
+     * 
+     * @return  int
+     */
+    public function getCurrentMaxLevel()
+    {
+        return (new Query())
+                ->select('level')
+                ->from('menu_item')
+                ->where('menu_id = :menu_id', [':menu_id' => $this->id])
+                ->max('level') + 1;   
+    }
 }
