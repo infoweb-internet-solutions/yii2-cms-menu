@@ -193,4 +193,27 @@ class MenuItem extends \yii\db\ActiveRecord
             return Url::to("{$prefix}{$page->alias->url}");
         }  
     }
+    
+    /**
+     * Recursively deletes all children of the item
+     * 
+     * @return  boolean
+     */
+    public function deleteChildren()
+    {
+        foreach ($this->getChildren()->all() as $child) {
+            if (!$child->delete())
+                return false;   
+        } 
+        
+        return true;   
+    }
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getChildren()
+    {
+        return $this->hasMany(MenuItem::className(), ['parent_id' => 'id']);
+    }
 }
