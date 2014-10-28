@@ -30,7 +30,10 @@ use infoweb\menu\models\Menu;
         <?= Html::dropDownList('MenuItem[entity_id]', $model->entity_id, ArrayHelper::map($pages, 'id', 'name'), [
             'class'     => 'form-control',
             'id'        => 'menuitem-entity_id',
-            'prompt'    => Yii::t('infoweb/alias', 'Choose a page')
+            'prompt'    => Yii::t('infoweb/alias', 'Choose a page'),
+            'options'   => [
+                'disabled'  => ($model->entity != $model::ENTITY_PAGE) ? true : false
+            ]
         ]) ?>
         <div class="help-block"></div>
     </div>
@@ -47,7 +50,7 @@ use infoweb\menu\models\Menu;
 
     <div class="form-group field-menuitem-entity_id attribute menu-item-attribute" <?php if ($model->entity != $model::ENTITY_MENU_ITEM) : ?>style="display: none;"<?php endif; ?>>
         <label for="menuitem-entity_id" class="control-label"><?= Yii::t('infoweb/menu', 'Menu item'); ?></label>
-        <select name="MenuItem[entity_id]" class="form-control" id="menuitem-entity_id">
+        <select name="MenuItem[entity_id]" class="form-control" id="menuitem-entity_id" <?php if ($model->entity != $model::ENTITY_MENU_ITEM) : ?>disabled<?php endif; ?>>
             <option value="">-- <?php echo Yii::t('infoweb/menu', 'Choose a menu item'); ?> --</option>
             <?php foreach (Menu::find()->all() as $menu): ?>
             <option value="" disabled="disabled">* <?php echo $menu->name; ?> *</option>
