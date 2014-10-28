@@ -63,7 +63,6 @@ class MenuController extends Controller
     public function actionCreate()
     {
         $model = new Menu();
-        $model->loadDefaultValues();
 
         $post = Yii::$app->request->post();
 
