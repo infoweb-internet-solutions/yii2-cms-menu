@@ -194,7 +194,7 @@ class MenuItem extends \yii\db\ActiveRecord
                 $menuItem = $this->getEntityModel();
                 $page = $menuItem->getEntityModel();
             }
-            
+
             return Url::to("{$prefix}{$page->alias->url}");
         }  
     }

@@ -322,7 +322,7 @@ class MenuItemController extends Controller
                     // Set rest of attributes and save
                     $model->position = $model->nextPosition();
                 }             
-                
+
                 $model->entity_id = $post['MenuItem']['entity_id'];
                 
                 // Save the main model
