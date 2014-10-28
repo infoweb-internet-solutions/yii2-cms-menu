@@ -14,25 +14,24 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="menu-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <?php // Title ?>
+    <h1>
+        <?= Html::encode($this->title) ?>
+        <?php // Buttons ?>
+        <?php if (Yii::$app->user->can('createMenu')): ?>
+        <div class="pull-right">
+            <?= Html::a(Yii::t('app', 'Create {modelClass}', [
+                'modelClass' => Yii::t('infoweb/menu', 'Menu'),
+            ]), ['create'], ['class' => 'btn btn-success']); ?>
+        </div>
+        <?php endif; ?>
+    </h1>
     
-    <?php // Flash message ?>
-    <?php if (Yii::$app->getSession()->hasFlash('menu')): ?>
-    <div class="alert alert-success">
-        <p><?= Yii::$app->getSession()->getFlash('menu') ?></p>
-    </div>
-    <?php endif; ?>
+    <?php // Flash messages ?>
+    <?php echo $this->render('_flash_messages'); ?>
 
-    <?php if (Yii::$app->user->can('createMenu')): ?>
-    <p>
-        <?= Html::a(Yii::t('app', 'Create {modelClass}', [
-            'modelClass' => Yii::t('infoweb/menu', 'Menu'),
-        ]), ['create'], ['class' => 'btn btn-success']); ?>
-    </p>
-    <?php endif; ?>
-
-    <?php Pjax::begin(['id'=>'grid-pjax']); ?>
-    
+    <?php // Gridview ?>
+    <?php Pjax::begin(['id'=>'grid-pjax']); ?>    
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,

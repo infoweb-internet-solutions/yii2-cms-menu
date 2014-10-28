@@ -311,4 +311,27 @@ class Menu extends \yii\db\ActiveRecord
     {
         return $this->hasMany(MenuItem::className(), ['menu_id' => 'id']);
     }
+    
+    /**
+     * Recursively deletes all children of the item
+     * 
+     * @return  boolean
+     */
+    public function deleteChildren()
+    {
+        foreach ($this->getChildren()->all() as $child) {
+            if (!$child->delete())
+                return false;   
+        } 
+        
+        return true;   
+    }
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getChildren()
+    {
+        return $this->hasMany(MenuItem::className(), ['menu_id' => 'id']);
+    }
 }

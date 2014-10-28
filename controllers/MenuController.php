@@ -126,12 +126,20 @@ class MenuController extends Controller
      */
     public function actionDelete($id)
     {
-        $model = $this->findModel($id);
-        $model->delete();
-        
+        try {
+            $model = $this->findModel($id);
+            
+            $transaction = Yii::$app->db->beginTransaction();
+            $model->delete();
+            $transaction->commit();   
+        } catch(\yii\base\Exception $e) {
+            // Set flash message
+            Yii::$app->getSession()->setFlash('menu-error', $e->getMessage());    
+        }        
+
         // Set flash message
         Yii::$app->getSession()->setFlash('menu', Yii::t('app', '{item} has been deleted', ['item' => $model->name]));
-
+            
         return $this->redirect(['index']);
     }
 
