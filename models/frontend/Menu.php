@@ -3,17 +3,9 @@
 namespace infoweb\menu\models\frontend;
 
 use Yii;
-use yii\helpers\ArrayHelper;
-use yii\helpers\Url;
-use infoweb\menu\models\MenuItem;
 
 /**
- * This is the model class for table "menu".
- *
- * @property string $id
- * @property string $name
- * @property string $created_at
- * @property string $updated_at
+ * This is the frontend model class for table "menu".
  */
 class Menu extends \infoweb\menu\models\Menu
 {
