@@ -105,7 +105,7 @@ class Menu extends \yii\db\ActiveRecord
                             <a href="<?= URL::to(['update', 'id' => $item->id]) ?>" data-toggle="tooltip" title="<?= Yii::t('app', 'Update') ?>" data-pjax="0">
                                 <span class="glyphicon glyphicon-pencil"></span>
                             </a>
-                            <a href="<?= Url::to(['delete', 'id' => $item->id]) ?>" id="delete-<?php echo $item->id; ?>" data-toggle="tooltip" title="<?= Yii::t('app', 'Delete') ?>" data-method="post" data-confirm="Are you sure to delete this item?" data-pjax="0">
+                            <a href="<?= Url::to(['delete', 'id' => $item->id]) ?>" id="delete-<?php echo $item->id; ?>" data-toggle="tooltip" title="<?= Yii::t('app', 'Delete') ?>" data-method="post" data-confirm="<?php echo Yii::t('app', 'Are you sure you want to delete this item?'); ?>" data-pjax="0">
                                 <span class="glyphicon glyphicon-trash"></span>
                             </a>                            
                             <a href="#" data-toggle-active-menu-items="<?php echo $item->id; ?>" data-toggle="tooltip" data-pjax="0" title="<?= Yii::t('app', 'Toggle active') ?>">
