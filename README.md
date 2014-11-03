@@ -37,6 +37,11 @@ return [
 ];
 ```
 
+Import the translations and use category 'infoweb/menu':
+```
+yii i18n/import @infoweb/menu/messages
+```
+
 To use the module, execute yii migration
 ```
 yii migrate/up --migrationPath=@vendor/infoweb-internet-solutions/yii2-cms-menu/migrations
