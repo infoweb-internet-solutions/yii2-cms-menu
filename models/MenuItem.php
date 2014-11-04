@@ -193,7 +193,12 @@ class MenuItem extends \yii\db\ActiveRecord
             } else {
                 $menuItem = $this->getEntityModel();
                 $page = $menuItem->getEntityModel();
-            }
+            }          
+                        
+            // In the frontend application, the alias for the homepage is ommited
+            // and '/' is used
+            if (Yii::$app->id == 'app-frontend' && $page->homepage == true)
+                return Url::to($prefix);
 
             return Url::to("{$prefix}{$page->alias->url}");
         }  
