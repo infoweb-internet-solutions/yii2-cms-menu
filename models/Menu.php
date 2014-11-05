@@ -115,7 +115,7 @@ class Menu extends \yii\db\ActiveRecord
                                     <span class="glyphicon glyphicon-eye-close"></span>
                                 <?php endif; ?>
                             </a>
-                            <a href="<?php echo '../../../' . MenuItem::findOne($item->id)->getUrl(true, true); ?>" data-toggle="tooltip" target="_blank" title="<?= Yii::t('app', 'View') ?>">
+                            <a href="<?php echo Yii::getAlias('@domain') . '/' . MenuItem::findOne($item->id)->getUrl(true, true); ?>" data-toggle="tooltip" target="_blank" title="<?= Yii::t('app', 'View') ?>">
                                 <span class="glyphicon glyphicon-globe"></span>
                             </a>
                             <?php if ($item->entity == MenuItem::ENTITY_PAGE): ?>
