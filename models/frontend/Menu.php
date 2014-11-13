@@ -42,11 +42,11 @@ class Menu extends \infoweb\menu\models\Menu
             $menuItem->language = Yii::$app->language;
             
             $url = $menuItem->getUrl($settings['includeLanguage']);
-            
+
             $item = [
                 'label'     => $menuItem->name,
                 'url'       => $url,
-                'active'    => (Yii::$app->request->url == $url) ? true : false 
+                'active'    => Yii::$app->request->url == $url
             ];
             
             // Get the item's children
