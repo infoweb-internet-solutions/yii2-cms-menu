@@ -59,9 +59,13 @@ ol.sortable .odd {
     background-color: #f9f9f9;
 }
 
+.table th.actions {
+    width:160px;
+}
+
 .action-buttons {
 	float:right;
-	width: 135px;
+	width: 140px;
 }
 
 .action-buttons a:hover,
