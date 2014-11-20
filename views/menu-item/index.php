@@ -42,9 +42,7 @@ $this->registerJs("var maxLevels = {$maxLevel};", View::POS_HEAD);
         <thead>
             <tr>
                 <th>Naam</th>
-                <th style="width:150px;">
-                    Acties
-                </th>
+                <th class="actions">Acties</th>
             </tr>
         </thead>
         <tbody>
