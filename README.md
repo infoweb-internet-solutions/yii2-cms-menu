@@ -27,14 +27,12 @@ Usage
 Once the extension is installed, simply modify your application configuration as follows:
 
 ```php
-return [
-    'modules' => [
-        ...
-        'menu' => [
-            'class' => 'infoweb\menu\Module',
-        ],
+'modules' => [
+    ...
+    'menu' => [
+        'class' => 'infoweb\menu\Module',
     ],
-];
+],
 ```
 
 Import the translations and use category 'infoweb/menu':
