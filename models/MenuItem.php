@@ -187,21 +187,23 @@ class MenuItem extends \yii\db\ActiveRecord
         } else {
             $prefix = (!$excludeWebPath) ? '@web/' : '';
             $prefix .= ($includeLanguage) ? "{$this->language}/" : '';
-            
+
             if ($this->entity == self::ENTITY_PAGE) {
                 $page = $this->getEntityModel();
             } else {
                 $menuItem = $this->getEntityModel();
                 $page = $menuItem->getEntityModel();
-            }          
-                        
+            }
+
             // In the frontend application, the alias for the homepage is ommited
             // and '/' is used
-            if (Yii::$app->id == 'app-frontend' && $page->homepage == true)
+            if (Yii::$app->id == 'app-frontend' && $page->homepage == true) {
                 return Url::to($prefix);
+            }
 
             return Url::to("{$prefix}{$page->alias->url}");
-        }  
+
+        }
     }
     
     /**
