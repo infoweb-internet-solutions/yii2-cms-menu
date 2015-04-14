@@ -12,6 +12,11 @@ class m141008_091012_init extends Migration
         if ($this->db->driverName === 'mysql') {
             $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
         }
+        
+        // Drop the default user table
+        if ($this->db->schema->getTableSchema('menu', true) !== null) {
+            $this->dropTable('{{%menu}}');
+        }        
 
         // Create 'menu' table
         $this->createTable('{{%menu}}', [
