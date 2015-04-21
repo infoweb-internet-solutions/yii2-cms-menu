@@ -50,8 +50,7 @@ class Menu extends \infoweb\menu\models\Menu
                     continue;                   
             }
             
-            $menuItem->language = Yii::$app->language;
-            
+            $menuItem->language = Yii::$app->language;            
             $url = $menuItem->getUrl($settings['includeLanguage']);
 
             $item = [
