@@ -19,13 +19,12 @@ class Menu extends \infoweb\menu\models\Menu
         // Filter by parent
         if (isset($options['parentId']))
             $items = $items->andWhere(['parent_id' => $options['parentId']]);
-        
+
         // Filter by level
         if (isset($options['level'])) {
 
             $items = $items->andWhere(['level' => $options['level']]);
         }
-
 
         return $items->orderBy('position', 'ASC');
     }
