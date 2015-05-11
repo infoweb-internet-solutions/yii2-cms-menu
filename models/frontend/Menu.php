@@ -19,7 +19,7 @@ class Menu extends \infoweb\menu\models\Menu
         // Filter by parent
         if (isset($options['parentId']))
             $items = $items->andWhere(['parent_id' => $options['parentId']]);
-        mail('ruben@infoweb.be', __FILE__ . ' => ' . __LINE__, var_export($options, TRUE));
+        
         // Filter by level
         if (isset($options['level'])) {
 
