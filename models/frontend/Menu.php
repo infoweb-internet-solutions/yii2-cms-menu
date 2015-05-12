@@ -15,7 +15,7 @@ class Menu extends \infoweb\menu\models\Menu
     public function getItems($options = [])
     {
         $items = parent::getItems()->where(['active' => 1]);
-        
+
         // Filter by parent
         if (isset($options['parentId']))
             $items = $items->andWhere(['parent_id' => $options['parentId']]);
