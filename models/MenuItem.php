@@ -166,7 +166,7 @@ class MenuItem extends \yii\db\ActiveRecord
                 break;
                 
             case self::ENTITY_URL:  
-                return MenuItem::findOne($thid->id);
+                return MenuItem::findOne($this->id);
                 break;     
         }            
     }
