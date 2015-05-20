@@ -23,7 +23,7 @@ class Menu extends Component {
      *
      * @return  Page
      */
-    public function page()
+    public function getPage()
     {
         // An alias is provided
         if (Yii::$app->request->get('alias')) {
