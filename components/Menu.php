@@ -17,6 +17,8 @@ use infoweb\menu\models\MenuItem;
 
 class Menu extends Component {
 
+    public $menuItem;
+
     /**
      * Returns a page, based on the alias that is provided in the request or, if
      *  no alias is provided, the homepage
@@ -55,15 +57,17 @@ class Menu extends Component {
         }
 
         // Current menu item
-        $menuItem = MenuItem::findOne(['entity' => 'page', 'entity_id' => $page->id]);
-        if ($menuItem) {
+
+        $this->menuItem = MenuItem::findOne(['entity' => 'page', 'entity_id' => $page->id]);
+
+        if ($this->menuItem) {
 
             // If current menu item has a parent id, the parent becomes the current menu item
-            if ($menuItem->parent_id > 0) {
-                $menuItem = MenuItem::findOne($menuItem->parent_id);
+            if ($this->menuItem->parent_id > 0) {
+                $this->menuItem = MenuItem::findOne($this->menuItem->parent_id);
             }
 
-            Yii::$app->params['menuId'] = $menuItem->id;
+            Yii::$app->params['menuId'] = $this->menuItem->id;
         }
 
         // Set the page language
@@ -72,9 +76,11 @@ class Menu extends Component {
         return $page;
     }
 
-    public function menu()
+    public function getMenu()
     {
+        $this->getPage();
 
+        return $this->menuItem;
     }
 
 }
