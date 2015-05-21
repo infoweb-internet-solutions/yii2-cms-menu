@@ -71,7 +71,7 @@ class MenuItem extends \yii\db\ActiveRecord
     {
         return [
             [['menu_id', 'parent_id', 'level', 'position'], 'integer'],
-            [['url'], 'string', 'max' => 255],
+            [['url', 'anchor'], 'string', 'max' => 255],
             // Required
             [['menu_id', 'parent_id', 'entity'], 'required'],
             // Only required when the entity is no url
@@ -80,7 +80,7 @@ class MenuItem extends \yii\db\ActiveRecord
                 return $model->entity != self::ENTITY_URL;
             }],*/
             // Trim
-            [['url'], 'trim'],
+            [['url', 'anchor'], 'trim'],
             [['url'], 'required', 'when' => function($model) {
                 return $model->entity == self::ENTITY_URL;
             }],
@@ -108,6 +108,7 @@ class MenuItem extends \yii\db\ActiveRecord
             'level' => Yii::t('infoweb/menu', 'Level'),
             'name' => Yii::t('app', 'Name'),
             'url' => Yii::t('app', 'Url'),
+            'anchor' => Yii::t('infoweb/menu', 'Target'),
             'position' => Yii::t('app', 'Position'),
             'active' => Yii::t('app', 'Active'),
             'created_at' => Yii::t('app', 'Created At'),
@@ -197,7 +198,6 @@ class MenuItem extends \yii\db\ActiveRecord
                 }
 
                 $page = $menuItem->getEntityModel();
-
             }
 
             // In the frontend application, the alias for the homepage is ommited
@@ -205,9 +205,13 @@ class MenuItem extends \yii\db\ActiveRecord
             if (Yii::$app->id == 'app-frontend' && $page->homepage == true) {
                 return Url::to($prefix);
             }
+            
+            // An anchor is set, append it to the url
+            if ($this->entity == self::ENTITY_PAGE && !empty($this->anchor)) {
+                return Url::to(["{$prefix}{$page->alias->url}", '#' => $this->anchor]);
+            }
 
             return Url::to("{$prefix}{$page->alias->url}");
-
         }
     }
     
