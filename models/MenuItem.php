@@ -192,7 +192,12 @@ class MenuItem extends \yii\db\ActiveRecord
                 $page = $this->getEntityModel();
             } else {
                 $menuItem = $this->getEntityModel();
+                if ($menuItem->entity != MenuItem::ENTITY_PAGE) {
+                    $menuItem = $menuItem->getEntityModel();
+                }
+
                 $page = $menuItem->getEntityModel();
+
             }
 
             // In the frontend application, the alias for the homepage is ommited
