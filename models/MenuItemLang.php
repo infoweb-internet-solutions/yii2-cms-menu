@@ -31,14 +31,10 @@ class MenuItemLang extends \yii\db\ActiveRecord
     {
         return [
             // Required
-            [['language'], 'required'],
+            [['language', 'name'], 'required'],
             // Only required for existing records
             [['menu_item_id'], 'required', 'when' => function($model) {
                 return !$model->isNewRecord;
-            }],
-            // Only required for the app language
-            [['name'], 'required', 'when' => function($model) {
-                return $model->language == Yii::$app->language;
             }],
             // Trim
             [['name'], 'trim'],
