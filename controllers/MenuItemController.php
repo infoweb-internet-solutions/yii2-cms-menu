@@ -326,6 +326,11 @@ class MenuItemController extends Controller
 
                 $model->entity_id = $post['MenuItem']['entity_id'];
                 
+                // If the item is not linked to a page, always reset the anchor value
+                if ($model->entity != MenuItem::ENTITY_PAGE) {
+                    $model->anchor = '';
+                }
+                
                 // Save the main model
                 if (!$model->load($post) || !$model->save()) {
                     return $this->render('update', [
