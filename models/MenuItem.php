@@ -108,7 +108,7 @@ class MenuItem extends \yii\db\ActiveRecord
             'level' => Yii::t('infoweb/menu', 'Level'),
             'name' => Yii::t('app', 'Name'),
             'url' => Yii::t('app', 'Url'),
-            'anchor' => Yii::t('infoweb/menu', 'Target'),
+            'anchor' => Yii::t('infoweb/menu', 'Anchor'),
             'position' => Yii::t('app', 'Position'),
             'active' => Yii::t('app', 'Active'),
             'created_at' => Yii::t('app', 'Created At'),

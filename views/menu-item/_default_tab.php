@@ -59,5 +59,12 @@ use infoweb\menu\models\Menu;
         </select>
         <div class="help-block"></div>
     </div>
+    
+    <div class="menu-item-anchor-container"<?php if ($model->entity != $model::ENTITY_PAGE || ($model->entity == $model::ENTITY_PAGE && !count($model->entityModel->htmlAnchors))) : ?> style="display: none;"<?php endif; ?>>
+        <?= $form->field($model, 'anchor')->dropDownList(array_merge(
+                ['' => Yii::t('infoweb/menu', 'Choose an anchor')],
+                ($model->entity == $model::ENTITY_PAGE) ? $model->entityModel->htmlAnchors : []
+            )); ?>
+    </div>
 
 </div>
