@@ -4,12 +4,6 @@ namespace infoweb\menu\components;
 
 use Yii;
 use yii\base\Component;
-use yii\web\BadRequestHttpException;
-use yii\web\Controller;
-use yii\web\Response;
-use yii\filters\VerbFilter;
-use yii\filters\AccessControl;
-use yii\widgets\ActiveForm;
 
 use infoweb\alias\models\AliasLang;
 use infoweb\pages\models\Page;
@@ -37,7 +31,7 @@ class Menu extends Component {
             ]);
 
             if (!$aliasLang) {
-                throw new \yii\web\HttpException(404, Yii::t('app', 'The requested page could not be found.'));
+                return Yii::$app->response->redirect('@web/404');
             }
 
             // Get the alias
@@ -53,7 +47,7 @@ class Menu extends Component {
 
         // The page must be active
         if ($page->active != 1) {
-            throw new \yii\web\HttpException(404, Yii::t('app', 'The requested page could not be found.'));
+            return Yii::$app->response->redirect('@web/404');
         }
 
         // Current menu item
