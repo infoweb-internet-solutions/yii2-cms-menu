@@ -326,6 +326,11 @@ class MenuItemController extends Controller
 
                 $model->entity_id = $post['MenuItem']['entity_id'];
                 
+                // If the item is not linked to a page, always reset the anchor value
+                if ($model->entity != MenuItem::ENTITY_PAGE) {
+                    $model->anchor = '';
+                }
+                
                 // Save the main model
                 if (!$model->load($post) || !$model->save()) {
                     return $this->render('update', [
@@ -489,5 +494,30 @@ class MenuItemController extends Controller
 
         Yii::$app->response->format = 'json';
         return $data;
+    }
+    
+    /**
+     * Returns a page's html anchors
+     * 
+     * @return  json
+     */
+    public function actionGetPageHtmlAnchors()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $response = [
+            'status'    => 0,
+            'msg'       => '',
+            'anchors'   => ['' => Yii::t('infoweb/menu', 'Choose an anchor')]
+        ];
+        
+        $page = Page::findOne(Yii::$app->request->get('page'));
+        
+        if ($page) {
+            $response['anchors'] = array_merge($response['anchors'], $page->htmlAnchors);
+        }
+        
+        $response['status'] = 1;
+        
+        return $response;
     }
 }

@@ -29,21 +29,19 @@ use yii\bootstrap\Tabs;
             'label'     => Yii::t('app', 'General'),
             'content'   => $this->render('_default_tab', [
                 'model' => $model,
-                'form'  => $form,
-                'pages' => $pages,
-                'levelSelect' => $levelSelect
+                'form'  => $form,                
             ]),
-        ]
+        ],
+        [
+            'label'     => Yii::t('app', 'Data'),
+            'content'   => $this->render('_data_tab', [
+                'model'         => $model,
+                'form'          => $form,
+                'pages'         => $pages,
+                'levelSelect'   => $levelSelect
+            ]),
+        ],
     ];
-    
-    // Add the language tabs
-    foreach (Yii::$app->params['languages'] as $languageId => $languageName) {
-        $tabs[] = [
-            'label' => $languageName,
-            'content' => $this->render('_language_tab', ['model' => $model->getTranslation($languageId), 'form' => $form]),
-            'active' => ($languageId == Yii::$app->language) ? true : false
-        ];
-    } 
     
     // Display the tabs
     echo Tabs::widget(['items' => $tabs]);   

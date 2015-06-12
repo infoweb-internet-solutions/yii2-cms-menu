@@ -71,7 +71,7 @@ class MenuItem extends \yii\db\ActiveRecord
     {
         return [
             [['menu_id', 'parent_id', 'level', 'position'], 'integer'],
-            [['url'], 'string', 'max' => 255],
+            [['url', 'anchor'], 'string', 'max' => 255],
             // Required
             [['menu_id', 'parent_id', 'entity'], 'required'],
             // Only required when the entity is no url
@@ -80,7 +80,7 @@ class MenuItem extends \yii\db\ActiveRecord
                 return $model->entity != self::ENTITY_URL;
             }],*/
             // Trim
-            [['url'], 'trim'],
+            [['url', 'anchor'], 'trim'],
             [['url'], 'required', 'when' => function($model) {
                 return $model->entity == self::ENTITY_URL;
             }],
@@ -108,6 +108,7 @@ class MenuItem extends \yii\db\ActiveRecord
             'level' => Yii::t('infoweb/menu', 'Level'),
             'name' => Yii::t('app', 'Name'),
             'url' => Yii::t('app', 'Url'),
+            'anchor' => Yii::t('infoweb/menu', 'Anchor'),
             'position' => Yii::t('app', 'Position'),
             'active' => Yii::t('app', 'Active'),
             'created_at' => Yii::t('app', 'Created At'),
@@ -120,7 +121,7 @@ class MenuItem extends \yii\db\ActiveRecord
      */
     public function getMenu()
     {
-        return $this->hasOne(Menus::className(), ['id' => 'menu_id']);
+        return $this->hasOne(Menu::className(), ['id' => 'menu_id']);
     }
 
     /**
@@ -166,7 +167,7 @@ class MenuItem extends \yii\db\ActiveRecord
                 break;
                 
             case self::ENTITY_URL:  
-                return MenuItem::findOne($thid->id);
+                return MenuItem::findOne($this->id);
                 break;     
         }            
     }
@@ -192,6 +193,10 @@ class MenuItem extends \yii\db\ActiveRecord
                 $page = $this->getEntityModel();
             } else {
                 $menuItem = $this->getEntityModel();
+                if ($menuItem->entity != MenuItem::ENTITY_PAGE) {
+                    $menuItem = $menuItem->getEntityModel();
+                }
+
                 $page = $menuItem->getEntityModel();
             }
 
@@ -200,9 +205,13 @@ class MenuItem extends \yii\db\ActiveRecord
             if (Yii::$app->id == 'app-frontend' && $page->homepage == true) {
                 return Url::to($prefix);
             }
+            
+            // An anchor is set, append it to the url
+            if ($this->entity == self::ENTITY_PAGE && !empty($this->anchor)) {
+                return Url::to(["{$prefix}{$page->alias->url}", '#' => $this->anchor]);
+            }
 
             return Url::to("{$prefix}{$page->alias->url}");
-
         }
     }
     

@@ -16,15 +16,17 @@ class Menu extends \infoweb\menu\models\Menu
     public function getItems($options = [])
     {
         $items = parent::getItems()->where(['active' => 1]);
-        
+
         // Filter by parent
         if (isset($options['parentId']))
             $items = $items->andWhere(['parent_id' => $options['parentId']]);
-        
+
         // Filter by level
-        if (isset($options['level']))
+        if (isset($options['level'])) {
+
             $items = $items->andWhere(['level' => $options['level']]);
-        
+        }
+
         return $items->orderBy('position', 'ASC');
     }
     
@@ -34,7 +36,7 @@ class Menu extends \infoweb\menu\models\Menu
      * @param   array   $settings       A settings array that holds the parent-id and level
      * @return  array
      */
-    public function getTree($settings = ['parentId' => 0, 'level' => 0, 'includeLanguage' => true])
+    public function getTree($settings = ['subMenu' => true, 'parentId' => 0, 'level' => 0, 'includeLanguage' => true])
     {
         $items = [];
         $menuItems = $this->getItems($settings)->all();
@@ -58,17 +60,20 @@ class Menu extends \infoweb\menu\models\Menu
                 'url'       => $url,
                 'active'    => Yii::$app->request->url == $url
             ];
-            
-            // Get the item's children
-            $children = $this->getTree([
-                'parentId'          => $menuItem->id,
-                'level'             => $menuItem->level + 1,
-                'includeLanguage'   => $settings['includeLanguage']
-            ]);
-            
-            if ($children)
-                $item['items'] = $children;
-            
+
+            if ($settings['subMenu'] == true) {
+                // Get the item's children
+                $children = $this->getTree([
+                    'parentId'          => $menuItem->id,
+                    'level'             => $menuItem->level + 1,
+                    'includeLanguage'   => $settings['includeLanguage'],
+                    'subMenu'           => $settings['subMenu'],
+                ]);
+
+                if ($children)
+                    $item['items'] = $children;
+            }
+
             $items[] = $item;
         }
         
