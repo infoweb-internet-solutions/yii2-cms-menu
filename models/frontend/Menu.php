@@ -48,7 +48,7 @@ class Menu extends \infoweb\menu\models\Menu
             if ($menuItem->entity == MenuItem::ENTITY_PAGE && Yii::$app->user->isGuest) {
                 $menuItemEntity = $menuItem->entityModel;
                 
-                if ($menuItemEntity->public == false)
+                if (isset($menuItemEntity->public) && $menuItemEntity->public == false)
                     continue;                   
             }
             
