@@ -3,6 +3,7 @@
 namespace infoweb\menu\models\frontend;
 
 use Yii;
+use infoweb\menu\models\MenuItem;
 
 /**
  * This is the frontend model class for table "menu".
@@ -39,8 +40,17 @@ class Menu extends \infoweb\menu\models\Menu
         $menuItems = $this->getItems($settings)->all();
 
         foreach ($menuItems as $menuItem) {
-            $menuItem->language = Yii::$app->language;
             
+            // First we need to check if the item has a non-public page attached
+            // If so, and no user is logged in, the item is skipped
+            if ($menuItem->entity == MenuItem::ENTITY_PAGE && Yii::$app->user->isGuest) {
+                $menuItemEntity = $menuItem->entityModel;
+                
+                if ($menuItemEntity->public == false)
+                    continue;                   
+            }
+            
+            $menuItem->language = Yii::$app->language;            
             $url = $menuItem->getUrl($settings['includeLanguage']);
 
             $item = [
