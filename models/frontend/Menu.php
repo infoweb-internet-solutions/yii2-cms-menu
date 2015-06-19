@@ -74,7 +74,7 @@ class Menu extends \infoweb\menu\models\Menu
                     $item['items'] = $children;
             }
 
-            $items[] = $item;
+            $items[$menuItem->id] = $item;
         }
         
         return $items;
