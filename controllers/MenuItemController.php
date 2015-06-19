@@ -324,7 +324,7 @@ class MenuItemController extends Controller
                     $model->position = $model->nextPosition();
                 }             
 
-                $model->entity_id = $post['MenuItem']['entity_id'];
+                $model->entity_id =  (isset($post['MenuItem']['entity_id'])) ? $post['MenuItem']['entity_id'] : 0;
                 
                 // If the item is not linked to a page, always reset the anchor value
                 if ($model->entity != MenuItem::ENTITY_PAGE) {
