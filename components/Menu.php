@@ -58,6 +58,7 @@ class Menu extends Component {
 
             // If current menu item has a parent id, the parent becomes the current menu item
             if ($this->menuItem->parent_id > 0) {
+
                 $this->menuItem = MenuItem::findOne($this->menuItem->parent_id);
             }
 

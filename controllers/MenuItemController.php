@@ -169,7 +169,7 @@ class MenuItemController extends Controller
     
                 // Set rest of attributes and save
                 $model->position = $model->nextPosition();
-                $model->entity_id = $post['MenuItem']['entity_id'];
+                $model->entity_id = (isset($post['MenuItem']['entity_id'])) ? $post['MenuItem']['entity_id'] : 0;
                 $model->active = 1;
                 
                 // Save the main model
