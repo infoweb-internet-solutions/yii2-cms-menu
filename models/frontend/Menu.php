@@ -58,7 +58,7 @@ class Menu extends \infoweb\menu\models\Menu
             $item = [
                 'label'     => $menuItem->name,
                 'url'       => $url,
-                'active'    => (strpos(Yii::$app->request->url, $url) === 0) ? true : false, // @todo Update with regex?
+                'active'    => Yii::$app->request->url == $url,
             ];
 
             if ($menuItem->entity == MenuItem::ENTITY_URL) {
