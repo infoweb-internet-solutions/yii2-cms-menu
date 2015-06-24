@@ -330,7 +330,7 @@ class MenuItemController extends Controller
                 if ($model->entity != MenuItem::ENTITY_PAGE) {
                     $model->anchor = '';
                 }
-                
+
                 // Save the main model
                 if (!$model->load($post) || !$model->save()) {
                     return $this->render('update', [
