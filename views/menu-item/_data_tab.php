@@ -31,9 +31,7 @@ use infoweb\menu\models\Menu;
             'class'     => 'form-control',
             'id'        => 'menuitem-entity_id',
             'prompt'    => Yii::t('infoweb/alias', 'Choose a page'),
-            'options'   => [
-                'disabled'  => ($model->entity != $model::ENTITY_PAGE) ? true : false
-            ]
+            'disabled'  => ($model->entity != $model::ENTITY_PAGE) ? true : false
         ]) ?>
         <div class="help-block"></div>
     </div>
