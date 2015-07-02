@@ -12,6 +12,7 @@ use infoweb\menu\models\MenuItem;
 class Menu extends Component {
 
     public $menuItem;
+    public $currentPage;
 
     /**
      * Returns a page, based on the alias that is provided in the request or, if
@@ -58,11 +59,15 @@ class Menu extends Component {
 
             // If current menu item has a parent id, the parent becomes the current menu item
             if ($this->menuItem->parent_id > 0) {
+
                 $this->menuItem = MenuItem::findOne($this->menuItem->parent_id);
             }
 
             Yii::$app->params['menuId'] = $this->menuItem->id;
         }
+
+        // Set the current page
+        $this->currentPage = $page;
 
         // Set the page language
         $page->language = Yii::$app->language;

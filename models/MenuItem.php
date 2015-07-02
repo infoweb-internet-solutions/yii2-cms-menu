@@ -70,7 +70,7 @@ class MenuItem extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['menu_id', 'parent_id', 'level', 'position'], 'integer'],
+            [['menu_id', 'active', 'parent_id', 'level', 'position'], 'integer'],
             [['url', 'anchor'], 'string', 'max' => 255],
             // Required
             [['menu_id', 'parent_id', 'entity'], 'required'],

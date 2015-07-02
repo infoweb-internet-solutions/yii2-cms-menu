@@ -14,6 +14,9 @@ use kartik\widgets\TouchSpin;
 
 <div class="menu-form">
 
+    <?php // Flash messages ?>
+    <?php echo $this->render('_flash_messages'); ?>
+
     <?php $form = ActiveForm::begin(); ?>
 
     <?= $form->field($model, 'name')->textInput(['maxlength' => 255]) ?>

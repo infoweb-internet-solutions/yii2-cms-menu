@@ -169,7 +169,7 @@ class MenuItemController extends Controller
     
                 // Set rest of attributes and save
                 $model->position = $model->nextPosition();
-                $model->entity_id = $post['MenuItem']['entity_id'];
+                $model->entity_id = (isset($post['MenuItem']['entity_id'])) ? $post['MenuItem']['entity_id'] : 0;
                 $model->active = 1;
                 
                 // Save the main model
@@ -324,13 +324,13 @@ class MenuItemController extends Controller
                     $model->position = $model->nextPosition();
                 }             
 
-                $model->entity_id = $post['MenuItem']['entity_id'];
+                $model->entity_id =  (isset($post['MenuItem']['entity_id'])) ? $post['MenuItem']['entity_id'] : 0;
                 
                 // If the item is not linked to a page, always reset the anchor value
                 if ($model->entity != MenuItem::ENTITY_PAGE) {
                     $model->anchor = '';
                 }
-                
+
                 // Save the main model
                 if (!$model->load($post) || !$model->save()) {
                     return $this->render('update', [
@@ -366,7 +366,7 @@ class MenuItemController extends Controller
                 $model->language = Yii::$app->language;
                 
                 // Set flash message
-                Yii::$app->getSession()->setFlash('menu-item', Yii::t('app', '{item} has been updated', ['item' => $model->name]));
+                Yii::$app->getSession()->setFlash('menu-item', Yii::t('app', '"{item}" has been updated', ['item' => $model->name]));
               
                 // Take appropriate action based on the pushed button
                 if (isset($post['close'])) {
@@ -408,7 +408,7 @@ class MenuItemController extends Controller
         
         // Set flash message
         $model->language = Yii::$app->language;
-        Yii::$app->getSession()->setFlash('menu-item', Yii::t('app', '{item} has been deleted', ['item' => $model->name]));       
+        Yii::$app->getSession()->setFlash('menu-item', Yii::t('app', '"{item}" has been deleted', ['item' => $model->name]));
 
         return $this->redirect(['index']);
     }

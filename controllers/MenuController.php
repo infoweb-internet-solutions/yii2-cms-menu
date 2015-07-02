@@ -100,7 +100,7 @@ class MenuController extends Controller
         if ($model->load($post) && $model->save()) {
 
             // Set flash message
-            Yii::$app->getSession()->setFlash('menu', Yii::t('app', '{item} has been updated', ['item' => $model->name]));
+            Yii::$app->getSession()->setFlash('menu', Yii::t('app', '"{item}" has been updated', ['item' => $model->name]));
             
             if (isset($post['close'])) {
                 return $this->redirect(['index']);
@@ -141,7 +141,7 @@ class MenuController extends Controller
         }        
 
         // Set flash message
-        Yii::$app->getSession()->setFlash('menu', Yii::t('app', '{item} has been deleted', ['item' => $model->name]));
+        Yii::$app->getSession()->setFlash('menu', Yii::t('app', '"{item}" has been deleted', ['item' => $model->name]));
             
         return $this->redirect(['index']);
     }

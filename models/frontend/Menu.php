@@ -58,8 +58,14 @@ class Menu extends \infoweb\menu\models\Menu
             $item = [
                 'label'     => $menuItem->name,
                 'url'       => $url,
-                'active'    => Yii::$app->request->url == $url
+                'active'    => Yii::$app->request->url == $url,
             ];
+
+            if ($menuItem->entity == MenuItem::ENTITY_URL) {
+                $item['linkOptions'] = [
+                    'target' => '_blank',
+                ];
+            }
 
             if ($settings['subMenu'] == true) {
                 // Get the item's children
@@ -74,7 +80,7 @@ class Menu extends \infoweb\menu\models\Menu
                     $item['items'] = $children;
             }
 
-            $items[] = $item;
+            $items[$menuItem->id] = $item;
         }
         
         return $items;
