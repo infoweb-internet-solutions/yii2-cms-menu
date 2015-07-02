@@ -58,7 +58,7 @@ class Menu extends \infoweb\menu\models\Menu
             $item = [
                 'label'     => $menuItem->name,
                 'url'       => $url,
-                'active'    => Yii::$app->request->url == $url,
+                'active'    => stripos(Yii::$app->request->url, $menuItem->getUrl(false)) !== false
             ];
 
             if ($menuItem->entity == MenuItem::ENTITY_URL) {
