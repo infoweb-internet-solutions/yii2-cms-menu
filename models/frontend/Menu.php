@@ -39,6 +39,7 @@ class Menu extends \infoweb\menu\models\Menu
     public function getTree($settings = ['subMenu' => true, 'parentId' => 0, 'level' => 0, 'includeLanguage' => true])
     {
         $items = [];
+
         $menuItems = $this->getItems($settings)->all();
 
         foreach ($menuItems as $menuItem) {
@@ -54,11 +55,17 @@ class Menu extends \infoweb\menu\models\Menu
             
             $menuItem->language = Yii::$app->language;            
             $url = $menuItem->getUrl($settings['includeLanguage']);
+            $activeUrlWithoutMenuItemUrl = stripos(Yii::$app->request->url, $menuItem->getUrl(false));
+
+            if ($activeUrlWithoutMenuItemUrl !== false) {
+                $activeUrlWithoutMenuItemUrl = str_replace(Yii::$app->request->url, '', $menuItem->getUrl(false));
+                $activeUrlWithoutMenuItemUrl = (strlen($activeUrlWithoutMenuItemUrl) > 0) ? $activeUrlWithoutMenuItemUrl[0] : $activeUrlWithoutMenuItemUrl;
+            }
 
             $item = [
                 'label'     => $menuItem->name,
                 'url'       => $url,
-                'active'    => stripos(Yii::$app->request->url, $menuItem->getUrl(false)) !== false
+                'active'    => stripos(Yii::$app->request->url, $menuItem->getUrl(false)) !== false, // ($activeUrlWithoutMenuItemUrl && in_array($activeUrlWithoutMenuItemUrl, ['', '/'])) ? true : false
             ];
 
             if ($menuItem->entity == MenuItem::ENTITY_URL) {
