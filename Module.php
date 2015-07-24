@@ -23,6 +23,12 @@ class Module extends \yii\base\Module
      * @var boolean
      */
     public $defaultPublicVisibility = true;
+    
+    /**
+     * The entities that a menu-item can point to
+     * @var array
+     */
+    public $linkableEntities = [];
 
     public function init()
     {
