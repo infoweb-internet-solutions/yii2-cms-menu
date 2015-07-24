@@ -64,6 +64,20 @@ use infoweb\menu\models\Menu;
                 ($model->entity == $model::ENTITY_PAGE) ? $model->entityModel->htmlAnchors : []
             )); ?>
     </div>
+    
+    <?php if (Yii::$app->getModule('menu')->enablePrivateItems) : ?>
+        
+    <?php echo $form->field($model, 'public')->widget(SwitchInput::classname(), [
+        'inlineLabel' => false,
+        'pluginOptions' => [
+            'onColor' => 'success',
+            'offColor' => 'danger',
+            'onText' => Yii::t('app', 'Yes'),
+            'offText' => Yii::t('app', 'No'),
+        ]
+    ]); ?>
+    
+    <?php endif; ?>
 
     <?= $form->field($model, 'active')->widget(SwitchInput::classname(), [
         'pluginOptions' => [

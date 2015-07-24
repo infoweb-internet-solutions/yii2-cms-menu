@@ -70,7 +70,8 @@ class MenuItem extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['menu_id', 'active', 'parent_id', 'level', 'position'], 'integer'],
+            [['menu_id', 'active', 'parent_id', 'level', 'position', 'public'], 'integer'],
+            ['public', 'default', 'value' => Yii::$app->getModule('menu')->defaultPublicVisibility],
             [['url', 'anchor'], 'string', 'max' => 255],
             // Required
             [['menu_id', 'parent_id', 'entity'], 'required'],
@@ -111,6 +112,7 @@ class MenuItem extends \yii\db\ActiveRecord
             'anchor' => Yii::t('infoweb/menu', 'Anchor'),
             'position' => Yii::t('app', 'Position'),
             'active' => Yii::t('app', 'Active'),
+            'public' => Yii::t('infoweb/menu', 'Public'),
             'created_at' => Yii::t('app', 'Created At'),
             'updated_at' => Yii::t('app', 'Updated At'),
         ];

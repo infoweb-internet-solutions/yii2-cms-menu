@@ -123,6 +123,16 @@ class Menu extends \yii\db\ActiveRecord
                                 <span class="glyphicon glyphicon-book"></span>
                             </a>
                             <?php endif; ?>
+                            
+                            <?php if (Yii::$app->getModule('menu')->enablePrivateItems) : ?>
+                            <a href="#" data-item="<?php echo $item->id; ?>" data-uri="<?= Url::toRoute('menu-item/public') ?>" data-toggle="tooltip" data-pjax="0" title="<?= Yii::t('infoweb/menu', 'Toggle public visiblity') ?>" class="toggle-public">
+                                <?php if ($item->public == 1) : ?>
+                                    <span class="glyphicon glyphicon-lock icon-disabled"></span>
+                                <?php else : ?>
+                                    <span class="glyphicon glyphicon-lock"></span>
+                                <?php endif; ?>
+                            </a>    
+                            <?php endif; ?>
                         </span>
                 </div>
 

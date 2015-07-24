@@ -109,7 +109,11 @@ class MenuItemController extends Controller
                     ->all();
         
         // Initialize the menu-item with default values
-        $model = new MenuItem(['menu_id' => $menu->id, 'active' => 1]);
+        $model = new MenuItem([
+            'menu_id'   => $menu->id,
+            'active'    => 1,
+            'public'    => (int) $this->module->defaultPublicVisibility
+        ]);
         
         if (Yii::$app->request->getIsPost()) {
             
@@ -519,5 +523,32 @@ class MenuItemController extends Controller
         $response['status'] = 1;
         
         return $response;
+    }
+    
+    /**
+     * Set public state
+     * @param string $id
+     * @return mixed
+     */
+    public function actionPublic()
+    {
+        $model = $this->findModel(Yii::$app->request->post('id'));
+        $model->public = ($model->public == 1) ? 0 : 1;
+
+        // Ajax request
+        if (Yii::$app->request->isAjax) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            $response = ['status' => 0];
+            
+            if ($model->save()) {
+                $response['status'] = 1;
+                $response['public'] = $model->public;
+            }
+            
+            return $response;
+        // Normal request                
+        } else {
+            return $model->save();
+        }
     }
 }
