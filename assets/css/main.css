@@ -60,12 +60,12 @@ ol.sortable .odd {
 }
 
 .table th.actions {
-    width:160px;
+    width:200px;
 }
 
 .action-buttons {
 	float:right;
-	width: 140px;
+	width: 180px;
 }
 
 .action-buttons a:hover,
