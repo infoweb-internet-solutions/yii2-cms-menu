@@ -44,3 +44,14 @@ To use the module, execute yii migration
 ```
 yii migrate/up --migrationPath=@vendor/infoweb-internet-solutions/yii2-cms-menu/migrations
 ```
+
+Configuration
+-------------
+All available configuration options are listed below with their default values.
+___
+##### enablePrivateItems (type: `boolean`, default: `false`)
+If this option is set to `true`, the `public` attribute of a menu-item can be managed and the `getTree` function in `models/frontend/Menu` will only return public menu-items if the current application user is a guest.
+___
+##### defaultPublicVisibility (type: `boolean`, default: `true`)
+This is the value that will be used as the default value of the `public` attribute of a menu-item.
+___
