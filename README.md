@@ -52,7 +52,6 @@ ___
 ##### enablePrivateItems (type: `boolean`, default: `false`)
 If this option is set to `true`, the `public` attribute of a menu-item can be managed and the `getTree` function in `models/frontend/Menu` will only return public menu-items if the current application user is a guest.
 Keep in mind that you will also have to enable the module in your frontend application to if you set this option to `true`.
-
 ___
 ##### defaultPublicVisibility (type: `boolean`, default: `true`)
 This is the value that will be used as the default value of the `public` attribute of a menu-item.
