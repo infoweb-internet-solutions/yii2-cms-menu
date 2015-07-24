@@ -26,6 +26,10 @@ class Menu extends \infoweb\menu\models\Menu
 
             $items = $items->andWhere(['level' => $options['level']]);
         }
+        
+        // Only show public items to guest users if this options is enabled in the "menu" module
+        if (Yii::$app->getModule('menu') && Yii::$app->getModule('menu')->enablePrivateItems && Yii::$app->user->isGuest)
+            $items = $items->andWhere(['public' => 1]);        
 
         return $items->orderBy('position', 'ASC');
     }
