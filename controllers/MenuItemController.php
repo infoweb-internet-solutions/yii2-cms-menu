@@ -12,6 +12,7 @@ use yii\web\AssetManager;
 use yii\web\Response;
 use yii\widgets\ActiveForm;
 use yii\base\Model;
+use yii\helpers\ArrayHelper;
 use infoweb\menu\models\MenuItem;
 use infoweb\menu\models\MenuItemLang;
 use infoweb\menu\models\MenuItemSearch;
@@ -27,7 +28,28 @@ class MenuItemController extends Controller
      * @var boolean whether to enable CSRF validation for the actions in this controller.
      * CSRF validation is enabled only when both this property and [[Request::enableCsrfValidation]] are true.
      */
-    public $enableCsrfValidation = false;
+    //public $enableCsrfValidation = false;
+    
+    /**
+     * The entity types that can be linked to a menu-item
+     * @var array
+     */
+    protected $entityTypes = [];
+    
+    /**
+     * Returns a combination of default entityTypes and the one's that are set
+     * in the controller.
+     * 
+     * @return  array
+     */
+    protected function entityTypes()
+    {
+        return ArrayHelper::merge([
+            'page'          => Yii::t('infoweb/pages', 'Page'),
+            'menu-item'     => Yii::t('infoweb/menu', 'Menu item'),
+            'url'           => Yii::t('app', 'Url')
+        ], $this->entityTypes);
+    }
 
     public function behaviors()
     {
@@ -52,18 +74,10 @@ class MenuItemController extends Controller
         // Store the active menu-id in a session var if it is provided through the url
         if (Yii::$app->request->get('menu-id') != null)
             Yii::$app->session->set('menu-items.menu-id', Yii::$app->request->get('menu-id'));
-        
-        // If no valid active menu-id is set, search the first menu and use it's id
-        if (in_array(Yii::$app->session->get('menu-items.menu-id'), [0, null])) {
-            $menu = Menu::findone();
-            
-            Yii::$app->session->set('menu-items.menu-id', $menu->id); 
-        } else {
-            $menu = Menu::findone(Yii::$app->session->get('menu-items.menu-id'));    
-        }
-        
+
         $searchModel = new MenuItemSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $menu = $this->findActiveMenu();
 
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -93,21 +107,12 @@ class MenuItemController extends Controller
     public function actionCreate()
     {
         $languages = Yii::$app->params['languages'];
-        
-        // Get the active menu
-        $menu = Menu::findone(Yii::$app->session->get('menu-items.menu-id'));
-        
-        // Get the html for the level select
-        $levelSelect = Menu::level_select(['menu-id' => Yii::$app->session->get('menu-items.menu-id')]);
-        
-        // Get all pages
-        $pages = (new Query())
-                    ->select('page.id, page_lang.name')
-                    ->from(['page' => 'pages'])
-                    ->innerJoin(['page_lang' => 'pages_lang'], "page.id = page_lang.page_id AND page_lang.language = '".Yii::$app->language."'")
-                    ->orderBy(['page_lang.name' => SORT_ASC])
-                    ->all();
-        
+        $menu = $this->findActiveMenu();
+        $levelSelect = Menu::level_select(['menu-id' => $menu->id]);
+        $pages = Page::getAllForDropDownList();
+        $linkableEntities = $this->findLinkableEntities();
+        $entityTypes = $this->entityTypes();        
+
         // Initialize the menu-item with default values
         $model = new MenuItem([
             'menu_id'   => $menu->id,
@@ -179,10 +184,12 @@ class MenuItemController extends Controller
                 // Save the main model
                 if (!$model->load($post) || !$model->save()) {
                     return $this->render('create', [
-                        'model'         => $model,
-                        'levelSelect'   => $levelSelect,
-                        'menu'          => $menu,
-                        'pages'         => $pages,
+                        'model'             => $model,
+                        'levelSelect'       => $levelSelect,
+                        'menu'              => $menu,
+                        'pages'             => $pages,
+                        'linkableEntities'  => $linkableEntities,
+                        'entityTypes'       => $entityTypes
                     ]);
                 }
                 
@@ -197,10 +204,12 @@ class MenuItemController extends Controller
                     
                     if (!$model->saveTranslation()) {
                         return $this->render('create', [
-                            'model'         => $model,
-                            'levelSelect'   => $levelSelect,
-                            'menu'          => $menu,
-                            'pages'         => $pages,
+                            'model'             => $model,
+                            'levelSelect'       => $levelSelect,
+                            'menu'              => $menu,
+                            'pages'             => $pages,
+                            'linkableEntities'  => $linkableEntities,
+                            'entityTypes'       => $entityTypes
                         ]);    
                     }                      
                 }
@@ -225,10 +234,12 @@ class MenuItemController extends Controller
         }
 
         return $this->render('create', [
-            'model'         => $model,
-            'levelSelect'   => $levelSelect,
-            'menu'          => $menu,
-            'pages'         => $pages,
+            'model'             => $model,
+            'levelSelect'       => $levelSelect,
+            'menu'              => $menu,
+            'pages'             => $pages,
+            'linkableEntities'  => $linkableEntities,
+            'entityTypes'       => $entityTypes
         ]);       
     }
 
@@ -240,26 +251,16 @@ class MenuItemController extends Controller
      */
     public function actionUpdate($id)
     {
-        $languages = Yii::$app->params['languages'];
-        
+        $languages = Yii::$app->params['languages'];        
         $model = $this->findModel($id);
-        
-        // Get the active menu
-        $menu = Menu::findone(Yii::$app->session->get('menu-items.menu-id'));
-        
-        // Get the html for the level select
+        $menu = $this->findActiveMenu();
         $levelSelect = Menu::level_select([
             'menu-id'   => Yii::$app->session->get('menu-items.menu-id'),
             'selected'  => $model->parent_id
         ]);
-        
-        // Get all pages
-        $pages = (new Query())
-                    ->select('page.id, page_lang.name')
-                    ->from(['page' => 'pages'])
-                    ->innerJoin(['page_lang' => 'pages_lang'], "page.id = page_lang.page_id AND page_lang.language = '".Yii::$app->language."'")
-                    ->orderBy(['page_lang.name' => SORT_ASC])
-                    ->all();
+        $pages = Page::getAllForDropDownList();
+        $linkableEntities = $this->findLinkableEntities();
+        $entityTypes = $this->entityTypes();
         
         if (Yii::$app->request->getIsPost()) {
             
@@ -338,10 +339,12 @@ class MenuItemController extends Controller
                 // Save the main model
                 if (!$model->load($post) || !$model->save()) {
                     return $this->render('update', [
-                        'model'         => $model,
-                        'levelSelect'   => $levelSelect,
-                        'menu'          => $menu,
-                        'pages'         => $pages,
+                        'model'             => $model,
+                        'levelSelect'       => $levelSelect,
+                        'menu'              => $menu,
+                        'pages'             => $pages,
+                        'linkableEntities'  => $linkableEntities,
+                        'entityTypes'       => $entityTypes
                     ]);
                 }
                 
@@ -356,10 +359,12 @@ class MenuItemController extends Controller
                     
                     if (!$model->saveTranslation()) {
                         return $this->render('update', [
-                            'model'         => $model,
-                            'levelSelect'   => $levelSelect,
-                            'menu'          => $menu,
-                            'pages'         => $pages,
+                            'model'             => $model,
+                            'levelSelect'       => $levelSelect,
+                            'menu'              => $menu,
+                            'pages'             => $pages,
+                            'linkableEntities'  => $linkableEntities,
+                            'entityTypes'       => $entityTypes
                         ]);    
                     }                      
                 }
@@ -384,10 +389,12 @@ class MenuItemController extends Controller
         }
         
         return $this->render('update', [
-            'model' => $model,
-            'levelSelect' => $levelSelect,
-            'menu' => $menu,
-            'pages' => $pages,
+            'model'             => $model,
+            'levelSelect'       => $levelSelect,
+            'menu'              => $menu,
+            'pages'             => $pages,
+            'linkableEntities'  => $linkableEntities,
+            'entityTypes'       => $entityTypes
         ]);       
     }
 
@@ -481,6 +488,47 @@ class MenuItemController extends Controller
         } else {
             throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist'));
         }
+    }
+    
+    protected function findActiveMenu()
+    {
+        // If no valid active menu-id is set, search the first menu and use it's id
+        if (in_array(Yii::$app->session->get('menu-items.menu-id'), [0, null])) {
+            $menu = Menu::findone();
+            
+            Yii::$app->session->set('menu-items.menu-id', $menu->id); 
+        } else {
+            $menu = Menu::findone(Yii::$app->session->get('menu-items.menu-id'));    
+        }
+        
+        return $menu;    
+    }
+    
+    /**
+     * Returns all the entities that can be linked to a menu-item
+     * 
+     * @return  array
+     */
+    protected function findLinkableEntities()
+    {
+        $linkableEntities = [];
+        
+        foreach ($this->module->linkableEntities as $k => $entity) {
+            $entityModel = Yii::createObject($entity['class']);
+            
+            // The entityModel must have the 'getUrl' and 'getAllForDropDownList' methods
+            if (method_exists($entityModel, 'getUrl') && method_exists($entityModel, 'getAllForDropDownList')) {
+                $linkableEntities[$k] = [
+                    'label' => Yii::t($entity['i18nGroup'], $entity['label']),
+                    'data'  => $entityModel->getAllForDropDownList()
+                ];
+                
+                // Add it also to the entityTypes variable of the controller
+                $this->entityTypes[$k] = $linkableEntities[$k]['label'];
+            }
+        }
+        
+        return $linkableEntities;    
     }
 
     /**

@@ -35,10 +35,12 @@ use yii\bootstrap\Tabs;
         [
             'label'     => Yii::t('app', 'Data'),
             'content'   => $this->render('_data_tab', [
-                'model'         => $model,
-                'form'          => $form,
-                'pages'         => $pages,
-                'levelSelect'   => $levelSelect
+                'model'             => $model,
+                'form'              => $form,
+                'pages'             => $pages,
+                'levelSelect'       => $levelSelect,
+                'linkableEntities'  => $linkableEntities,
+                'entityTypes'       => $entityTypes
             ]),
         ],
     ];

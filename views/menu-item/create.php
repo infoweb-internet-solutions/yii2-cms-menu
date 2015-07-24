@@ -22,10 +22,12 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
     
     <?= $this->render('_form', [
-        'model' => $model,
-        'menu'  => $menu,
-        'pages' => $pages,
-        'levelSelect' => $levelSelect
+        'model'             => $model,
+        'menu'              => $menu,
+        'pages'             => $pages,
+        'levelSelect'       => $levelSelect,
+        'linkableEntities'  => $linkableEntities,
+        'entityTypes'       => $entityTypes
     ]) ?>
     
 </div>

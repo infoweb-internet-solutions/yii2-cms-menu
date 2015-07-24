@@ -8,6 +8,7 @@ use infoweb\menu\models\Menu;
     
     <?= Html::hiddenInput('MenuItem[menu_id]', $model->menu_id); ?>
     
+    <?php // Level ?>
     <div class="form-group field-menuitem-parent_id">
         <label for="menuitem-parent_id" class="control-label"><?= Yii::t('infoweb/menu', 'Level'); ?></label>
         <select autofocus class="form-control" name="MenuItem[parent_id]" id="menuitem-parent_id">
@@ -17,17 +18,15 @@ use infoweb\menu\models\Menu;
         <div class="help-block"></div>
     </div>
     
-    <?= $form->field($model, 'entity')->dropDownList([
-        'page'          => Yii::t('infoweb/pages', 'Page'),
-        'menu-item'     => Yii::t('infoweb/menu', 'Menu item'),
-        'url'           => Yii::t('app', 'Url')
-    ],[
+    <?php // Entity types ?>
+    <?= $form->field($model, 'entity')->dropDownList($entityTypes, [
         'prompt' => Yii::t('app', 'Choose a type')
     ]); ?>
 
+    <?php // Pages ?>
     <div class="form-group field-menuitem-entity_id attribute page-attribute" <?php if ($model->entity != $model::ENTITY_PAGE) : ?>style="display: none;"<?php endif; ?>>
         <label for="menuitem-entity_id" class="control-label"><?= Yii::t('infoweb/pages', 'Page'); ?></label>
-        <?= Html::dropDownList('MenuItem[entity_id]', $model->entity_id, ArrayHelper::map($pages, 'id', 'name'), [
+        <?= Html::dropDownList('MenuItem[entity_id]', $model->entity_id, $pages, [
             'class'     => 'form-control',
             'id'        => 'menuitem-entity_id',
             'prompt'    => Yii::t('infoweb/alias', 'Choose a page'),
@@ -35,7 +34,24 @@ use infoweb\menu\models\Menu;
         ]) ?>
         <div class="help-block"></div>
     </div>
+    
+    <?php // Linkable entities ?>
+    <?php foreach ($linkableEntities as $k => $v) : ?>
+    
+    <div class="form-group field-<?= $k ?>-entity_id attribute <?= $k ?>-attribute" <?php if ($model->entity != $k) : ?>style="display: none;"<?php endif; ?>>
+        <label for="<?= $k ?>-entity_id" class="control-label"><?= $v['label'] ?></label>
+        <?= Html::dropDownList('MenuItem[entity_id]', $model->entity_id, $v['data'], [
+            'class'     => 'form-control',
+            'id'        => 'menuitem-entity_id',
+            'prompt'    => Yii::t('infoweb/menu', 'Choose a {entity}', ['entity' => strtolower($v['label'])]),
+            'disabled'  => ($model->entity != $k) ? true : false
+        ]) ?>
+        <div class="help-block"></div>
+    </div>
+        
+    <?php endforeach; ?>    
 
+    <?php // Url ?>
     <div class="form-group field-menuitem-url attribute url-attribute" <?php if ($model->entity != $model::ENTITY_URL) : ?>style="display: none;"<?php endif; ?>>
         <label for="menuitem-url" class="control-label"><?php echo Yii::t('app', 'Url'); ?></label>
         <?= Html::input('url', 'MenuItem[url]', $model->url, [
@@ -46,6 +62,7 @@ use infoweb\menu\models\Menu;
         <div class="help-block"></div>
     </div>
 
+    <?php // Menu items ?>
     <div class="form-group field-menuitem-entity_id attribute menu-item-attribute" <?php if ($model->entity != $model::ENTITY_MENU_ITEM) : ?>style="display: none;"<?php endif; ?>>
         <label for="menuitem-entity_id" class="control-label"><?= Yii::t('infoweb/menu', 'Menu item'); ?></label>
         <select name="MenuItem[entity_id]" class="form-control" id="menuitem-entity_id" <?php if ($model->entity != $model::ENTITY_MENU_ITEM) : ?>disabled<?php endif; ?>>
@@ -58,6 +75,7 @@ use infoweb\menu\models\Menu;
         <div class="help-block"></div>
     </div>
     
+    <?php // Page anchors ?>
     <div class="menu-item-anchor-container"<?php if ($model->entity != $model::ENTITY_PAGE || ($model->entity == $model::ENTITY_PAGE && !count($model->entityModel->htmlAnchors))) : ?> style="display: none;"<?php endif; ?>>
         <?= $form->field($model, 'anchor')->dropDownList(array_merge(
                 ['' => Yii::t('infoweb/menu', 'Choose an anchor')],

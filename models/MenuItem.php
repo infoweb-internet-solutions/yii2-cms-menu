@@ -160,7 +160,6 @@ class MenuItem extends \yii\db\ActiveRecord
     {
         switch ($this->entity) {
             case self::ENTITY_PAGE:
-            default:
                 return Page::findOne($this->entity_id);
                 break;
            
@@ -170,6 +169,19 @@ class MenuItem extends \yii\db\ActiveRecord
                 
             case self::ENTITY_URL:  
                 return MenuItem::findOne($this->id);
+                break;
+                
+            default:
+                if (Yii::$app->getModule('menu')) {
+                    $linkableEntities = Yii::$app->getModule('menu')->linkableEntities;
+                    
+                    if (!isset($linkableEntities[$this->entity]))
+                        throw new \Exception('Invalid entity');
+
+                    return $linkableEntities[$this->entity]['class']::findOne($this->entity_id);
+                } else {
+                    throw new \Exception('Menu module has to be enabled');
+                }
                 break;     
         }            
     }
@@ -185,35 +197,34 @@ class MenuItem extends \yii\db\ActiveRecord
      */
     public function getUrl($includeLanguage = true, $excludeWebPath = false)
     {
+        // Url
         if ($this->entity == self::ENTITY_URL) {
             return $this->url;
         } else {
             $prefix = (!$excludeWebPath) ? '@web/' : '';
             $prefix .= ($includeLanguage) ? "{$this->language}/" : '';
 
+            // Page
             if ($this->entity == self::ENTITY_PAGE) {
                 $page = $this->getEntityModel();
-            } else {
-                $menuItem = $this->getEntityModel();
-                if ($menuItem->entity != MenuItem::ENTITY_PAGE) {
-                    $menuItem = $menuItem->getEntityModel();
+                
+                // In the frontend application, the alias for the homepage is ommited
+                // and '/' is used
+                if (Yii::$app->id == 'app-frontend' && $page->homepage == true) {
+                    return Url::to($prefix);
                 }
-
-                $page = $menuItem->getEntityModel();
-            }
-
-            // In the frontend application, the alias for the homepage is ommited
-            // and '/' is used
-            if (Yii::$app->id == 'app-frontend' && $page->homepage == true) {
-                return Url::to($prefix);
-            }
+                
+                // An anchor is set, append it to the url
+                if (!empty($this->anchor)) {
+                    return Url::to(["{$prefix}{$page->alias->url}", '#' => $this->anchor]);
+                } else {
+                    return Url::to("{$prefix}{$page->alias->url}");    
+                }
             
-            // An anchor is set, append it to the url
-            if ($this->entity == self::ENTITY_PAGE && !empty($this->anchor)) {
-                return Url::to(["{$prefix}{$page->alias->url}", '#' => $this->anchor]);
+            // Everything else    
+            } else {
+                return $this->getEntityModel()->getUrl($includeLanguage, $excludeWebPath);
             }
-
-            return Url::to("{$prefix}{$page->alias->url}");
         }
     }
     
