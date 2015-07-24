@@ -28,7 +28,7 @@ class MenuItemController extends Controller
      * @var boolean whether to enable CSRF validation for the actions in this controller.
      * CSRF validation is enabled only when both this property and [[Request::enableCsrfValidation]] are true.
      */
-    //public $enableCsrfValidation = false;
+    public $enableCsrfValidation = false;
     
     /**
      * The entity types that can be linked to a menu-item
