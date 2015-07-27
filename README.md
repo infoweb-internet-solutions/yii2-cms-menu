@@ -58,7 +58,8 @@ This is the value that will be used as the default value of the `public` attribu
 ___
 ##### linkableEntities (type: `boolean`, default: `[]`)
 These are the entities will be used in the `menu` module.
-For each entity the following fields are required:
+An entity can only be linked if it implements the `getUrl` and `getAllForDropDownList` methods.
+For each configured entity the following fields are required:
    - ** class **: The name of the entity model
    - ** label **: The entity label that will be used in the `menu` module
    - ** i18nGroup **: The group that will be used for the translation of the label
