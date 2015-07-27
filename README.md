@@ -56,3 +56,25 @@ ___
 ##### defaultPublicVisibility (type: `boolean`, default: `true`)
 This is the value that will be used as the default value of the `public` attribute of a menu-item.
 ___
+##### linkableEntities (type: `boolean`, default: `[]`)
+These are the entities will be used in the `menu` module.
+For each entity the following fields are required:
+   - ** class **: The name of the entity model
+   - ** label **: The entity label that will be used in the `menu` module
+   - ** i18nGroup **: The group that will be used for the translation of the label
+   
+Example configuration:
+```php
+'menu' => [
+    'class' => 'infoweb\menu\Module',
+    'enablePrivateItems' => true,
+    'linkableEntities' => [
+        'medical-training'  => [
+            'class'     => 'infoweb\medical\training\models\training\MedicalTraining',
+            'label'     => 'Training',
+            'i18nGroup' => 'infoweb/medical-training',
+        ]
+    ]
+],
+```
+___
