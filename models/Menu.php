@@ -102,28 +102,39 @@ class Menu extends \yii\db\ActiveRecord
                     </span>
                     <?php echo $item->name; ?>
                     <span class="action-buttons">
-                            <a href="<?= URL::to(['update', 'id' => $item->id]) ?>" data-toggle="tooltip" title="<?= Yii::t('app', 'Update') ?>" data-pjax="0">
-                                <span class="glyphicon glyphicon-pencil"></span>
-                            </a>
-                            <a href="<?= Url::to(['delete', 'id' => $item->id]) ?>" id="delete-<?php echo $item->id; ?>" data-toggle="tooltip" title="<?= Yii::t('app', 'Delete') ?>" data-method="post" data-confirm="<?php echo Yii::t('app', 'Are you sure you want to delete this item?'); ?>" data-pjax="0">
-                                <span class="glyphicon glyphicon-trash"></span>
-                            </a>                            
-                            <a href="#" data-toggle-active-menu-items="<?php echo $item->id; ?>" data-toggle="tooltip" data-pjax="0" title="<?= Yii::t('app', 'Toggle active') ?>">
-                                <?php if ($item->active == 1) : ?>
-                                    <span class="glyphicon glyphicon-eye-open"></span>
-                                <?php else : ?>
-                                    <span class="glyphicon glyphicon-eye-close"></span>
-                                <?php endif; ?>
-                            </a>
-                            <a href="<?php echo Yii::getAlias('@baseUrl') . '/' . MenuItem::findOne($item->id)->getUrl(true, true); ?>" data-toggle="tooltip" target="_blank" title="<?= Yii::t('app', 'View') ?>">
-                                <span class="glyphicon glyphicon-globe"></span>
-                            </a>
-                            <?php if ($item->entity == MenuItem::ENTITY_PAGE): ?>
-                            <a href="<?= Url::toRoute(['/pages/page/update', 'id' => $item->entity_id, 'referrer' => 'menu-items']) ?>" data-toggle="tooltip" title="<?= Yii::t('app', 'Edit {modelClass}', ['modelClass' => strtolower(Yii::t('infoweb/pages', 'Page'))]) ?>">
-                                <span class="glyphicon glyphicon-book"></span>
-                            </a>
+                        <a href="<?= URL::to(['update', 'id' => $item->id]) ?>" data-toggle="tooltip" title="<?= Yii::t('app', 'Update') ?>" data-pjax="0">
+                            <span class="glyphicon glyphicon-pencil"></span>
+                        </a>
+                        <a href="<?= Url::to(['delete', 'id' => $item->id]) ?>" id="delete-<?php echo $item->id; ?>" data-toggle="tooltip" title="<?= Yii::t('app', 'Delete') ?>" data-method="post" data-confirm="<?php echo Yii::t('app', 'Are you sure you want to delete this item?'); ?>" data-pjax="0">
+                            <span class="glyphicon glyphicon-trash"></span>
+                        </a>                            
+                        <a href="#" data-toggle-active-menu-items="<?php echo $item->id; ?>" data-toggle="tooltip" data-pjax="0" title="<?= Yii::t('app', 'Toggle active') ?>">
+                            <?php if ($item->active == 1) : ?>
+                                <span class="glyphicon glyphicon-eye-open"></span>
+                            <?php else : ?>
+                                <span class="glyphicon glyphicon-eye-close"></span>
                             <?php endif; ?>
-                        </span>
+                        </a>
+                        
+                        <?php if (Yii::$app->getModule('menu')->enablePrivateItems) : ?>
+                        <a href="#" data-item="<?php echo $item->id; ?>" data-uri="<?= Url::toRoute('menu-item/public') ?>" data-toggle="tooltip" data-pjax="0" title="<?= Yii::t('infoweb/menu', 'Toggle public visiblity') ?>" class="toggle-public">
+                            <?php if ($item->public == 1) : ?>
+                                <span class="glyphicon glyphicon-lock icon-disabled"></span>
+                            <?php else : ?>
+                                <span class="glyphicon glyphicon-lock"></span>
+                            <?php endif; ?>
+                        </a>    
+                        <?php endif; ?>
+                        
+                        <a href="<?php echo Yii::getAlias('@baseUrl') . '/' . MenuItem::findOne($item->id)->getUrl(true, true); ?>" data-toggle="tooltip" target="_blank" title="<?= Yii::t('app', 'View') ?>">
+                            <span class="glyphicon glyphicon-globe"></span>
+                        </a>
+                        <?php if ($item->entity == MenuItem::ENTITY_PAGE): ?>
+                        <a href="<?= Url::toRoute(['/pages/page/update', 'id' => $item->entity_id, 'referrer' => 'menu-items']) ?>" data-toggle="tooltip" title="<?= Yii::t('app', 'Edit {modelClass}', ['modelClass' => strtolower(Yii::t('infoweb/pages', 'Page'))]) ?>">
+                            <span class="glyphicon glyphicon-book"></span>
+                        </a>
+                        <?php endif; ?>
+                    </span>
                 </div>
 
                 <?php

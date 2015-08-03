@@ -50,4 +50,27 @@ $(function(){
         });
     });
 
+    $(document).on('click', '.toggle-public', togglePublic);
 });
+
+/**
+ * Toggle public visibility
+ *  
+ * @param   Event
+ */
+function togglePublic(event) {
+    event.preventDefault();
+    
+    var that = this,
+        id = $(this).data('item'),
+        uri = $(this).data('uri'),
+        request = $.post(uri, {id:id});
+        
+    request.done(function(response) {
+        // Update the icon
+        if (response.status == 1) {
+            $('.glyphicon-lock', that).toggleClass('icon-disabled');   
+        }
+    });   
+       
+}
