@@ -65,7 +65,8 @@ class Menu extends \infoweb\menu\models\Menu
             $item = [
                 'label'     => $menuItem->name,
                 'url'       => $url,
-                'active'    => stripos(Yii::$app->request->url, $menuItem->getUrl(false)) !== false, // ($activeUrlWithoutMenuItemUrl && in_array($activeUrlWithoutMenuItemUrl, ['', '/'])) ? true : false
+                //'active'    => stripos(Yii::$app->request->url, $menuItem->getUrl(false)) !== false, // ($activeUrlWithoutMenuItemUrl && in_array($activeUrlWithoutMenuItemUrl, ['', '/'])) ? true : false
+                //'active'    => in_array($alias, [$menuItem->entity_id, $parentMenuItem->entity_id]),
             ];
 
             if ($menuItem->entity == MenuItem::ENTITY_URL) {
