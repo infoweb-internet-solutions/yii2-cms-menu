@@ -57,22 +57,16 @@ class Menu extends \infoweb\menu\models\Menu
                     continue;                   
             }
             
-            $menuItem->language = Yii::$app->language;            
-            $url = $menuItem->getUrl($settings['includeLanguage']);
-            $activeUrlWithoutMenuItemUrl = stripos(Yii::$app->request->url, $menuItem->getUrl(false));
-
-            if ($activeUrlWithoutMenuItemUrl !== false) {
-                $activeUrlWithoutMenuItemUrl = str_replace(Yii::$app->request->url, '', $menuItem->getUrl(false));
-                $activeUrlWithoutMenuItemUrl = (strlen($activeUrlWithoutMenuItemUrl) > 0) ? $activeUrlWithoutMenuItemUrl[0] : $activeUrlWithoutMenuItemUrl;
-            }
+            $menuItem->language = Yii::$app->language;
 
             $item = [
                 'label'     => $menuItem->name,
-                'url'       => $url,
+                'url'       => $menuItem->getUrl($settings['includeLanguage']),
                 //'active'    => stripos(Yii::$app->request->url, $menuItem->getUrl(false)) !== false, // ($activeUrlWithoutMenuItemUrl && in_array($activeUrlWithoutMenuItemUrl, ['', '/'])) ? true : false
-                //'active'    => in_array($alias, [$menuItem->entity_id, $parentMenuItem->entity_id]),
+                'active'    => in_array($menuItem->id, [Yii::$app->frontend->menuItem->id, Yii::$app->frontend->parentMenuItem->id]),
             ];
 
+            // Url entity
             if ($menuItem->entity == MenuItem::ENTITY_URL) {
                 $item['linkOptions'] = [
                     'target' => '_blank',
