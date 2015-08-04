@@ -250,4 +250,12 @@ class MenuItem extends \yii\db\ActiveRecord
     {
         return $this->hasMany(MenuItem::className(), ['parent_id' => 'id']);
     }
+
+    /**
+     * Parent menu item
+     * @return null|static
+     */
+    public function getParent() {
+        return MenuItem::findOne(['id' => $this->parent_id]);
+    }
 }
