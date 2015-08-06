@@ -46,6 +46,9 @@ class Menu extends \infoweb\menu\models\Menu
 
         $menuItems = $this->getItems($settings)->all();
 
+        // Array for active menu items
+        $activeItems = [Yii::$app->frontend->menuItem->id, Yii::$app->frontend->parentMenuItem->id];
+
         foreach ($menuItems as $menuItem) {
             
             // First we need to check if the item has a non-public page attached
@@ -59,11 +62,32 @@ class Menu extends \infoweb\menu\models\Menu
             
             $menuItem->language = Yii::$app->language;
 
+            $active = false;
+
+            // Extra check for menu item entity
+            if ($menuItem->entity == MenuItem::ENTITY_MENU_ITEM ) {
+
+                // Get the parent menu item of the entity
+                $parent = MenuItem::find()->select('id')->where(['id' => $menuItem->entity_id])->column();
+
+                // Add the parent id to the active items
+                $activeItems[] = $parent;
+
+                // Active is true if the entity id is in the active items array
+                if (in_array($menuItem->entity_id, $activeItems)) {
+                    $active = true;
+                }
+            }
+
+            // Active is true if the menu item id is in the active items array
+            if (in_array($menuItem->id, $activeItems)) {
+                $active = true;
+            }
+
             $item = [
                 'label'     => $menuItem->name,
                 'url'       => $menuItem->getUrl($settings['includeLanguage']),
-                //'active'    => stripos(Yii::$app->request->url, $menuItem->getUrl(false)) !== false, // ($activeUrlWithoutMenuItemUrl && in_array($activeUrlWithoutMenuItemUrl, ['', '/'])) ? true : false
-                'active'    => in_array($menuItem->id, [Yii::$app->frontend->menuItem->id, Yii::$app->frontend->parentMenuItem->id]),
+                'active'    => $active,
             ];
 
             // Url entity
