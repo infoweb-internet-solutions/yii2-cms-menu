@@ -45,6 +45,7 @@ class MenuSearch extends Menu
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => ['defaultOrder' => ['position' => SORT_ASC]],
         ]);
 
         if (!($this->load($params) && $this->validate())) {
