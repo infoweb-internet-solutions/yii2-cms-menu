@@ -43,54 +43,31 @@ class Menu extends \infoweb\menu\models\Menu
     public function getTree($settings = ['subMenu' => true, 'parentId' => 0, 'level' => 0, 'includeLanguage' => true])
     {
         $items = [];
-
         $menuItems = $this->getItems($settings)->all();
-
-        // Array for active menu items
-        $activeItems = [Yii::$app->frontend->menuItem->id, Yii::$app->frontend->parentMenuItem->id];
 
         foreach ($menuItems as $menuItem) {
             
             // First we need to check if the item has a non-public page attached
             // If so, and no user is logged in, the item is skipped
             if ($menuItem->entity == MenuItem::ENTITY_PAGE && Yii::$app->user->isGuest) {
-                $menuItemEntity = $menuItem->entityModel;
-                
+                $menuItemEntity = $menuItem->entityModel;                                
                 if (isset($menuItemEntity->public) && $menuItemEntity->public == false)
                     continue;                   
             }
             
+            // Change the language of the item to the application language
             $menuItem->language = Yii::$app->language;
-
-            $active = false;
-
-            // Extra check for menu item entity
-            if ($menuItem->entity == MenuItem::ENTITY_MENU_ITEM ) {
-
-                // Get the parent menu item of the entity
-                $parent = MenuItem::find()->select('id')->where(['id' => $menuItem->entity_id])->column();
-
-                // Add the parent id to the active items
-                $activeItems[] = $parent;
-
-                // Active is true if the entity id is in the active items array
-                if (in_array($menuItem->entity_id, $activeItems)) {
-                    $active = true;
-                }
-            }
-
-            // Active is true if the menu item id is in the active items array
-            if (in_array($menuItem->id, $activeItems)) {
-                $active = true;
-            }
-
+            
             $item = [
                 'label'     => $menuItem->name,
                 'url'       => $menuItem->getUrl($settings['includeLanguage']),
-                'active'    => $active,
+                // The item is active if it's (or that of it's entity in case
+                // of redirect to another menu-item) id is in the array of the 
+                // menu-items that are linked to the current page
+                'active'    => in_array(($menuItem->entity == MenuItem::ENTITY_MENU_ITEM) ? $menuItem->entity_id : $menuItem->id, Yii::$app->page->linkedMenuItemsIds),
             ];
 
-            // Url entity
+            // A menu-item that links to an url has to open in a new window
             if ($menuItem->entity == MenuItem::ENTITY_URL) {
                 $item['linkOptions'] = [
                     'target' => '_blank',

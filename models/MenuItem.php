@@ -255,7 +255,31 @@ class MenuItem extends \yii\db\ActiveRecord
      * Parent menu item
      * @return null|static
      */
-    public function getParent() {
-        return MenuItem::findOne(['id' => $this->parent_id]);
+    public function getParent()
+    {
+        return $this->hasOne(MenuItem::className(), ['id' => 'parent_id']);
+    }
+    
+    /**
+     * Returns a recursive list of all parents of the item
+     * 
+     * @param   int|null    The id of the item for which the parents have to be loaded.
+     *                      When null is passed, the id of the loaded MenuItem instance is taken.
+     */
+    public function getParents($id = null, $parents = [])
+    {
+        if ($id == null) {
+            $item = $this;
+        } else {
+            $item = MenuItem::findOne($id);
+        }
+        
+        if ($item->parent) {
+            $parents[] = $item->parent;
+            
+            return $this->getParents($item->parent->id, $parents);
+        }
+        
+        return $parents;   
     }
 }
