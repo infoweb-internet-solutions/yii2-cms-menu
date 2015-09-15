@@ -213,12 +213,16 @@ class MenuItem extends \yii\db\ActiveRecord
                 if (Yii::$app->id == 'app-frontend' && $page->homepage == true) {
                     return Url::to($prefix);
                 }
-                
+
+                if (Yii::$app->id == 'app-frontend' && $this->parent) {
+                    $prefix .= $this->parent->getUrl(false, true) . '/';
+                }
+
                 // An anchor is set, append it to the url
                 if (!empty($this->anchor)) {
                     return Url::to(["{$prefix}{$page->alias->url}", '#' => $this->anchor]);
                 } else {
-                    return Url::to("{$prefix}{$page->alias->url}");    
+                    return Url::to("{$prefix}{$page->alias->url}");
                 }
             
             // Everything else    
