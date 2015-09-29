@@ -3,4 +3,9 @@
         'maxlength' => 255,
         'name' => "MenuItemLang[{$model->language}][name]"
     ]); ?>
+
+    <?= $form->field($model, "[{$model->language}]params")->textarea([
+        'name' => "MenuItemLang[{$model->language}][params]",
+        'readonly' => Yii::$app->user->can('Superadmin') ? false : true,
+    ]); ?>
 </div>

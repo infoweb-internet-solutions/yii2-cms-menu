@@ -37,11 +37,12 @@ class MenuItemLang extends \yii\db\ActiveRecord
                 return !$model->isNewRecord;
             }],
             // Trim
-            [['name'], 'trim'],
+            [['name', 'params'], 'trim'],
             // Types
             [['menu_item_id', 'created_at', 'updated_at'], 'integer'],
             [['language'], 'string', 'max' => 2],
-            [['name'], 'string', 'max' => 255]
+            [['name'], 'string', 'max' => 255],
+            [['params'], 'string'],
         ];
     }
 

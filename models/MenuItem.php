@@ -50,7 +50,8 @@ class MenuItem extends \yii\db\ActiveRecord
             'trans' => [
                 'class' => TranslateableBehavior::className(),
                 'translationAttributes' => [
-                    'name'
+                    'name',
+                    'params',
                 ]
             ],
             'timestamp' => [
@@ -63,7 +64,7 @@ class MenuItem extends \yii\db\ActiveRecord
             ],
         ];
     }
-    
+
     /**
      * @inheritdoc
      */
@@ -76,10 +77,9 @@ class MenuItem extends \yii\db\ActiveRecord
             // Required
             [['menu_id', 'parent_id', 'entity'], 'required'],
             // Only required when the entity is no url
-            // @todo: Re-activate this
-            /*[['entity_id'], 'required', 'when' => function($model) {
+            [['entity_id'], 'required', 'when' => function($model) {
                 return $model->entity != self::ENTITY_URL;
-            }],*/
+            }],
             // Trim
             [['url', 'anchor'], 'trim'],
             [['url'], 'required', 'when' => function($model) {
@@ -142,7 +142,7 @@ class MenuItem extends \yii\db\ActiveRecord
 
         return $result['position'];
     }
-    
+
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -153,7 +153,7 @@ class MenuItem extends \yii\db\ActiveRecord
 
     /**
      * Returns the model of the entity that is associated with the item
-     * 
+     *
      * @return  mixed
      */
     public function getEntityModel()
@@ -162,19 +162,19 @@ class MenuItem extends \yii\db\ActiveRecord
             case self::ENTITY_PAGE:
                 return Page::findOne($this->entity_id);
                 break;
-           
-            case self::ENTITY_MENU_ITEM:  
+
+            case self::ENTITY_MENU_ITEM:
                 return MenuItem::findOne($this->entity_id);
                 break;
-                
-            case self::ENTITY_URL:  
+
+            case self::ENTITY_URL:
                 return MenuItem::findOne($this->id);
                 break;
-                
+
             default:
                 if (Yii::$app->getModule('menu')) {
                     $linkableEntities = Yii::$app->getModule('menu')->linkableEntities;
-                    
+
                     if (!isset($linkableEntities[$this->entity]))
                         throw new \Exception('Invalid entity');
 
@@ -182,17 +182,17 @@ class MenuItem extends \yii\db\ActiveRecord
                 } else {
                     throw new \Exception('Menu module has to be enabled');
                 }
-                break;     
-        }            
+                break;
+        }
     }
-    
+
     /**
      * Returns the url for the item
-     * 
-     * @param   boolean     A flag to determine if the language parameter should 
+     *
+     * @param   boolean     A flag to determine if the language parameter should
      *                      be added to the url
      * @param   boolean     A flag to determine if the url should be prefixed with
-     *                      the webpath 
+     *                      the webpath
      * @return  string
      */
     public function getUrl($includeLanguage = true, $excludeWebPath = false)
@@ -207,46 +207,56 @@ class MenuItem extends \yii\db\ActiveRecord
             // Page
             if ($this->entity == self::ENTITY_PAGE) {
                 $page = $this->getEntityModel();
-                
+
                 // In the frontend application, the alias for the homepage is ommited
                 // and '/' is used
                 if (Yii::$app->id == 'app-frontend' && $page->homepage == true) {
                     return Url::to($prefix);
                 }
 
-                if (Yii::$app->id == 'app-frontend' && $this->parent) {
-                    $prefix .= $this->parent->getUrl(false, true) . '/';
+                $url = "{$prefix}{$page->alias->url}";
+
+                // Params are set, append to the url
+                if (!empty($this->params)) {
+                    $url = $url . $this->params;
                 }
 
                 // An anchor is set, append it to the url
                 if (!empty($this->anchor)) {
-                    return Url::to(["{$prefix}{$page->alias->url}", '#' => $this->anchor]);
-                } else {
-                    return Url::to("{$prefix}{$page->alias->url}");
+                    return Url::to("{$url}#{$this->anchor}");
                 }
-            
-            // Everything else    
+
+                return Url::to($url);
+
+                // Everything else
             } else {
-                return $this->getEntityModel()->getUrl($includeLanguage, $excludeWebPath);
+                $url = $this->getEntityModel()->getUrl($includeLanguage, $excludeWebPath);
+
+                // Params are set, append to the url
+                if (!empty($this->params)) {
+                    $url = $url . $this->params;
+                }
+
+                return $url;
             }
         }
     }
-    
+
     /**
      * Recursively deletes all children of the item
-     * 
+     *
      * @return  boolean
      */
     public function deleteChildren()
     {
         foreach ($this->getChildren()->all() as $child) {
             if (!$child->delete())
-                return false;   
-        } 
-        
-        return true;   
+                return false;
+        }
+
+        return true;
     }
-    
+
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -263,10 +273,10 @@ class MenuItem extends \yii\db\ActiveRecord
     {
         return $this->hasOne(MenuItem::className(), ['id' => 'parent_id']);
     }
-    
+
     /**
      * Returns a recursive list of all parents of the item
-     * 
+     *
      * @param   int|null    The id of the item for which the parents have to be loaded.
      *                      When null is passed, the id of the loaded MenuItem instance is taken.
      */
@@ -277,13 +287,13 @@ class MenuItem extends \yii\db\ActiveRecord
         } else {
             $item = MenuItem::findOne($id);
         }
-        
+
         if ($item->parent) {
             $parents[] = $item->parent;
-            
+
             return $this->getParents($item->parent->id, $parents);
         }
-        
-        return $parents;   
+
+        return $parents;
     }
 }

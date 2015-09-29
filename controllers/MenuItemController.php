@@ -491,8 +491,7 @@ class MenuItemController extends Controller
     {
         // If no valid active menu-id is set, search the first menu and use it's id
         if (in_array(Yii::$app->session->get('menu-items.menu-id'), [0, null])) {
-            $menu = Menu::findone();
-            
+            $menu = Menu::find()->one();
             Yii::$app->session->set('menu-items.menu-id', $menu->id); 
         } else {
             $menu = Menu::findone(Yii::$app->session->get('menu-items.menu-id'));    
