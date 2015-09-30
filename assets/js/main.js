@@ -7,6 +7,10 @@ $(function(){
     });
     */
 
+
+    // Disable all readonly select element options, except for the selected option.
+    $('select[readonly] option:not(:selected)').attr('disabled', true);
+
     /**
      * Create/update menu item
      */

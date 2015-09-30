@@ -114,7 +114,8 @@ class MenuItemController extends Controller
         $model = new MenuItem([
             'menu_id'   => $menu->id,
             'active'    => 1,
-            'public'    => (int) $this->module->defaultPublicVisibility
+            'public'    => (int) $this->module->defaultPublicVisibility,
+            'type'      => MenuItem::TYPE_USER_DEFINED,
         ]);
         
         if (Yii::$app->request->getIsPost()) {

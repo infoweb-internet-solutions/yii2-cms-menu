@@ -35,6 +35,8 @@ class MenuItem extends \yii\db\ActiveRecord
     const ENTITY_PAGE = 'page';
     const ENTITY_URL = 'url';
     const ENTITY_MENU_ITEM = 'menu-item';
+    const TYPE_SYSTEM = 'system';
+    const TYPE_USER_DEFINED = 'user-defined';
 
     /**
      * @inheritdoc
@@ -73,7 +75,7 @@ class MenuItem extends \yii\db\ActiveRecord
         return [
             [['menu_id', 'active', 'parent_id', 'level', 'position', 'public'], 'integer'],
             ['public', 'default', 'value' => Yii::$app->getModule('menu')->defaultPublicVisibility],
-            [['url', 'anchor'], 'string', 'max' => 255],
+            [['url', 'anchor', 'type'], 'string', 'max' => 255],
             // Required
             [['menu_id', 'parent_id', 'entity'], 'required'],
             // Only required when the entity is no url
