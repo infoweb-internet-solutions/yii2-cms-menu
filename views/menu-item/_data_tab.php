@@ -88,7 +88,7 @@ use infoweb\menu\models\Menu;
     <?php // Page anchors ?>
     <div class="menu-item-anchor-container"<?php if (($model->entity != $model::ENTITY_PAGE) || !isset($model->entityModel) || ($model->entity == $model::ENTITY_PAGE && !count($model->entityModel->htmlAnchors))) : ?> style="display: none;"<?php endif; ?>>
         <?= $form->field($model, 'anchor')->dropDownList(array_merge(
-                ['' => Yii::t('infoweb/menu', 'Choose an anchor')],
+                ['' => Yii::t('app', '-- Choose an {item} --', ['item' => Yii::t('infoweb/menu', 'anchor')])],
                 ($model->entity == $model::ENTITY_PAGE && isset($model->entityModel)) ? $model->entityModel->htmlAnchors : []
             ), [
             'readonly'  => ($model->type == $model::TYPE_SYSTEM && !Yii::$app->user->can('Superadmin')) ? true : false,

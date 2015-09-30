@@ -103,7 +103,6 @@ class MenuItem extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => Yii::t('app', 'ID'),
             'menu_id' => Yii::t('infoweb/menu', 'Menu ID'),
             'parent_id' => Yii::t('infoweb/menu', 'Parent ID'),
             'entity' => Yii::t('app', 'Entity'),
