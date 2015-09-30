@@ -17,8 +17,13 @@ class MenuItemSearch extends MenuItem
      */
     public function rules()
     {
+        $integerFields = ['id', 'menu_id', 'parent_id', 'entity_id', 'level', 'position', 'active', 'created_at', 'updated_at'];
+
+        if (Yii::$app->getModule('menu')->enablePrivateMenuItems)
+            $integerFields[] = 'public';
+
         return [
-            [['id', 'menu_id', 'parent_id', 'entity_id', 'level', 'position', 'active', 'created_at', 'updated_at'], 'integer'],
+            [$integerFields, 'integer'],
             [['entity', 'name', 'url'], 'safe'],
         ];
     }
@@ -66,6 +71,9 @@ class MenuItemSearch extends MenuItem
         $query->andFilterWhere(['like', 'entity', $this->entity])
             ->andFilterWhere(['like', 'name', $this->name])
             ->andFilterWhere(['like', 'url', $this->url]);
+
+        if (Yii::$app->getModule('menu')->enablePrivateMenuItems)
+            $query->andFilterWhere(['public' => $this->public]);
 
         return $dataProvider;
     }

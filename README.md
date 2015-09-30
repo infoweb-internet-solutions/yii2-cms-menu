@@ -49,7 +49,7 @@ Configuration
 -------------
 All available configuration options are listed below with their default values.
 ___
-##### enablePrivateItems (type: `boolean`, default: `false`)
+##### enablePrivateMenuItems (type: `boolean`, default: `false`)
 If this option is set to `true`, the `public` attribute of a menu-item can be managed and the `getTree` function in `models/frontend/Menu` will only return public menu-items if the current application user is a guest.
 Keep in mind that you will also have to enable the module in your frontend application to if you set this option to `true`.
 ___
@@ -68,7 +68,7 @@ Example configuration:
 ```php
 'menu' => [
     'class' => 'infoweb\menu\Module',
-    'enablePrivateItems' => true,
+    'enablePrivateMenuItems' => true,
     'linkableEntities' => [
         'medical-training'  => [
             'class'     => 'infoweb\medical\training\models\training\MedicalTraining',
@@ -78,4 +78,3 @@ Example configuration:
     ]
 ],
 ```
-___

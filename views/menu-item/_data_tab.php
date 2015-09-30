@@ -95,7 +95,7 @@ use infoweb\menu\models\Menu;
         ]); ?>
     </div>
     
-    <?php if (Yii::$app->getModule('menu')->enablePrivateItems) : ?>
+    <?php if (Yii::$app->getModule('menu')->enablePrivateMenuItems) : ?>
         
     <?php echo $form->field($model, 'public')->widget(SwitchInput::classname(), [
         'inlineLabel' => false,
@@ -119,4 +119,5 @@ use infoweb\menu\models\Menu;
         ],
         'readonly'  => ($model->type == $model::TYPE_SYSTEM && !Yii::$app->user->can('Superadmin')) ? true : false,
     ]) ?>
+
 </div>

@@ -16,14 +16,14 @@ class Module extends \yii\base\Module
      * Enable the possibility to toggle the public visibility of menu-items
      * @var boolean
      */
-    public $enablePrivateItems = false;
+    public $enablePrivateMenuItems = false;
     
     /**
      * The default value for the public visibility of a menu-item
      * @var boolean
      */
     public $defaultPublicVisibility = true;
-    
+
     /**
      * The entities that a menu-item can point to
      * @var array
