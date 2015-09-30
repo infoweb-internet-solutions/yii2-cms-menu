@@ -404,19 +404,27 @@ class MenuItemController extends Controller
      */
     public function actionDelete($id)
     {
+        $model = $this->findModel($id);
+
         try {
-            $model = $this->findModel($id);
-            
+
             $transaction = Yii::$app->db->beginTransaction();
+
+            // Only Superadmin can delete system pages
+            if ($model->type == MenuItem::TYPE_SYSTEM && !Yii::$app->user->can('Superadmin'))
+                throw new \yii\base\Exception(Yii::t('app', 'You do not have the right permissions to delete this item'));
+
             $model->delete();
-            $transaction->commit();   
+            $transaction->commit();
         } catch(\yii\base\Exception $e) {
+            $transaction->rollBack();
             // Set flash message
-            Yii::$app->getSession()->setFlash('menu-item-error', $e->getMessage());    
+            Yii::$app->getSession()->setFlash('menu-item-error', $e->getMessage());
+
+            return $this->redirect(['index']);
         } 
         
         // Set flash message
-        $model->language = Yii::$app->language;
         Yii::$app->getSession()->setFlash('menu-item', Yii::t('app', '"{item}" has been deleted', ['item' => $model->name]));
 
         return $this->redirect(['index']);
