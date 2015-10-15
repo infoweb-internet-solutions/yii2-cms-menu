@@ -199,6 +199,7 @@ class MenuItemController extends Controller
                     // Set the translation language and attributes                    
                     $model->language    = $languageId;
                     $model->name        = $data['name'];
+                    $model->params      = $data['params'];
                     
                     if (!$model->saveTranslation()) {
                         return $this->render('create', [
@@ -207,7 +208,7 @@ class MenuItemController extends Controller
                             'menu'              => $menu,
                             'pages'             => $pages,
                             'linkableEntities'  => $linkableEntities,
-                            'entityTypes'       => $entityTypes
+                            'entityTypes'       => $entityTypes,
                         ]);    
                     }                      
                 }
@@ -354,6 +355,7 @@ class MenuItemController extends Controller
                     // Set the translation language and attributes                    
                     $model->language    = $languageId;
                     $model->name        = $data['name'];
+                    $model->params      = $data['params'];
                     
                     if (!$model->saveTranslation()) {
                         return $this->render('update', [
