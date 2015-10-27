@@ -25,6 +25,12 @@ class Module extends \yii\base\Module
     public $defaultPublicVisibility = true;
 
     /**
+     * Allow content duplication with the "duplicateable" plugin
+     * @var boolean
+     */
+    public $allowContentDuplication = true;
+
+    /**
      * The entities that a menu-item can point to
      * @var array
      */
@@ -36,6 +42,11 @@ class Module extends \yii\base\Module
 
         // Set eventhandlers
         $this->setEventHandlers();
+
+        // Content duplication is only possible if there is more than 1 app language
+        if (isset(Yii::$app->params['languages']) && count(Yii::$app->params['languages']) == 1) {
+            $this->allowContentDuplication = false;
+        }
     }
     
     public function setEventHandlers()

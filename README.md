@@ -56,6 +56,9 @@ ___
 ##### defaultPublicVisibility (type: `boolean`, default: `true`)
 This is the value that will be used as the default value of the `public` attribute of a menu-item.
 ___
+##### allowContentDuplication (type: `boolean`, default: `true`)
+If this option is set to `true`, the `duplicateable` jquery plugin is activated on all translateable attributes.
+___
 ##### linkableEntities (type: `boolean`, default: `[]`)
 These are the entities will be used in the `menu` module.
 An entity can only be linked if it implements the `getUrl` and `getAllForDropDownList` methods.
