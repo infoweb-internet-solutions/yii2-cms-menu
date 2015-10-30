@@ -44,7 +44,8 @@ class MenuItemController extends Controller
         return ArrayHelper::merge([
             'page'          => Yii::t('infoweb/pages', 'Page'),
             'menu-item'     => Yii::t('infoweb/menu', 'Menu item'),
-            'url'           => Yii::t('app', 'Url')
+            'url'           => Yii::t('app', 'Url'),
+            'none'          => Yii::t('infoweb/menu', 'Nothing'),
         ], $this->entityTypes);
     }
 

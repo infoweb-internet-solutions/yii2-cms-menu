@@ -35,6 +35,8 @@ class MenuItem extends \yii\db\ActiveRecord
     const ENTITY_PAGE = 'page';
     const ENTITY_URL = 'url';
     const ENTITY_MENU_ITEM = 'menu-item';
+    const ENTITY_NONE = 'none';
+
     const TYPE_SYSTEM = 'system';
     const TYPE_USER_DEFINED = 'user-defined';
 
@@ -199,7 +201,9 @@ class MenuItem extends \yii\db\ActiveRecord
     public function getUrl($includeLanguage = true, $excludeWebPath = false)
     {
         // Url
-        if ($this->entity == self::ENTITY_URL) {
+        if ($this->entity == self::ENTITY_NONE) {
+            return null;
+        } elseif ($this->entity == self::ENTITY_URL) {
             return $this->url;
         } else {
             $prefix = (!$excludeWebPath) ? '@web/' : '';

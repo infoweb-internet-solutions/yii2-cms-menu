@@ -1,11 +1,9 @@
 <?php
 
 return [
-    '-- Choose an {item} --' => '',
-    'Anchor' => 'Interne link',
+    'Anchor' => '',
     'Choose a menu item' => '',
-    'Choose a {entity}' => '',
-    'Choose an {item}' => '',
+    'Choose an anchor' => '',
     'Level' => '',
     'Menu' => '',
     'Menu ID' => '',
@@ -13,8 +11,8 @@ return [
     'Menu items' => '',
     'Menu\'s' => '',
     'Menus' => '',
+    'Nothing' => 'Niets',
     'Parent ID' => '',
     'Public' => '',
-    'Toggle public visiblity' => '',
-    'anchor' => 'interne link',
+    'anchor' => '',
 ];

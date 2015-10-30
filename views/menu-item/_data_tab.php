@@ -85,6 +85,9 @@ use infoweb\menu\models\Menu;
         <div class="help-block"></div>
     </div>
 
+    <?php // None ?>
+    <?= Html::hiddenInput('MenuItem[entity_id]', 0, ['class' => 'attribute none-attribute']) ?>
+
     <?php // Page anchors ?>
     <div class="menu-item-anchor-container"<?php if (($model->entity != $model::ENTITY_PAGE) || !isset($model->entityModel) || ($model->entity == $model::ENTITY_PAGE && !count($model->entityModel->htmlAnchors))) : ?> style="display: none;"<?php endif; ?>>
         <?= $form->field($model, 'anchor')->dropDownList(array_merge(
