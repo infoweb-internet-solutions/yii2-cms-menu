@@ -40,7 +40,7 @@ class Menu extends \infoweb\menu\models\Menu
      * @param   array   $settings       A settings array that holds the parent-id and level
      * @return  array
      */
-    public function getTree($settings = ['subMenu' => true, 'parentId' => 0, 'level' => 0, 'includeLanguage' => true])
+    public function getTree($settings = ['subMenu' => true, 'parentId' => 0, 'level' => 0, 'includeLanguage' => true, 'convertBr' => false])
     {
         $items = [];
         $menuItems = $this->getItems($settings)->all();
@@ -59,7 +59,7 @@ class Menu extends \infoweb\menu\models\Menu
             $menuItem->language = Yii::$app->language;
             
             $item = [
-                'label'     => str_replace('|', '', $menuItem->name),
+                'label'     => (isset($settings['convertBr'])) ? str_replace('|', '<br>', $menuItem->name) : str_replace('|', '', $menuItem->name),
                 'url'       => $menuItem->getUrl($settings['includeLanguage']),
                 // The item is active if it's (or that of it's entity in case
                 // of redirect to another menu-item) id is in the array of the 
@@ -81,6 +81,7 @@ class Menu extends \infoweb\menu\models\Menu
                     'level'             => $menuItem->level + 1,
                     'includeLanguage'   => $settings['includeLanguage'],
                     'subMenu'           => $settings['subMenu'],
+                    'convertBr'         => isset($settings['convertBr']),
                 ]);
 
                 if ($children)
