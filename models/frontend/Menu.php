@@ -59,7 +59,7 @@ class Menu extends \infoweb\menu\models\Menu
             $menuItem->language = Yii::$app->language;
             
             $item = [
-                'label'     => $menuItem->name,
+                'label'     => str_replace('|', '', $menuItem->name),
                 'url'       => $menuItem->getUrl($settings['includeLanguage']),
                 // The item is active if it's (or that of it's entity in case
                 // of redirect to another menu-item) id is in the array of the 
