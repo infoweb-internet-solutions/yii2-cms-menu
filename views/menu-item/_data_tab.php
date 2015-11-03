@@ -86,7 +86,11 @@ use infoweb\menu\models\Menu;
     </div>
 
     <?php // None ?>
-    <?= Html::hiddenInput('MenuItem[entity_id]', 0, ['class' => 'attribute none-attribute']) ?>
+    <?= Html::hiddenInput('MenuItem[entity_id]', 0, [
+        'class' => 'attribute none-attribute',
+        'style' => ($model->entity != $model::ENTITY_NONE) ? 'display: none;' : '',
+        'disabled' => ($model->entity != $model::ENTITY_NONE) ? 'true' : '',
+    ]) ?>
 
     <?php // Page anchors ?>
     <div class="menu-item-anchor-container"<?php if (($model->entity != $model::ENTITY_PAGE) || !isset($model->entityModel) || ($model->entity == $model::ENTITY_PAGE && !count($model->entityModel->htmlAnchors))) : ?> style="display: none;"<?php endif; ?>>
