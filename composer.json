@@ -22,7 +22,8 @@
     ],
 	"require": {
 	    "yiisoft/yii2": "@stable",
-        "infoweb-internet-solutions/yii2-cms": "@stable"
+        "infoweb-internet-solutions/yii2-cms": "@stable",
+        "bower-asset/nestable2": "@stable"
 	},
 	"autoload": {
 		"psr-4": {
