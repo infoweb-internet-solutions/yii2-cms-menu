@@ -1,0 +1,82 @@
+.table {
+    margin: 20px 0 0 0;
+}
+
+.table th.actions {
+    width:200px;
+}
+
+.table tbody td:first-of-type() {
+    padding: 0 0 0 3px;
+}
+
+.dd {
+    max-width: none;
+}
+
+.dd-item {
+    line-height: 30px;
+}
+
+.dd-item .odd {
+    background-color: #f9f9f9;
+}
+
+.dd-item > button {
+    font-size: 18px;
+    margin-left: 25px;
+}
+
+.dd-handle {
+    position: absolute;
+    left: 0;
+    top: 0;
+    cursor: pointer;
+    width: 25px;
+    text-indent: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    border: none;
+    margin: 0;
+    border-radius: 0;
+    font-weight: normal;
+    color: #333;
+}
+
+.dd-handle::before {
+    content: "\f047";
+    display: block;
+    position: absolute;
+    left: 5px;
+    top: 0;
+    width: 100%;
+    text-indent: 0;
+    color: #333;
+    font-size: 18px;
+    font-weight: normal;
+    font-family: "FontAwesome"
+}
+
+.dd-handle::hover {
+    background: #ddd;
+}
+
+.dd-content {
+    display: block;
+    height: 30px;
+    margin: 5px 0;
+    padding: 0px 10px 5px 50px;
+}
+
+.dd-content:hover {
+    background-color: #f5f5f5
+}
+
+.dd-label {
+    display: inline;
+}
+
+.dd-actions {
+    float: right;
+    width: 180px;
+}
