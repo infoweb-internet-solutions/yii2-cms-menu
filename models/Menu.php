@@ -107,7 +107,7 @@ class Menu extends \yii\db\ActiveRecord
                         </a>
                         <a href="<?= Url::to(['delete', 'id' => $item->id]) ?>" id="delete-<?php echo $item->id; ?>" data-toggle="tooltip" title="<?= Yii::t('app', 'Delete') ?>" data-method="post" data-confirm="<?php echo Yii::t('app', 'Are you sure you want to delete this item?'); ?>" data-pjax="0">
                             <span class="glyphicon glyphicon-trash"></span>
-                        </a>                            
+                        </a>
                         <a href="#" data-toggle-active-menu-items="<?php echo $item->id; ?>" data-toggle="tooltip" data-pjax="0" title="<?= Yii::t('app', 'Toggle active') ?>">
                             <?php if ($item->active == 1) : ?>
                                 <span class="glyphicon glyphicon-eye-open"></span>
@@ -115,7 +115,7 @@ class Menu extends \yii\db\ActiveRecord
                                 <span class="glyphicon glyphicon-eye-close"></span>
                             <?php endif; ?>
                         </a>
-                        
+
                         <?php if (Yii::$app->getModule('menu')->enablePrivateMenuItems) : ?>
                         <a href="#" data-item="<?php echo $item->id; ?>" data-uri="<?= Url::toRoute('menu-item/public') ?>" data-toggle="tooltip" data-pjax="0" title="<?= Yii::t('infoweb/menu', 'Toggle public visiblity') ?>" class="toggle-public">
                             <?php if ($item->public == 1) : ?>
@@ -123,9 +123,9 @@ class Menu extends \yii\db\ActiveRecord
                             <?php else : ?>
                             <span class="glyphicon glyphicon-lock"></span>
                             <?php endif; ?>
-                        </a>    
+                        </a>
                         <?php endif; ?>
-                        
+
                         <a href="<?= Yii::getAlias('@baseUrl/') . MenuItem::findOne($item->id)->getUrl(false, true); ?>" data-toggle="tooltip" target="_blank" title="<?= Yii::t('app', 'View') ?>">
                             <span class="glyphicon glyphicon-globe"></span>
                         </a>
@@ -324,22 +324,22 @@ class Menu extends \yii\db\ActiveRecord
     {
         return $this->hasMany(MenuItem::className(), ['menu_id' => 'id']);
     }
-    
+
     /**
      * Recursively deletes all children of the item
-     * 
+     *
      * @return  boolean
      */
     public function deleteChildren()
     {
         foreach ($this->getChildren()->all() as $child) {
             if (!$child->delete())
-                return false;   
-        } 
-        
-        return true;   
+                return false;
+        }
+
+        return true;
     }
-    
+
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -347,10 +347,19 @@ class Menu extends \yii\db\ActiveRecord
     {
         return $this->hasMany(MenuItem::className(), ['menu_id' => 'id']);
     }
-    
+
+    /**
+     * Returns all the children with a specific parent
+     * @return \yii\db\ActiveQuery
+     */
+    public function getChildrenWithParent($parentId = 0)
+    {
+        return $this->getChildren()->where(['parent_id' => $parentId])->orderBy(['position' => SORT_ASC]);
+    }
+
     /**
      * Returns the current max level
-     * 
+     *
      * @return  int
      */
     public function getCurrentMaxLevel()
@@ -359,6 +368,31 @@ class Menu extends \yii\db\ActiveRecord
                 ->select('level')
                 ->from('menu_item')
                 ->where('menu_id = :menu_id', [':menu_id' => $this->id])
-                ->max('level') + 1;   
+                ->max('level') + 1;
+    }
+
+    /**
+     * Returns descendants of the provided parent in a nestable tree structure
+     *
+     * @param   int     $parentId
+     * @return  array
+     */
+    public function getNestableTree($parentId = 0)
+    {
+        // Find the direct descendants of the provided parent
+        $descendants = $this->getChildrenWithParent($parentId)->all();
+
+        foreach ($descendants as $k => $descendant) {
+            $data = ['item' => $descendant];
+
+            // Load the children of the descendant as a nestable tree
+            if ($descendant->children) {
+                $data['children'] = $this->getNestableTree($descendant->id);
+            }
+
+            $tree[] = $data;
+        }
+
+        return $tree;
     }
 }

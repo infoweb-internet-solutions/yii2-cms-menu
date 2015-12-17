@@ -6,20 +6,11 @@ use yii\web\View;
 use yii\web\JqueryAsset;
 use yii\helpers\Url;
 use infoweb\menu\models\Menu;
-
-use infoweb\menu\MenuAsset;
-MenuAsset::register($this);
-
-/* @var $this yii\web\View */
-/* @var $searchModel infoweb\menu\models\MenuItemSearch */
-/* @var $dataProvider yii\data\ActiveDataProvider */
+use infoweb\menu\widgets\Nestable;
 
 $this->title = $menu->name;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('infoweb/menu', 'Menus'), 'url' => ['menu/index']];
 $this->params['breadcrumbs'][] = $this->title;
-
-// Nested sortable max level
-$this->registerJs("var maxLevels = {$maxLevel};", View::POS_HEAD);
 ?>
 <div class="menu-item-index">
 
@@ -30,27 +21,17 @@ $this->registerJs("var maxLevels = {$maxLevel};", View::POS_HEAD);
         <div class="pull-right">
             <?= Html::a(Yii::t('app', 'Create {modelClass}', [
                 'modelClass' => Yii::t('infoweb/menu', 'Menu item'),
-            ]), ['create'], ['class' => 'btn btn-success']) ?>    
+            ]), ['create'], ['class' => 'btn btn-success']) ?>
         </div>
     </h1>
-    
+
     <?php // Flash messages ?>
     <?php echo $this->render('_flash_messages'); ?>
 
-    <?php // Gridview ?>
-    <table class="table table-bordered" style="margin: 20px 0 0 0;">
-        <thead>
-            <tr>
-                <th>Naam</th>
-                <th class="actions">Acties</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td colspan="2">
-                    <?php echo Menu::sortableTree(['menu-id' => $menu->id]); ?>    
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    <?php // Nestable ?>
+    <?= Nestable::widget([
+        'items'    => $menu->getNestableTree(),
+        'maxDepth' => $menu->max_level
+    ]) ?>
+
 </div>

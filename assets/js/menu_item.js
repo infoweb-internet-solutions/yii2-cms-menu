@@ -3,13 +3,13 @@
 })(this, function($) {
 
     'use strict';
-    
+
     var menu_item = {};
-    
+
     menu_item.init = function() {
-        menu_item.set_eventhandlers();          
+        menu_item.set_eventhandlers();
     };
-    
+
     menu_item.set_eventhandlers = function() {
         $(document)
             .on('change', '#menuitem-entity', menu_item.toggle_attributes)
@@ -18,10 +18,10 @@
     };
     /*
     menu_item.delete = function(e) {
-        
+
         e.preventDefault();
         var val = $(this).attr('id').replace('delete-', '');
-        
+
         console.log(val);
     };
    */
@@ -84,58 +84,58 @@
 
         // Hide all attributes
         $('.attribute').hide();
-        
+
         // Show the attributes that belong to the selected type
         if (val) {
-            $('.'+val+'-attribute').show().find('select').prop('disabled', false);              
+            $('.'+val+'-attribute').show().find('select').prop('disabled', false);
         }
-            
+
         // Only enable the 'menuitem-entity_id' field that is visible
         $('.attribute select').prop('disabled', true);
         $('.attribute select:visible').prop('disabled', false);
-        
+
         // Reset the values of the entities
         $('#menuitem-entity_id').val('');
         $('#menuitem-url').val('');
-        
+
         // Hide the anchors dropdown for a 'page' entity
-        $('.menu-item-anchor-container').hide(); 
+        $('.menu-item-anchor-container').hide();
     };
-    
+
     /**
      * Toggles the dropdown of a page's html anchors
-     * 
-     * @param   Event  
+     *
+     * @param   Event
      */
     menu_item.togglePageHtmlAnchors = function(e) {
         // If the entity is a 'page', refresh the anchors dropdown and show it
         if ($('#menuitem-entity').val() == 'page' && $(this).val()) {
-            
+
             var request = $.get('get-page-html-anchors', {page: $(this).val()});
-            
+
             request.done(function(response) {
                 if (response.status == 1) {
                     // Remove current anchors from the dropdown
                     $('#menuitem-anchor option').remove();
-                    
+
                     // Add the anchors
                     $.each(response.anchors, function(i) {
-                        $('#menuitem-anchor').append('<option value="'+i+'">'+this+'</option>');                    
+                        $('#menuitem-anchor').append('<option value="'+i+'">'+this+'</option>');
                     });
-                        
+
                     // Show the dropdown if it contains options
-                    if ($('#menuitem-anchor option').length > 1) {   
+                    if ($('#menuitem-anchor option').length > 1) {
                         $('.menu-item-anchor-container').show();
                     } else {
-                        $('.menu-item-anchor-container').hide();    
+                        $('.menu-item-anchor-container').hide();
                     }
                 }
-            });            
-            
+            });
+
         } else {
-            $('.menu-item-anchor-container').hide();        
-        }   
+            $('.menu-item-anchor-container').hide();
+        }
     };
-    
+
     return menu_item;
 }(jQuery));
