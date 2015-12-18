@@ -18,10 +18,6 @@
     line-height: 30px;
 }
 
-.dd-item .odd {
-    background-color: #f9f9f9;
-}
-
 .dd-item > button {
     font-size: 18px;
     margin-left: 25px;
