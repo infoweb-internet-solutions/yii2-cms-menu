@@ -657,7 +657,7 @@ class MenuItemController extends Controller
     {
         // Determine the parentId and level
         $parentId = ($parent !== null) ? $parent->id : 0;
-        $level = ($parent !== null) ? $parent->level : 0;
+        $level = ($parent !== null) ? $parent->level + 1 : 0;
 
         foreach ($items as $k => $item) {
             // Update the menu item
