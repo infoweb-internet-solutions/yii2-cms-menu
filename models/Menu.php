@@ -283,7 +283,7 @@ class Menu extends \yii\db\ActiveRecord
      * @param   int     $parentId
      * @return  array
      */
-    public function getNestableTree($parentId = 0)
+    public function getNestableTree($parentId = 0, &$tree = [])
     {
         // Find the direct descendants of the provided parent
         $descendants = $this->getChildrenWithParent($parentId)->all();
