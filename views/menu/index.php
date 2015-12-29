@@ -81,11 +81,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 'width' => '100px',
             ]
         ],
-        'responsive' => true,
-        'floatHeader' => true,
-        'floatHeaderOptions' => ['scrollingTop' => 88],
-        'hover' => true,
-        'export' => false,
     ]); ?>
     <?php Pjax::end(); ?>
 
