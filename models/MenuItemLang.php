@@ -40,7 +40,7 @@ class MenuItemLang extends \yii\db\ActiveRecord
             [['name', 'params'], 'trim'],
             // Types
             [['menu_item_id', 'created_at', 'updated_at'], 'integer'],
-            [['language'], 'string', 'max' => 2],
+            [['language'], 'string', 'max' => 10],
             [['name'], 'string', 'max' => 255],
             [['params'], 'string'],
         ];

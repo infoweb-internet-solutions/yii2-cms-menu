@@ -52,7 +52,7 @@ class m141008_091012_init extends Migration
         // Create 'menu_item_lang' table
         $this->createTable('{{%menu_item_lang}}', [
             'menu_item_id'               => Schema::TYPE_INTEGER . ' NOT NULL',
-            'language'              => Schema::TYPE_STRING . '(2) NOT NULL',
+            'language'              => Schema::TYPE_STRING . '(10) NOT NULL',
             'name'                  => Schema::TYPE_STRING . '(255) NOT NULL',
             'created_at'            => Schema::TYPE_INTEGER . ' UNSIGNED NOT NULL',
             'updated_at'            => Schema::TYPE_INTEGER . ' UNSIGNED NOT NULL'
