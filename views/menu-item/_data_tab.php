@@ -2,6 +2,7 @@
 use yii\helpers\Html;
 use kartik\widgets\SwitchInput;
 use infoweb\menu\models\Menu;
+use kartik\select2\Select2;
 ?>
 <div class="tab-content default-tab">
     
@@ -33,16 +34,22 @@ use infoweb\menu\models\Menu;
     <?php // Pages ?>
     <div class="form-group field-menuitem-entity_id attribute page-attribute" <?php if ($model->entity != $model::ENTITY_PAGE) : ?>style="display: none;"<?php endif; ?>>
         <label for="menuitem-entity_id" class="control-label"><?= Yii::t('infoweb/pages', 'Page'); ?></label>
-        <?= Html::dropDownList('MenuItem[entity_id]', $model->entity_id, $pages, [
-            'class'     => 'form-control',
-            'id'        => 'menuitem-entity_id',
-            'prompt'    => Yii::t('infoweb/alias', 'Choose a page'),
+        <?= Select2::widget([
+            'model' => $model,
+            'attribute' => 'entity_id',
+            'data' => $pages,
+            'options' => [
+                'placeholder' => Yii::t('infoweb/alias', 'Choose a page'),
+            ],
             'readonly'  => ($model->type == $model::TYPE_SYSTEM && !Yii::$app->user->can('Superadmin')) ? true : false,
             'disabled'  => ($model->entity != $model::ENTITY_PAGE) ? true : false,
-        ]) ?>
+            'pluginOptions' => [
+                'allowClear' => true
+            ],
+        ]); ?>
         <div class="help-block"></div>
     </div>
-    
+
     <?php // Linkable entities ?>
     <?php foreach ($linkableEntities as $k => $v) : ?>
     
