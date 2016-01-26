@@ -121,6 +121,15 @@ class MenuItemController extends Controller
 
         $levelSelect = Menu::level_select(['menu-id' => $menu->id, 'active-menu-item-id' => $model->id]);
 
+        $returnOptions = [
+            'model'             => $model,
+            'levelSelect'       => $levelSelect,
+            'menu'              => $menu,
+            'pages'             => $pages,
+            'linkableEntities'  => $linkableEntities,
+            'entityTypes'       => $entityTypes
+        ];
+
         if (Yii::$app->request->getIsPost()) {
 
             $post = Yii::$app->request->post();
@@ -184,14 +193,7 @@ class MenuItemController extends Controller
 
                 // Save the main model
                 if (!$model->load($post) || !$model->save()) {
-                    return $this->render('create', [
-                        'model'             => $model,
-                        'levelSelect'       => $levelSelect,
-                        'menu'              => $menu,
-                        'pages'             => $pages,
-                        'linkableEntities'  => $linkableEntities,
-                        'entityTypes'       => $entityTypes
-                    ]);
+                    return $this->render('create', $returnOptions);
                 }
 
                 // Save the translations
@@ -205,14 +207,7 @@ class MenuItemController extends Controller
                     $model->params      = $data['params'];
 
                     if (!$model->saveTranslation()) {
-                        return $this->render('create', [
-                            'model'             => $model,
-                            'levelSelect'       => $levelSelect,
-                            'menu'              => $menu,
-                            'pages'             => $pages,
-                            'linkableEntities'  => $linkableEntities,
-                            'entityTypes'       => $entityTypes,
-                        ]);
+                        return $this->render('create', $returnOptions);
                     }
                 }
 
@@ -235,14 +230,7 @@ class MenuItemController extends Controller
             }
         }
 
-        return $this->render('create', [
-            'model'             => $model,
-            'levelSelect'       => $levelSelect,
-            'menu'              => $menu,
-            'pages'             => $pages,
-            'linkableEntities'  => $linkableEntities,
-            'entityTypes'       => $entityTypes
-        ]);
+        return $this->render('create', $returnOptions);
     }
 
     /**
@@ -264,6 +252,15 @@ class MenuItemController extends Controller
         $pages = Page::getAllForDropDownList();
         $linkableEntities = $this->findLinkableEntities();
         $entityTypes = $this->entityTypes();
+
+        $returnOptions = [
+            'model'             => $model,
+            'levelSelect'       => $levelSelect,
+            'menu'              => $menu,
+            'pages'             => $pages,
+            'linkableEntities'  => $linkableEntities,
+            'entityTypes'       => $entityTypes
+        ];
 
         if (Yii::$app->request->getIsPost()) {
 
@@ -341,14 +338,7 @@ class MenuItemController extends Controller
 
                 // Save the main model
                 if (!$model->load($post) || !$model->save()) {
-                    return $this->render('update', [
-                        'model'             => $model,
-                        'levelSelect'       => $levelSelect,
-                        'menu'              => $menu,
-                        'pages'             => $pages,
-                        'linkableEntities'  => $linkableEntities,
-                        'entityTypes'       => $entityTypes
-                    ]);
+                    return $this->render('update', $returnOptions);
                 }
 
                 // Save the translations
@@ -362,14 +352,7 @@ class MenuItemController extends Controller
                     $model->params      = $data['params'];
 
                     if (!$model->saveTranslation()) {
-                        return $this->render('update', [
-                            'model'             => $model,
-                            'levelSelect'       => $levelSelect,
-                            'menu'              => $menu,
-                            'pages'             => $pages,
-                            'linkableEntities'  => $linkableEntities,
-                            'entityTypes'       => $entityTypes
-                        ]);
+                        return $this->render('update', $returnOptions);
                     }
                 }
 
@@ -392,14 +375,7 @@ class MenuItemController extends Controller
             }
         }
 
-        return $this->render('update', [
-            'model'             => $model,
-            'levelSelect'       => $levelSelect,
-            'menu'              => $menu,
-            'pages'             => $pages,
-            'linkableEntities'  => $linkableEntities,
-            'entityTypes'       => $entityTypes
-        ]);
+        return $this->render('update', $returnOptions);
     }
 
     /**
