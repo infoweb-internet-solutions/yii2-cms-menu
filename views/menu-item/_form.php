@@ -42,7 +42,6 @@ use yii\bootstrap\Tabs;
                 'linkableEntities'  => $linkableEntities,
                 'entityTypes'       => $entityTypes
             ]),
-            'active' => true,
         ],
     ];
     
