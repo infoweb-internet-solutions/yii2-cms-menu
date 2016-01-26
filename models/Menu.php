@@ -96,10 +96,12 @@ class Menu extends \yii\db\ActiveRecord
             'menu-id'     => 0,
             'ancestor'      => 0,
             'active-ancestor' => 0,
-            'selected'      => 0
+            'selected'      => 0,
+            'active-menu-item-id' => 0,
         ];
 
         $settings = array_merge($default_settings, $settings);
+
         $result = '';
         $items = MenuItem::find()->where(['menu_id' => $settings['menu-id']])->orderby('position ASC')->all();
 
@@ -112,7 +114,10 @@ class Menu extends \yii\db\ActiveRecord
                 <option
                     value="<?php echo $item->id; ?>"
                     <?php if ($settings['selected'] != 0 && $settings['selected'] == $item->id) : ?> selected="selected"<?php endif; ?>
-                    <?php /*if (in_array($item->id, Menu::findChildren(['id' => $settings['active-ancestor'], 'menu-id' => $settings['menu-id']]))) : ?> disabled="disabled"<?php endif; */?>>
+
+                    <?php if (in_array($item->id, Menu::findChildren(['id' => $settings['active-menu-item-id'], 'menu-id' => $settings['menu-id']]))) : ?>
+                        disabled="disabled"
+                    <?php endif; ?>>
                     <?php echo str_repeat("-", 2 * $item->level); ?><?php if ($item->level != 0) : ?>> <?php endif; ?><?php echo $item->name; ?>
                 </option>
                 <?php
@@ -127,7 +132,8 @@ class Menu extends \yii\db\ActiveRecord
                         'menu-id'           => $settings['menu-id'],
                         'ancestor'          => $item->parent_id,
                         'active-ancestor'   => $settings['active-ancestor'],
-                        'selected'          => $settings['selected']
+                        'selected'          => $settings['selected'],
+                        'active-menu-item-id' => $settings['active-menu-item-id'],
                     ));
                 }
             }

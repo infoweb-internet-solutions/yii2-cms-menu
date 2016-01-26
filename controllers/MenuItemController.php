@@ -107,7 +107,6 @@ class MenuItemController extends Controller
     {
         $languages = Yii::$app->params['languages'];
         $menu = $this->findActiveMenu();
-        $levelSelect = Menu::level_select(['menu-id' => $menu->id]);
         $pages = Page::getAllForDropDownList();
         $linkableEntities = $this->findLinkableEntities();
         $entityTypes = $this->entityTypes();
@@ -119,6 +118,8 @@ class MenuItemController extends Controller
             'public'    => (int) $this->module->defaultPublicVisibility,
             'type'      => MenuItem::TYPE_USER_DEFINED,
         ]);
+
+        $levelSelect = Menu::level_select(['menu-id' => $menu->id, 'active-menu-item-id' => $model->id]);
 
         if (Yii::$app->request->getIsPost()) {
 
@@ -257,7 +258,8 @@ class MenuItemController extends Controller
         $menu = $this->findActiveMenu();
         $levelSelect = Menu::level_select([
             'menu-id'   => Yii::$app->session->get('menu-items.menu-id'),
-            'selected'  => $model->parent_id
+            'selected'  => $model->parent_id,
+            'active-menu-item-id' => $model->id,
         ]);
         $pages = Page::getAllForDropDownList();
         $linkableEntities = $this->findLinkableEntities();
