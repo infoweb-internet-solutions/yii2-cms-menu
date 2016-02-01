@@ -6,7 +6,7 @@
     width:200px;
 }
 
-.table tbody td:first-of-type() {
+.table tbody td:first-of-type {
     padding: 0 0 0 3px;
 }
 

@@ -6,11 +6,11 @@ use yii\web\AssetBundle;
 
 class NestableAsset extends AssetBundle
 {
-    public $sourcePath = '@bower/nestable2';
+    public $sourcePath = '@infoweb/menu/assets/';
     public $css = [
-        'jquery.nestable.css'
+        'css/jquery.nestable.css'
     ];
     public $js = [
-        'jquery.nestable.js'
+        'js/jquery.nestable.js'
     ];
 }
