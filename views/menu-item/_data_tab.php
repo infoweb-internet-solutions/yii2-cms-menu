@@ -3,6 +3,7 @@ use yii\helpers\Html;
 use kartik\widgets\SwitchInput;
 use infoweb\menu\models\Menu;
 use kartik\select2\Select2;
+use yii\bootstrap\Modal;
 ?>
 <div class="tab-content default-tab">
     
@@ -48,6 +49,19 @@ use kartik\select2\Select2;
             ],
         ]); ?>
         <div class="help-block"></div>
+    </div>
+
+    <div class="add-page" <?php if ($model->entity != $model::ENTITY_PAGE) : ?>style="display: none;"<?php endif; ?>>
+        <?php Modal::begin([
+            'id' => 'duplicateable-modal',
+            'toggleButton' => ['label' => \kartik\icons\Icon::show('plus')],
+
+        ]); ?>
+
+        <?php echo Yii::$app->runAction('pages/page/create', ['test' => true]) ?>
+
+        <?php Modal::end(); ?>
+
     </div>
 
     <?php // Linkable entities ?>

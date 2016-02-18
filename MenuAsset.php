@@ -8,7 +8,7 @@ class MenuAsset extends AssetBundle
 {
     public $sourcePath = '@infoweb/menu/assets/';
     public $css = [
-        'css/jquery.nestalbe.css',
+        'css/jquery.nestable.css',
         'css/main.css',
     ];
 

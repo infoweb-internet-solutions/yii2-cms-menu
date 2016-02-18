@@ -13,7 +13,9 @@
     menu_item.set_eventhandlers = function() {
         $(document)
             .on('change', '#menuitem-entity', menu_item.toggle_attributes)
-            .on('change', '#menuitem-entity_id', menu_item.togglePageHtmlAnchors);
+            .on('change', '#menuitem-entity_id', menu_item.togglePageHtmlAnchors)
+
+        ;
             //.on('click', '#delete-100', menu_item.delete);
     };
     /*
