@@ -24,27 +24,22 @@ $(document).ready(function() {
         $('#create-page-modal').modal('show');
     });
 
-    $(document).on("beforeSubmit", "#page-form", function () {
+    $(document).on("beforeSubmit", "#page-form", function (event) {
 
-        var form = $(this);
+        //event.preventDefault();
 
+        var form = $(this),
+            data = form.serialize();
 
-        var postData = form.serializeArray();
-        console.log(postData);
-        postData.push({test: 1});
-        console.dir(postData);
+        data.save = '';
 
-        var request = $.post(form.attr('action'), postData);
+        var request = $.post(form.attr('action'), data);
 
         request.done(function(response) {
-console.dir(response);
-
             if (response.status == 1) {
-
-                alert("test");
-
                 // Update dropdown content with pjax
                 $.pjax.reload({container: '#pages-dropdown'});
+
 
                 // Update pages dropdown after pjax reload
                 $(document).on('pjax:complete', function() {
@@ -55,9 +50,12 @@ console.dir(response);
                 });
 
                 // Hide modal
-                $('#duplicateable-modal').modal('hide');
+                $('#create-page-modal').modal('hide');
             }
+
         });
+
         return false;
+
     });
 });
