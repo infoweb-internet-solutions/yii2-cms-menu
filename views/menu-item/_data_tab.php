@@ -4,6 +4,8 @@ use kartik\widgets\SwitchInput;
 use infoweb\menu\models\Menu;
 use kartik\select2\Select2;
 use yii\bootstrap\Modal;
+use yii\widgets\Pjax;
+use yii\bootstrap\ActiveForm;
 ?>
 <div class="tab-content default-tab">
     
@@ -33,6 +35,11 @@ use yii\bootstrap\Modal;
     ]); ?>
 
     <?php // Pages ?>
+
+    <?php Pjax::begin([
+        'id' => 'pages-dropdown',
+    ]);
+    ?>
     <div class="form-group field-menuitem-entity_id attribute page-attribute" <?php if ($model->entity != $model::ENTITY_PAGE) : ?>style="display: none;"<?php endif; ?>>
         <label for="menuitem-entity_id" class="control-label"><?= Yii::t('infoweb/pages', 'Page'); ?></label>
         <?= Select2::widget([
@@ -49,20 +56,13 @@ use yii\bootstrap\Modal;
             ],
         ]); ?>
         <div class="help-block"></div>
-    </div>
 
-    <div class="add-page" <?php if ($model->entity != $model::ENTITY_PAGE) : ?>style="display: none;"<?php endif; ?>>
-        <?php Modal::begin([
-            'id' => 'duplicateable-modal',
-            'toggleButton' => ['label' => \kartik\icons\Icon::show('plus')],
-
-        ]); ?>
-
-        <?php echo Yii::$app->runAction('pages/page/create', ['test' => true]) ?>
-
-        <?php Modal::end(); ?>
+        <?= Html::a(Yii::t('app', 'Create {modelClass}', [
+            'modelClass' => Yii::t('infoweb/pages', 'Page'),
+        ]), '#', ['id' => 'create-page-url']) ?>
 
     </div>
+    <?php Pjax::end(); ?>
 
     <?php // Linkable entities ?>
     <?php foreach ($linkableEntities as $k => $v) : ?>

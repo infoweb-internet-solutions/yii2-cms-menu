@@ -17,8 +17,10 @@ use yii\bootstrap\Tabs;
     <?php
     // Init the form
     $form = ActiveForm::begin([
-        'id'                        => 'menu-item-form',
-        'options'                   => ['class' => 'tabbed-form'],
+        'options'                   => [
+            'class' => 'tabbed-form',
+            'id'                        => 'menu-item-form',
+        ],
         'enableAjaxValidation'      => true,
         'enableClientValidation'    => false        
     ]);
@@ -42,6 +44,7 @@ use yii\bootstrap\Tabs;
                 'linkableEntities'  => $linkableEntities,
                 'entityTypes'       => $entityTypes
             ]),
+            'active'    => true,
         ],
     ];
     
@@ -57,5 +60,30 @@ use yii\bootstrap\Tabs;
     </div>
 
     <?php ActiveForm::end(); ?>
+
+
+    <div class="create-page" <?php if ($model->entity != $model::ENTITY_PAGE) : ?>style="display: none;"<?php endif; ?>>
+        <?php \yii\bootstrap\Modal::begin([
+            'id' => 'create-page-modal',
+        ]); ?>
+
+        <?php // Init the form
+        $form = ActiveForm::begin([
+            'action'                    => \yii\helpers\Url::toRoute('/pages/page/create'),
+            'options'                   => [
+                'class' => 'tabbed-form',
+                'id'                        => 'page-form',
+            ],
+            'enableAjaxValidation'      => true,
+            'enableClientValidation'    => false
+        ]); ?>
+
+        <?php echo Yii::$app->runAction('pages/page/create', ['modal' => true]) ?>
+
+        <?php ActiveForm::end(); ?>
+
+        <?php \yii\bootstrap\Modal::end(); ?>
+
+    </div>
 
 </div>
