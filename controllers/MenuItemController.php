@@ -191,30 +191,24 @@ class MenuItemController extends Controller
                 $model->entity_id = (isset($post['MenuItem']['entity_id'])) ? $post['MenuItem']['entity_id'] : 0;
                 $model->active = 1;
 
-                // Save the main model
-                if (!$model->load($post) || !$model->save()) {
+                // Load the main model
+                if (!$model->load($post)) {
                     return $this->render('create', $returnOptions);
                 }
 
-                // Save the translations
-                foreach ($languages as $languageId => $languageName) {
-
-                    $data = $post['MenuItemLang'][$languageId];
-
-                    // Set the translation language and attributes
-                    $model->language    = $languageId;
-                    $model->name        = $data['name'];
-                    $model->params      = $data['params'];
-
-                    if (!$model->saveTranslation()) {
-                        return $this->render('create', $returnOptions);
+                // Attach translations
+                foreach (Yii::$app->request->post('MenuItemLang', []) as $language => $data) {
+                    foreach ($data as $attribute => $translation) {
+                        $model->translate($language)->$attribute = $translation;
                     }
                 }
 
-                $transaction->commit();
+                // Save the model
+                if (!$model->save()) {
+                    return $this->render('create', $returnOptions);
+                }
 
-                // Switch back to the main language
-                $model->language = Yii::$app->language;
+                $transaction->commit();
 
                 // Set flash message
                 Yii::$app->getSession()->setFlash('menu-item', Yii::t('app', '"{item}" has been created', ['item' => $model->name]));
@@ -282,12 +276,8 @@ class MenuItemController extends Controller
                     $model->level       = $parent->level + 1;
                 }
 
-                // Create an array of translation models
-                $translationModels = [];
-
-                foreach ($languages as $languageId => $languageName) {
-                    $translationModels[$languageId] = new MenuItemLang(['language' => $languageId]);
-                }
+                // Get the translation models
+                $translationModels = ArrayHelper::index($model->getTranslations()->all(), 'language');
 
                 // Populate the translation models
                 Model::loadMultiple($translationModels, $post);
@@ -336,30 +326,24 @@ class MenuItemController extends Controller
                     $model->anchor = '';
                 }
 
-                // Save the main model
-                if (!$model->load($post) || !$model->save()) {
-                    return $this->render('update', $returnOptions);
+                // Load the main model
+                if (!$model->load($post)) {
+                    return $this->render('create', $returnOptions);
                 }
 
-                // Save the translations
-                foreach ($languages as $languageId => $languageName) {
-
-                    $data = $post['MenuItemLang'][$languageId];
-
-                    // Set the translation language and attributes
-                    $model->language    = $languageId;
-                    $model->name        = $data['name'];
-                    $model->params      = $data['params'];
-
-                    if (!$model->saveTranslation()) {
-                        return $this->render('update', $returnOptions);
+                // Attach translations
+                foreach (Yii::$app->request->post('MenuItemLang', []) as $language => $data) {
+                    foreach ($data as $attribute => $translation) {
+                        $model->translate($language)->$attribute = $translation;
                     }
                 }
 
-                $transaction->commit();
+                // Save the model
+                if (!$model->save()) {
+                    return $this->render('create', $returnOptions);
+                }
 
-                // Switch back to the main language
-                $model->language = Yii::$app->language;
+                $transaction->commit();
 
                 // Set flash message
                 Yii::$app->getSession()->setFlash('menu-item', Yii::t('app', '"{item}" has been updated', ['item' => $model->name]));

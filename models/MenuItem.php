@@ -8,7 +8,7 @@ use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\db\Query;
 use yii\helpers\Url;
-use dosamigos\translateable\TranslateableBehavior;
+use creocoder\translateable\TranslateableBehavior;
 use infoweb\pages\models\Page;
 
 /**
@@ -51,12 +51,9 @@ class MenuItem extends \yii\db\ActiveRecord
     public function behaviors()
     {
         return [
-            'trans' => [
+            'translateable' => [
                 'class' => TranslateableBehavior::className(),
-                'translationAttributes' => [
-                    'name',
-                    'params',
-                ]
+                'translationAttributes' => ['name', 'params'],
             ],
             'timestamp' => [
                 'class' => TimestampBehavior::className(),
@@ -219,7 +216,7 @@ class MenuItem extends \yii\db\ActiveRecord
                     return Url::to($prefix);
                 }
 
-                $url = "{$prefix}{$page->alias->url}";
+                $url = "{$prefix}";
 
                 // Params are set, append to the url
                 if (!empty($this->params)) {
