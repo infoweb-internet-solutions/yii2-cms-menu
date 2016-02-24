@@ -10,6 +10,7 @@ use yii\web\Response;
 use yii\widgets\ActiveForm;
 use yii\base\Model;
 use yii\helpers\ArrayHelper;
+use yii\helpers\StringHelper;
 use infoweb\menu\models\MenuItem;
 use infoweb\menu\models\MenuItemLang;
 use infoweb\menu\models\MenuItemSearch;
@@ -27,31 +28,15 @@ class MenuItemController extends Controller
      */
     protected $entityTypes = [];
 
-    /**
-     * Returns a combination of default entityTypes and the one's that are set
-     * in the controller.
-     *
-     * @return  array
-     */
-    protected function entityTypes()
-    {
-        return ArrayHelper::merge([
-            'page'          => Yii::t('infoweb/pages', 'Page'),
-            'menu-item'     => Yii::t('infoweb/menu', 'Menu item'),
-            'url'           => Yii::t('app', 'Url'),
-            'none'          => Yii::t('infoweb/menu', 'Nothing'),
-        ], $this->entityTypes);
-    }
-
     public function behaviors()
     {
         return [
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
-                    'delete' => ['post'],
-                    'position' => ['post'],
-                    'active' => ['post'],
+                    'delete'           => ['post'],
+                    'position'         => ['post'],
+                    'active'           => ['post'],
                     'update-positions' => ['post']
                 ],
             ],
@@ -73,22 +58,10 @@ class MenuItemController extends Controller
         $menu = $this->findActiveMenu();
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
+            'searchModel'  => $searchModel,
             'dataProvider' => $dataProvider,
-            'menu' => $menu,
-            'maxLevel' => json_encode($menu->max_level),
-        ]);
-    }
-
-    /**
-     * Displays a single MenuItem model.
-     * @param string $id
-     * @return mixed
-     */
-    public function actionView($id)
-    {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
+            'menu'         => $menu,
+            'maxLevel'     => json_encode($menu->max_level),
         ]);
     }
 
@@ -99,126 +72,31 @@ class MenuItemController extends Controller
      */
     public function actionCreate()
     {
-        $languages = Yii::$app->params['languages'];
-        $menu = $this->findActiveMenu();
-        $pages = Page::getAllForDropDownList();
-        $linkableEntities = $this->findLinkableEntities();
-        $entityTypes = $this->entityTypes();
-
         // Initialize the menu-item with default values
         $model = new MenuItem([
-            'menu_id'   => $menu->id,
+            'menu_id'   => $this->findActiveMenu()->id,
             'active'    => 1,
             'public'    => (int) $this->module->defaultPublicVisibility,
             'type'      => MenuItem::TYPE_USER_DEFINED,
         ]);
 
-        $levelSelect = Menu::level_select(['menu-id' => $menu->id, 'active-menu-item-id' => $model->id]);
-
-        $returnOptions = [
-            'model'             => $model,
-            'levelSelect'       => $levelSelect,
-            'menu'              => $menu,
-            'pages'             => $pages,
-            'linkableEntities'  => $linkableEntities,
-            'entityTypes'       => $entityTypes
-        ];
+        // The view params
+        $params = $this->getDefaultViewParams($model);
 
         if (Yii::$app->request->getIsPost()) {
 
             $post = Yii::$app->request->post();
 
-            // Ajax request, validate the models
+            // Ajax request, validate
             if (Yii::$app->request->isAjax) {
-
-                // Populate the model with the POST data
-                $model->load($post);
-
-                // Set model level
-                // Parent is root
-                if (empty($post['MenuItem']['parent_id'])) {
-                    $model->level = 0;
-                } else {
-                    // Load parent
-                    $parent = MenuItem::findOne($post['MenuItem']['parent_id']);
-                    $model->level       = $parent->level + 1;
-                }
-
-                // Create an array of translation models
-                $translationModels = [];
-
-                foreach ($languages as $languageId => $languageName) {
-                    $translationModels[$languageId] = new MenuItemLang(['language' => $languageId]);
-                }
-
-                // Populate the translation models
-                Model::loadMultiple($translationModels, $post);
-
-                // Validate the model and translation models
-                $response = array_merge(ActiveForm::validate($model), ActiveForm::validateMultiple($translationModels));
-
-                // Return validation in JSON format
-                Yii::$app->response->format = Response::FORMAT_JSON;
-                return $response;
-
-            // Normal request, save models
+                return $this->validateModel($model, $post);
+            // Normal request, save
             } else {
-                // Wrap the everything in a database transaction
-                $transaction = Yii::$app->db->beginTransaction();
-
-                // Parent is root
-                if (empty($post['MenuItem']['parent_id'])) {
-                    // Set parent and level
-                    $model->parent_id = 0;
-                    $model->level = 0;
-                } else {
-                    // Load parent
-                    $parent = MenuItem::findOne($post['MenuItem']['parent_id']);
-
-                    // Set parent and level
-                    $model->parent_id   = $parent->id;
-                    $model->level       = $parent->level + 1;
-                }
-
-                // Set rest of attributes and save
-                $model->position = $model->nextPosition();
-                $model->entity_id = (isset($post['MenuItem']['entity_id'])) ? $post['MenuItem']['entity_id'] : 0;
-                $model->active = 1;
-
-                // Load the main model
-                if (!$model->load($post)) {
-                    return $this->render('create', $returnOptions);
-                }
-
-                // Attach translations
-                foreach (Yii::$app->request->post('MenuItemLang', []) as $language => $data) {
-                    foreach ($data as $attribute => $translation) {
-                        $model->translate($language)->$attribute = $translation;
-                    }
-                }
-
-                // Save the model
-                if (!$model->save()) {
-                    return $this->render('create', $returnOptions);
-                }
-
-                $transaction->commit();
-
-                // Set flash message
-                Yii::$app->getSession()->setFlash('menu-item', Yii::t('app', '"{item}" has been created', ['item' => $model->name]));
-
-                // Take appropriate action based on the pushed button
-                if (isset($post['close'])) {
-                    return $this->redirect(['index']);
-                } elseif (isset($post['new'])) {
-                    return $this->redirect(['create']);
-                } else {
-                    return $this->redirect(['update', 'id' => $model->id]);
-                }
+                return $this->saveModel($model, $post);
             }
         }
 
-        return $this->render('create', $returnOptions);
+        return $this->render('create', $params);
     }
 
     /**
@@ -229,131 +107,28 @@ class MenuItemController extends Controller
      */
     public function actionUpdate($id)
     {
-        $languages = Yii::$app->params['languages'];
+        // Load the model
         $model = $this->findModel($id);
-        $menu = $this->findActiveMenu();
-        $levelSelect = Menu::level_select([
-            'menu-id'   => Yii::$app->session->get('menu-items.menu-id'),
-            'selected'  => $model->parent_id,
-            'active-menu-item-id' => $model->id,
-        ]);
-        $pages = Page::getAllForDropDownList();
-        $linkableEntities = $this->findLinkableEntities();
-        $entityTypes = $this->entityTypes();
 
-        $returnOptions = [
-            'model'             => $model,
-            'levelSelect'       => $levelSelect,
-            'menu'              => $menu,
-            'pages'             => $pages,
-            'linkableEntities'  => $linkableEntities,
-            'entityTypes'       => $entityTypes
-        ];
+        // The view params
+        $params = $this->getDefaultViewParams($model);
 
         if (Yii::$app->request->getIsPost()) {
 
             $post = Yii::$app->request->post();
 
-            // Ajax request, validate the models
+            // Ajax request, validate
             if (Yii::$app->request->isAjax) {
 
-                // Populate the model with the POST data
-                $model->load($post);
-
-                // Set model level
-                // Parent is root
-                if (empty($post['MenuItem']['parent_id'])) {
-                    $model->level = 0;
-                } else {
-                    // Load parent
-                    $parent = MenuItem::findOne($post['MenuItem']['parent_id']);
-                    $model->level       = $parent->level + 1;
-                }
-
-                // Get the translation models
-                $translationModels = ArrayHelper::index($model->getTranslations()->all(), 'language');
-
-                // Populate the translation models
-                Model::loadMultiple($translationModels, $post);
-
-                // Validate the model and translation models
-                $response = array_merge(ActiveForm::validate($model), ActiveForm::validateMultiple($translationModels));
-
-                // Return validation in JSON format
-                Yii::$app->response->format = Response::FORMAT_JSON;
-                return $response;
+                return $this->validateModel($model, $post);
 
             // Normal request, save models
             } else {
-
-                // Wrap the everything in a database transaction
-                $transaction = Yii::$app->db->beginTransaction();
-
-                $currentParentId = $model->parent_id;
-
-                // Check if the parent has changed
-                if ($currentParentId != $post['MenuItem']['parent_id'])
-                {
-                    // Change parent, level and position
-                    // Parent is root
-                    if (empty($post['MenuItem']['parent_id'])) {
-                        // Set parent and level
-                        $model->parent_id = 0;
-                        $model->level = 0;
-                    } else {
-                        // Load parent
-                        $parent = MenuItem::findOne($post['MenuItem']['parent_id']);
-
-                        // Set parent and level
-                        $model->parent_id   = $parent->id;
-                        $model->level       = $parent->level + 1;
-                    }
-
-                    // Set rest of attributes and save
-                    $model->position = $model->nextPosition();
-                }
-
-                $model->entity_id =  (isset($post['MenuItem']['entity_id'])) ? $post['MenuItem']['entity_id'] : 0;
-
-                // If the item is not linked to a page, always reset the anchor value
-                if ($model->entity != MenuItem::ENTITY_PAGE) {
-                    $model->anchor = '';
-                }
-
-                // Load the main model
-                if (!$model->load($post)) {
-                    return $this->render('create', $returnOptions);
-                }
-
-                // Attach translations
-                foreach (Yii::$app->request->post('MenuItemLang', []) as $language => $data) {
-                    foreach ($data as $attribute => $translation) {
-                        $model->translate($language)->$attribute = $translation;
-                    }
-                }
-
-                // Save the model
-                if (!$model->save()) {
-                    return $this->render('create', $returnOptions);
-                }
-
-                $transaction->commit();
-
-                // Set flash message
-                Yii::$app->getSession()->setFlash('menu-item', Yii::t('app', '"{item}" has been updated', ['item' => $model->name]));
-
-                // Take appropriate action based on the pushed button
-                if (isset($post['close'])) {
-                    return $this->redirect(['index']);
-                } elseif (isset($post['new'])) {
-                    return $this->redirect(['create']);
-                } else {
-                    return $this->redirect(['update', 'id' => $model->id]);
-                }
+                return $this->saveModel($model, $post);
             }
         }
 
-        return $this->render('update', $returnOptions);
+        return $this->render('update', $params);
     }
 
     /**
@@ -365,6 +140,7 @@ class MenuItemController extends Controller
     public function actionDelete($id)
     {
         $model = $this->findModel($id);
+        $name = $model->name;
 
         try {
 
@@ -385,7 +161,7 @@ class MenuItemController extends Controller
         }
 
         // Set flash message
-        Yii::$app->getSession()->setFlash('menu-item', Yii::t('app', '"{item}" has been deleted', ['item' => $model->name]));
+        Yii::$app->getSession()->setFlash('menu-item', Yii::t('app', '"{item}" has been deleted', ['item' => $name]));
 
         return $this->redirect(['index']);
     }
@@ -438,62 +214,6 @@ class MenuItemController extends Controller
 
         Yii::$app->response->format = 'json';
         return $data;
-    }
-
-    /**
-     * Finds the MenuItem model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param string $id
-     * @return MenuItem the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    protected function findModel($id)
-    {
-        if (($model = MenuItem::findOne($id)) !== null) {
-            return $model;
-        } else {
-            throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist'));
-        }
-    }
-
-    protected function findActiveMenu()
-    {
-        // If no valid active menu-id is set, search the first menu and use it's id
-        if (in_array(Yii::$app->session->get('menu-items.menu-id'), [0, null])) {
-            $menu = Menu::find()->one();
-            Yii::$app->session->set('menu-items.menu-id', $menu->id);
-        } else {
-            $menu = Menu::findone(Yii::$app->session->get('menu-items.menu-id'));
-        }
-
-        return $menu;
-    }
-
-    /**
-     * Returns all the entities that can be linked to a menu-item
-     *
-     * @return  array
-     */
-    protected function findLinkableEntities()
-    {
-        $linkableEntities = [];
-
-        foreach ($this->module->linkableEntities as $k => $entity) {
-            $entityModel = Yii::createObject($entity['class']);
-
-            // The entityModel must have the 'getUrl' and 'getAllForDropDownList' methods
-            if (method_exists($entityModel, 'getUrl') && method_exists($entityModel, 'getAllForDropDownList')) {
-                $linkableEntities[$k] = [
-                    'label' => Yii::t($entity['i18nGroup'], $entity['label']),
-                    'data'  => $entityModel->getAllForDropDownList()
-                ];
-
-                // Add it also to the entityTypes variable of the controller
-                $this->entityTypes[$k] = $linkableEntities[$k]['label'];
-            }
-        }
-
-        return $linkableEntities;
     }
 
     /**
@@ -600,6 +320,196 @@ class MenuItemController extends Controller
         }
 
         return $response;
+    }
+
+    /**
+     * Finds the MenuItem model based on its primary key value.
+     * If the model is not found, a 404 HTTP exception will be thrown.
+     * @param string $id
+     * @return MenuItem the loaded model
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    protected function findModel($id)
+    {
+        if (($model = MenuItem::findOne($id)) !== null) {
+            return $model;
+        } else {
+            throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist'));
+        }
+    }
+
+    /**
+     * Returns an array of the default params that are passed to a view
+     *
+     * @param Page $model The model that has to be passed to the view
+     * @return array
+     */
+    protected function getDefaultViewParams($model = null)
+    {
+        return [
+            'model'                   => $model,
+            'menu'                    => $this->findActiveMenu(),
+            'linkableEntities'        => $this->findLinkableEntities(),
+            'entityTypes'             => $this->entityTypes(),
+            'allowContentDuplication' => $this->module->allowContentDuplication
+        ];
+    }
+
+    protected function findActiveMenu()
+    {
+        // If no valid active menu-id is set, search the first menu and use it's id
+        if (in_array(Yii::$app->session->get('menu-items.menu-id'), [0, null])) {
+            $menu = Menu::find()->one();
+            Yii::$app->session->set('menu-items.menu-id', $menu->id);
+        } else {
+            $menu = Menu::findone(Yii::$app->session->get('menu-items.menu-id'));
+        }
+
+        return $menu;
+    }
+
+    /**
+     * Returns a combination of default entityTypes and the one's that are set
+     * in the controller.
+     *
+     * @return  array
+     */
+    protected function entityTypes()
+    {
+        return ArrayHelper::merge($this->entityTypes, [
+            'url'  => Yii::t('app', 'Url'),
+            'none' => Yii::t('infoweb/menu', 'Nothing'),
+        ]);
+    }
+
+    /**
+     * Returns all the entities that can be linked to a menu-item
+     *
+     * @return  array
+     */
+    protected function findLinkableEntities()
+    {
+        $linkableEntities = [];
+
+        foreach ($this->module->linkableEntities as $k => $entity) {
+            $entityModel = Yii::createObject($k);
+
+            // The entityModel must have the 'getUrl' and 'getAllForDropDownList' methods
+            if (method_exists($entityModel, 'getUrl') && method_exists($entityModel, 'getAllForDropDownList')) {
+                $linkableEntities[$k] = [
+                    'label' => Yii::t($entity['i18nGroup'], $entity['label']),
+                    'data'  => $entityModel->getAllForDropDownList()
+                ];
+
+                // Add it also to the entityTypes variable of the controller
+                $this->entityTypes[$k] = $linkableEntities[$k]['label'];
+            }
+        }
+
+        return $linkableEntities;
+    }
+
+     /**
+     * Performs validation on the provided model and $_POST data
+     *
+     * @param \infoweb\pages\models\Page $model The page model
+     * @param array $post The $_POST data
+     * @return array
+     */
+    protected function validateModel($model, $post)
+    {
+        $languages = Yii::$app->params['languages'];
+
+        // Populate the model with the POST data
+        $model->load($post);
+
+        // Parent is root
+        if (empty($post[StringHelper::basename(MenuItem::className())]['parent_id'])) {
+            $model->parent_id = 0;
+            $model->level = 0;
+        } else {
+            $parent = MenuItem::findOne($post[StringHelper::basename(MenuItem::className())]['parent_id']);
+            $model->parent_id = $parent->id;
+            $model->level = $parent->level + 1;
+        }
+
+        // Create an array of translation models and populate them
+        $translationModels = [];
+        // Insert
+        if ($model->isNewRecord) {
+            foreach ($languages as $languageId => $languageName) {
+                $translationModels[$languageId] = new MenuItemLang(['language' => $languageId]);
+            }
+        // Update
+        } else {
+            $translationModels = ArrayHelper::index($model->getTranslations()->all(), 'language');
+        }
+        Model::loadMultiple($translationModels, $post);
+
+        // Validate the model and translation
+        $response = array_merge(
+            ActiveForm::validate($model),
+            ActiveForm::validateMultiple($translationModels)
+        );
+
+        // Return validation in JSON format
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        return $response;
+    }
+
+    protected function saveModel($model, $post)
+    {
+        // Wrap everything in a database transaction
+        $transaction = Yii::$app->db->beginTransaction();
+
+        // Get the params
+        $params = $this->getDefaultViewParams($model);
+        $currentParentId = $model->parent_id;
+
+        // Populate the model with the POST data
+        $model->load($post);
+
+        // Set level and calculate next position for a new record or when
+        // the parent has changed
+        if ($model->isNewRecord || (!$model->isNewRecord && $currentParentId != $model->parent_id)) {
+            $model->level = ($model->parent_id) ? $model->parent->level + 1 : 0;
+            $model->position = $model->nextPosition();
+        }
+
+        // Validate the main model
+        if (!$model->validate()) {
+            return $this->render($this->action->id, $params);
+        }
+
+        // Add the translations
+        foreach (Yii::$app->request->post(StringHelper::basename(MenuItemLang::className()), []) as $language => $data) {
+            foreach ($data as $attribute => $translation) {
+                $model->translate($language)->$attribute = $translation;
+            }
+        }
+
+        // Save the main model
+        if (!$model->save()) {
+            return $this->render($this->action->id, $params);
+        }
+
+        $transaction->commit();
+
+        // Set flash message
+        if ($this->action->id == 'create') {
+            Yii::$app->getSession()->setFlash('page', Yii::t('app', '"{item}" has been created', ['item' => $model->name]));
+        } else {
+            Yii::$app->getSession()->setFlash('page', Yii::t('app', '"{item}" has been updated', ['item' => $model->name]));
+        }
+
+        // Take appropriate action based on the pushed button
+        if (isset($post['save-close'])) {
+            return $this->redirect(['index']);
+        } elseif (isset($post['save-add'])) {
+            return $this->redirect(['create']);
+        } else {
+            return $this->redirect(['update', 'id' => $model->id]);
+        }
     }
 
     /**

@@ -49,13 +49,8 @@ use infoweb\pages\models\Page;
     <?php endforeach; ?>
 
     <?php // Url ?>
-    <div class="form-group field-menuitem-url attribute url-attribute" <?php if ($model->entity != $model::ENTITY_URL) : ?>style="display: none;"<?php endif; ?>>
-        <label for="menuitem-url" class="control-label"><?php echo Yii::t('app', 'Url'); ?></label>
-        <?= Html::input('url', 'MenuItem[url]', $model->url, [
-            'maxlength' => 255,
-            'class'     => 'form-control',
-            'id'        => 'menuitem-url',
-            'readonly'  => ($model->type == $model::TYPE_SYSTEM && !Yii::$app->user->can('Superadmin')) ? true : false,
+    <?= $form->field($model, 'url', ['options' => ['class' => 'attribute url-attribute', 'style' => ($model->entity != $model::ENTITY_URL) ? 'display: none;' : '']])->textInput([
+            'readonly'  => ($model->type == $model::TYPE_SYSTEM && !Yii::$app->user->can('Superadmin')) ? true : false
         ]); ?>
 
     <?php // None ?>
@@ -86,7 +81,6 @@ use infoweb\pages\models\Page;
         ],
         'readonly'  => ($model->type == $model::TYPE_SYSTEM && !Yii::$app->user->can('Superadmin')) ? true : false,
     ]); ?>
-    
     <?php endif; ?>
 
     <?= $form->field($model, 'active')->widget(SwitchInput::classname(), [

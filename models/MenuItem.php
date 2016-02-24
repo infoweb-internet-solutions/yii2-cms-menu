@@ -88,12 +88,12 @@ class MenuItem extends \yii\db\ActiveRecord
                 return $model->entity == self::ENTITY_URL;
             }],
             [['url'], 'url', 'defaultScheme' => 'http'],
+            ['active', 'default', 'value' => 1],
             [['entity_id'], 'default', 'value' => 0],
-            /*['parent_id', function($attribute, $params) {
-                mail('fabio@infoweb.be', __FILE__.' => '.__LINE__, '');
-                if ($this->level > $model->menu->max_level - 1)
-                    $this->addError($attribute, Yii::t('infoweb/menu', 'The maximum level has been reached'));    
-            }]*/
+            ['parent_id', function($attribute, $params) {
+                if (!empty($this->parent_id) && $this->level > $this->menu->max_level - 1)
+                    $this->addError($attribute, Yii::t('infoweb/menu', 'The maximum level has been reached'));
+            }]
         ];
     }
 
@@ -125,23 +125,6 @@ class MenuItem extends \yii\db\ActiveRecord
     public function getMenu()
     {
         return $this->hasOne(Menu::className(), ['id' => 'menu_id']);
-    }
-
-    /**
-     * Get the next position
-     *
-     * @return int
-     */
-    public function nextPosition()
-    {
-        $query = new Query;
-
-        $result = $query->select('IFNULL(MAX(`position`),0) + 1 AS `position`')
-            ->from($this->tableName())
-            ->where(['level' => $this->level, 'parent_id' => $this->parent_id, 'menu_id' => $this->menu_id])
-            ->one();
-
-        return $result['position'];
     }
 
     /**
