@@ -24,8 +24,6 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= $this->render('_form', [
         'model'             => $model,
         'menu'              => $menu,
-        'pages'             => $pages,
-        'levelSelect'       => $levelSelect,
         'linkableEntities'  => $linkableEntities,
         'entityTypes'       => $entityTypes
     ]) ?>

@@ -9,6 +9,7 @@ use yii\db\Query;
 use yii\helpers\Url;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "menu".
@@ -182,54 +183,6 @@ class Menu extends \yii\db\ActiveRecord
     }
 
     /**
-     *
-     *
-     */
-    public function menu_items_select($settings = array())
-    {
-        $default_settings = array(
-            'active-only'   => FALSE,
-            'parent'        => 0,
-            'relations'     => array(),
-            'menu-item-id'     => 0,
-            'ancestor'      => 0,
-            'selected'      => 0
-        );
-
-        $settings = array_merge($default_settings, $settings);
-        $result = '';
-        $items = MenuItem::find()->where(['menu_id' => $this->id, 'parent_id' => $settings['parent']])->orderby('position ASC')->all();
-
-        foreach ($items as $item)
-        {
-            if ($settings['parent'] == $item->parent_id)
-            {
-                ob_start();
-                ?>
-                <option value="<?php echo $item->id; ?>"<?php if ($settings['menu-item-id'] == $item->id) : ?> disabled="disabled"<?php endif; ?><?php if ($settings['selected'] != 0 && $settings['selected'] == $item->id) : ?> selected="selected"<?php endif; ?>>
-                    <?php echo str_repeat("-", 2 * $item->level); ?><?php if ($item->level != 0) : ?>> <?php endif; ?><?php echo $item->name; ?>
-                </option>
-                <?php
-                $result .= ob_get_clean();
-
-                if (Menu::has_children($item->id))
-                {
-                    $result .= $this->menu_items_select(array(
-                        'active-only'   => $settings['active-only'],
-                        'parent'        => $item->id,
-                        'relations'     => $settings['relations'],
-                        'menu-item-id'     => $settings['menu-item-id'],
-                        'ancestor'      => $settings['ancestor'],
-                        'selected'      => $settings['selected']
-                    ));
-                }
-            }
-        }
-
-        return $result;
-    }
-
-    /**
      * @return \yii\db\ActiveQuery
      */
     public function getItems()
@@ -306,5 +259,36 @@ class Menu extends \yii\db\ActiveRecord
         }
 
         return $tree;
+    }
+
+    /**
+     * Returns all items formatted for usage in a Html::dropDownList widget:
+     *      [
+     *          'id' => 'name',
+     *          'id' => 'name,
+     *          ...
+     *      ]
+     *
+     * @return  array
+     */
+    public function getAllForDropDownList($parent = 0)
+    {
+        $items = [];
+        $children = $this->getChildren()->where(['parent_id' => $parent])->orderBy(['position' => SORT_ASC])->all();
+
+        foreach ($children as $child) {
+            $items[$child->id] = $child->name;
+
+            if ($child->children) {
+                $items = $child->getChildrenForDropDownList($items);
+            }
+        }
+
+        return $items;
+    }
+
+    public function getAllForLevelDropDownList()
+    {
+        return ArrayHelper::merge([0 => 'Root'], $this->getAllForDropDownList());
     }
 }

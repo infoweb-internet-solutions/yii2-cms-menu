@@ -5,8 +5,10 @@ namespace infoweb\menu;
 use Yii;
 use yii\base\Event;
 use yii\db\ActiveRecord;
+use yii\helpers\ArrayHelper;
 use infoweb\menu\models\Menu;
 use infoweb\menu\models\MenuItem;
+use infoweb\pages\models\Page;
 
 class Module extends \yii\base\Module
 {
@@ -39,6 +41,18 @@ class Module extends \yii\base\Module
     public function init()
     {
         parent::init();
+
+        // Merge the linkable entities with default values
+        $this->linkableEntities = ArrayHelper::merge([
+            MenuItem::className() => [
+                'label' => 'Menu item',
+                'i18nGroup' => 'infoweb/menu'
+            ],
+            Page::className() => [
+                'label' => 'Page',
+                'i18nGroup' => 'infoweb/pages'
+            ]
+        ], $this->linkableEntities);
 
         // Set eventhandlers
         $this->setEventHandlers();

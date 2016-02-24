@@ -8,6 +8,7 @@ use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\db\Query;
 use yii\helpers\Url;
+use yii\helpers\ArrayHelper;
 use creocoder\translateable\TranslateableBehavior;
 use infoweb\pages\models\Page;
 
@@ -159,29 +160,14 @@ class MenuItem extends \yii\db\ActiveRecord
     public function getEntityModel()
     {
         switch ($this->entity) {
-            case self::ENTITY_PAGE:
-                return Page::findOne($this->entity_id);
-                break;
-
-            case self::ENTITY_MENU_ITEM:
-                return MenuItem::findOne($this->entity_id);
-                break;
 
             case self::ENTITY_URL:
-                return MenuItem::findOne($this->id);
+                return self::findOne($this->id);
                 break;
 
             default:
-                if (Yii::$app->getModule('menu')) {
-                    $linkableEntities = Yii::$app->getModule('menu')->linkableEntities;
-
-                    if (!isset($linkableEntities[$this->entity]))
-                        throw new \Exception('Invalid entity');
-
-                    return $linkableEntities[$this->entity]['class']::findOne($this->entity_id);
-                } else {
-                    throw new \Exception('Menu module has to be enabled');
-                }
+                $className = $this->entity;
+                return $className::findOne($this->entity_id);
                 break;
         }
     }
@@ -204,10 +190,10 @@ class MenuItem extends \yii\db\ActiveRecord
             return $this->url;
         } else {
             $prefix = (!$excludeWebPath) ? '@web/' : '';
-            $prefix .= ($includeLanguage) ? "{$this->language}/" : '';
+            $prefix .= ($includeLanguage) ? Yii::$app->language.'/' : '';
 
             // Page
-            if ($this->entity == self::ENTITY_PAGE) {
+            if ($this->entity == Page::className()) {
                 $page = $this->getEntityModel();
 
                 // In the frontend application, the alias for the homepage is ommited
@@ -242,21 +228,6 @@ class MenuItem extends \yii\db\ActiveRecord
                 return $url;
             }
         }
-    }
-
-    /**
-     * Recursively deletes all children of the item
-     *
-     * @return  boolean
-     */
-    public function deleteChildren()
-    {
-        foreach ($this->getChildren()->all() as $child) {
-            if (!$child->delete())
-                return false;
-        }
-
-        return true;
     }
 
     /**
@@ -297,5 +268,79 @@ class MenuItem extends \yii\db\ActiveRecord
         }
 
         return $parents;
+    }
+
+    /**
+     * Get the next position
+     *
+     * @return int
+     */
+    public function nextPosition()
+    {
+        $result = (new Query)
+                    ->select('IFNULL(MAX(`position`),0) + 1 AS `position`')
+                    ->from($this->tableName())
+                    ->where(['level' => $this->level, 'parent_id' => $this->parent_id, 'menu_id' => $this->menu_id])
+                    ->one();
+
+        return $result['position'];
+    }
+
+    /**
+     * Recursively deletes all children of the item
+     *
+     * @return  boolean
+     */
+    public function deleteChildren()
+    {
+        foreach ($this->getChildren()->all() as $child) {
+            if (!$child->delete())
+                return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Returns a tree of all items, grouped by menu, formatted for usage in a
+     * Html::dropDownList widget
+     *
+     * @return  array
+     */
+    public function getAllForDropDownList()
+    {
+        $items = [];
+
+        foreach (Menu::find()->all() as $menu) {
+            $items[$menu->name] = $menu->getAllForDropDownList();
+        }
+
+        return $items;
+    }
+
+    /**
+     * Returns all children formatted for usage in a Html::dropDownList widget:
+     *      [
+     *          'id' => 'name',
+     *          'id' => 'name,
+     *          ...
+     *      ]
+     *
+     * @return  array
+     */
+    public function getChildrenForDropDownList($items)
+    {
+        foreach ($this->getChildren()->orderBy(['position' => SORT_ASC])->all() as $child) {
+            // Prepend the name for indentation
+            $prepend = str_repeat('-', ($child->level) ? $child->level * 2 : $child->level);
+            $prepend .= ($child->level) ? '> ' : '';
+            $items[$child->id] = "{$prepend}{$child->name}";
+
+            if ($child->children) {
+                $items = $child->getChildrenForDropDownList($items);
+            }
+        }
+
+        return $items;
     }
 }
