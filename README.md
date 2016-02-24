@@ -61,9 +61,9 @@ If this option is set to `true`, the `duplicateable` jquery plugin is activated 
 ___
 ##### linkableEntities (type: `boolean`, default: `[]`)
 These are the entities will be used in the `menu` module.
+The fully qualified name of the entity class is used as the key in the array.
 An entity can only be linked if it implements the `getUrl` and `getAllForDropDownList` methods.
 For each configured entity the following fields are required:
-   - ** class **: The name of the entity model
    - ** label **: The entity label that will be used in the `menu` module
    - ** i18nGroup **: The group that will be used for the translation of the label
    
@@ -73,8 +73,7 @@ Example configuration:
     'class' => 'infoweb\menu\Module',
     'enablePrivateMenuItems' => true,
     'linkableEntities' => [
-        'medical-training'  => [
-            'class'     => 'infoweb\medical\training\models\training\MedicalTraining',
+        MedicalTraining::className()  => [
             'label'     => 'Training',
             'i18nGroup' => 'infoweb/medical-training',
         ]
