@@ -20,12 +20,13 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="menu-item-create">
 
     <h1><?= Html::encode($this->title) ?></h1>
-    
+
     <?= $this->render('_form', [
-        'model'             => $model,
-        'menu'              => $menu,
-        'linkableEntities'  => $linkableEntities,
-        'entityTypes'       => $entityTypes
+        'model'                   => $model,
+        'menu'                    => $menu,
+        'linkableEntities'        => $linkableEntities,
+        'entityTypes'             => $entityTypes,
+        'allowContentDuplication' => $allowContentDuplication
     ]) ?>
-    
+
 </div>

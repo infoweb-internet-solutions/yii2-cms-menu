@@ -24,8 +24,9 @@ use yii\bootstrap\Tabs;
         [
             'label'     => Yii::t('app', 'General'),
             'content'   => $this->render('_default_tab', [
-                'model' => $model,
-                'form'  => $form,
+                'model'                   => $model,
+                'form'                    => $form,
+                'allowContentDuplication' => $allowContentDuplication
             ]),
         ],
         [
