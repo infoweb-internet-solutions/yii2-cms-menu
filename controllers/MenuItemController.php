@@ -497,9 +497,9 @@ class MenuItemController extends Controller
 
         // Set flash message
         if ($this->action->id == 'create') {
-            Yii::$app->getSession()->setFlash('page', Yii::t('app', '"{item}" has been created', ['item' => $model->name]));
+            Yii::$app->getSession()->setFlash('menu-item', Yii::t('app', '"{item}" has been created', ['item' => $model->name]));
         } else {
-            Yii::$app->getSession()->setFlash('page', Yii::t('app', '"{item}" has been updated', ['item' => $model->name]));
+            Yii::$app->getSession()->setFlash('menu-item', Yii::t('app', '"{item}" has been updated', ['item' => $model->name]));
         }
 
         // Take appropriate action based on the pushed button
