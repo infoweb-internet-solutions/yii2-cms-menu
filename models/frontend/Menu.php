@@ -63,6 +63,7 @@ class Menu extends \infoweb\menu\models\Menu
                 // of redirect to another menu-item) id is in the array of the
                 // menu-items that are linked to the current page
                 'active'    => in_array(($menuItem->entity == MenuItem::className()) ? $menuItem->entity_id : $menuItem->id, Yii::$app->page->linkedMenuItemsIds),
+                'options' => ['class' => "menu-item-{$menuItem->id}"],
             ];
 
             // A menu-item that links to an url has to open in a new window
