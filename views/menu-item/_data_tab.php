@@ -31,6 +31,7 @@ use infoweb\pages\models\Page;
     ]); ?>
 
     <?php // Linkable entities ?>
+
     <?php foreach ($linkableEntities as $k => $v) : ?>
 
     <?= $form->field($model, 'entity_id', ['options' => ['class' => 'attribute '.StringHelper::basename($k).'-attribute', 'style' => ($model->entity != $k) ? 'display: none;' : '']])->widget(Select2::className(), [
