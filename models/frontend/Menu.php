@@ -60,6 +60,7 @@ class Menu extends \infoweb\menu\models\Menu
                 'label'     => (isset($settings['convertBr'])) ? str_replace('|', '<br>', $menuItem->name) : str_replace('|', '', $menuItem->name),
                 'url'       => $menuItem->getUrl($settings['includeLanguage']),
                 'entity'    => $menuItem->entity,
+                'entity_id' => $menuItem->entity_id,
                 // The item is active if it's (or that of it's entity in case
                 // of redirect to another menu-item) id is in the array of the
                 // menu-items that are linked to the current page
