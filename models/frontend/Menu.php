@@ -57,7 +57,7 @@ class Menu extends \infoweb\menu\models\Menu
             }
 
             $item = [
-                'label'     => (isset($settings['convertBr'])) ? str_replace('|', '<br>', $menuItem->name) : str_replace('|', '', $menuItem->name),
+                'label'     => (isset($settings['convertBr'])) ? str_replace("\n", '<br>', $menuItem->name) : str_replace("\n", ' ', $menuItem->name),
                 'url'       => $menuItem->getUrl($settings['includeLanguage']),
                 'entity'    => $menuItem->entity,
                 'entity_id' => $menuItem->entity_id,
