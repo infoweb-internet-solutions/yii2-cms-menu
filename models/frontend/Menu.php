@@ -52,8 +52,9 @@ class Menu extends \infoweb\menu\models\Menu
             // If so, and no user is logged in, the item is skipped
             if ($menuItem->entity == Page::className() && Yii::$app->user->isGuest) {
                 $menuItemEntity = $menuItem->entityModel;
-                if (isset($menuItemEntity->public) && $menuItemEntity->public == false)
+                if (isset($menuItemEntity->public) && $menuItemEntity->public == false) {
                     continue;
+                }
             }
 
             $item = [
@@ -67,6 +68,10 @@ class Menu extends \infoweb\menu\models\Menu
                 'active'    => in_array(($menuItem->entity == MenuItem::className()) ? $menuItem->entity_id : $menuItem->id, Yii::$app->page->linkedMenuItemsIds),
                 'options' => ['class' => "menu-item-{$menuItem->id}"],
             ];
+ 
+            if(isset($settings['includeObject']) && $settings['includeObject'] == true) {
+                $item['object'] = $menuItem;
+            }
 
             // A menu-item that links to an url has to open in a new window
             if ($menuItem->entity == MenuItem::ENTITY_URL) {
@@ -85,8 +90,9 @@ class Menu extends \infoweb\menu\models\Menu
                     'convertBr'         => isset($settings['convertBr']),
                 ]);
 
-                if ($children)
+                if ($children) {
                     $item['items'] = $children;
+                }
             }
 
             $items[$menuItem->id] = $item;
