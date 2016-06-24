@@ -80,7 +80,7 @@ class MenuItem extends \yii\db\ActiveRecord
             [['menu_id', 'parent_id', 'entity'], 'required'],
             // Only required when the entity is no url
             [['entity_id'], 'required', 'when' => function($model) {
-                return $model->entity != self::ENTITY_URL;
+                return !in_array($model->entity , [self::ENTITY_URL, self::ENTITY_NONE]);
             }],
             // Trim
             [['url', 'anchor'], 'trim'],

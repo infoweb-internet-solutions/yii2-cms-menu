@@ -52,18 +52,26 @@ class Menu extends \infoweb\menu\models\Menu
             // If so, and no user is logged in, the item is skipped
             if ($menuItem->entity == Page::className() && Yii::$app->user->isGuest) {
                 $menuItemEntity = $menuItem->entityModel;
-                if (isset($menuItemEntity->public) && $menuItemEntity->public == false)
+                if (isset($menuItemEntity->public) && $menuItemEntity->public == false) {
                     continue;
+                }
             }
 
             $item = [
-                'label'     => (isset($settings['convertBr'])) ? str_replace('|', '<br>', $menuItem->name) : str_replace('|', '', $menuItem->name),
+                'label'     => (isset($settings['convertBr'])) ? str_replace("\n", '<br>', $menuItem->name) : str_replace("\n", ' ', $menuItem->name),
                 'url'       => $menuItem->getUrl($settings['includeLanguage']),
+                'entity'    => $menuItem->entity,
+                'entity_id' => $menuItem->entity_id,
                 // The item is active if it's (or that of it's entity in case
                 // of redirect to another menu-item) id is in the array of the
                 // menu-items that are linked to the current page
                 'active'    => in_array(($menuItem->entity == MenuItem::className()) ? $menuItem->entity_id : $menuItem->id, Yii::$app->page->linkedMenuItemsIds),
+                'options' => ['class' => "menu-item-{$menuItem->id}"],
             ];
+ 
+            if(isset($settings['includeObject']) && $settings['includeObject'] == true) {
+                $item['object'] = $menuItem;
+            }
 
             // A menu-item that links to an url has to open in a new window
             if ($menuItem->entity == MenuItem::ENTITY_URL) {
@@ -82,8 +90,9 @@ class Menu extends \infoweb\menu\models\Menu
                     'convertBr'         => isset($settings['convertBr']),
                 ]);
 
-                if ($children)
+                if ($children) {
                     $item['items'] = $children;
+                }
             }
 
             $items[$menuItem->id] = $item;

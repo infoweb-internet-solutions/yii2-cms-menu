@@ -1,5 +1,5 @@
 <div class="tab-content language-tab">
-    <?= $form->field($model, "[{$model->language}]name")->textInput([
+    <?= $form->field($model, "[{$model->language}]name")->textarea([
         'maxlength' => 255,
         'name' => "MenuItemLang[{$model->language}][name]",
         'data-duplicateable' => var_export($allowContentDuplication,true)
