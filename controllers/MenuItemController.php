@@ -44,6 +44,62 @@ class MenuItemController extends Controller
     }
 
     /**
+     * get all entities
+     * @return mixed
+     */
+    public function actionGetEntities() {
+        // Response array
+        $response = ['status' => 406];
+
+        $linkableEntities = $this->module->findLinkableEntities();
+        
+        if (Yii::$app->request->post('entity') != null && isset($linkableEntities[Yii::$app->request->post('entity')])) {
+            $entityModel = Yii::createObject(Yii::$app->request->post('entity'));
+
+            $response['status'] = 200;
+            $response['data'] = $entityModel->getAllForDropDownList();
+        }
+
+        // Return response in JSON format
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        return $response;
+    }
+
+    /**
+     * get entity links
+     * @return mixed
+     */
+    public function actionGetEntityUrl() {
+        // Response array
+        $response = ['status' => 406];
+
+        $linkableEntities = $this->module->findLinkableEntities();
+
+        if (Yii::$app->request->post('entity') != null && isset($linkableEntities[Yii::$app->request->post('entity')])) {
+            $entityModel = Yii::createObject(Yii::$app->request->post('entity'));
+            $result = $entityModel->findOne(['id' => (int) Yii::$app->request->post('entity_id')]);
+
+            if(method_exists($result, 'getUrl')) {
+                $response['status'] = 200;
+                $response['url'] = parse_url($result->getUrl(false), PHP_URL_PATH);
+
+                if(isset(Yii::$app->params['developmentFolder'])) {
+                    $response['url'] = str_replace(Yii::$app->params['developmentFolder'], '', $response['url']);
+                }
+            }
+            else {
+                $response['status'] = 404;
+            }
+        }
+
+        // Return response in JSON format
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        return $response;
+    }
+
+    /**
      * Lists all MenuItem models.
      * @return mixed
      */
@@ -389,21 +445,14 @@ class MenuItemController extends Controller
      */
     protected function findLinkableEntities()
     {
-        $linkableEntities = [];
+        $linkableEntities = $this->module->findLinkableEntities();
 
-        foreach ($this->module->linkableEntities as $k => $entity) {
+        foreach($linkableEntities as $k => $entity) {
             $entityModel = Yii::createObject($k);
+            $linkableEntities[$k]['data'] = $entityModel->getAllForDropDownList();
 
-            // The entityModel must have the 'getUrl' and 'getAllForDropDownList' methods
-            if (method_exists($entityModel, 'getUrl') && method_exists($entityModel, 'getAllForDropDownList')) {
-                $linkableEntities[$k] = [
-                    'label' => Yii::t($entity['i18nGroup'], $entity['label']),
-                    'data'  => $entityModel->getAllForDropDownList()
-                ];
-
-                // Add it also to the entityTypes variable of the controller
-                $this->entityTypes[$k] = $linkableEntities[$k]['label'];
-            }
+            // Add it also to the entityTypes variable of the controller
+            $this->entityTypes[$k] = $entity['label'];
         }
 
         return $linkableEntities;
