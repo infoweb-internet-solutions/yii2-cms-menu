@@ -6,6 +6,9 @@ use kartik\select2\Select2;
 use infoweb\menu\models\Menu;
 use infoweb\menu\models\MenuItem;
 use infoweb\pages\models\Page;
+use yii\bootstrap\Modal;
+use yii\widgets\Pjax;
+use yii\bootstrap\ActiveForm;
 ?>
 <div class="tab-content default-tab">
 
@@ -19,40 +22,92 @@ use infoweb\pages\models\Page;
     ]); ?>
 
     <?php // Level ?>
-    <?= $form->field($model, 'parent_id')->dropDownList($model->menu->getAllForLevelDropDownList(), [
-        'readonly' => ($model->type == $model::TYPE_SYSTEM && !Yii::$app->user->can('Superadmin')) ? true : false,
-        'options' => [$model->id => ['disabled' => true]]
-    ])->label($model->getAttributeLabel('level')); ?>
-
+    <div class="form-group field-menuitem-parent_id">
+        <label for="menuitem-parent_id" class="control-label"><?= Yii::t('infoweb/menu', 'Level'); ?></label>
+        <select <?= ($model->type == $model::TYPE_SYSTEM && !Yii::$app->user->can('Superadmin')) ? 'readonly="true"' : '' ?> autofocus class="form-control" name="MenuItem[parent_id]" id="menuitem-parent_id">
+            <option value="0">Root</option>
+            <?= $levelSelect ?>
+        </select>
+        <div class="help-block"></div>
+    </div>
+    
     <?php // Entity types ?>
     <?= $form->field($model, 'entity')->dropDownList($entityTypes, [
         'prompt' => Yii::t('app', 'Choose a type'),
         'readonly' => ($model->type == $model::TYPE_SYSTEM && !Yii::$app->user->can('Superadmin')) ? true : false
     ]); ?>
 
+    <?php // Pages ?>
+
+    <?php Pjax::begin([
+        'id' => 'pages-dropdown',
+    ]);
+    ?>
+    <div class="form-group field-menuitem-entity_id attribute page-attribute" <?php if ($model->entity != $model::ENTITY_PAGE) : ?>style="display: none;"<?php endif; ?>>
+        <label for="menuitem-entity_id" class="control-label"><?= Yii::t('infoweb/pages', 'Page'); ?></label>
+        <?= Select2::widget([
+            'model' => $model,
+            'attribute' => 'entity_id',
+            'data' => $pages,
+            'options' => [
+                'placeholder' => Yii::t('infoweb/alias', 'Choose a page'),
+            ],
+            'readonly'  => ($model->type == $model::TYPE_SYSTEM && !Yii::$app->user->can('Superadmin')) ? true : false,
+            'disabled'  => ($model->entity != $model::ENTITY_PAGE) ? true : false,
+            'pluginOptions' => [
+                'allowClear' => true
+            ],
+        ]); ?>
+        <div class="help-block"></div>
+
+        <?= Html::a(Yii::t('app', 'Create {modelClass}', [
+            'modelClass' => Yii::t('infoweb/pages', 'Page'),
+        ]), '#', ['id' => 'create-page-url']) ?>
+
+    </div>
+    <?php Pjax::end(); ?>
+
     <?php // Linkable entities ?>
-
     <?php foreach ($linkableEntities as $k => $v) : ?>
-
-    <?= $form->field($model, 'entity_id', ['options' => ['class' => 'attribute '.StringHelper::basename($k).'-attribute', 'style' => ($model->entity != $k) ? 'display: none;' : '']])->widget(Select2::className(), [
-        'data' => $v['data'],
-        'options' => [
-            'placeholder' => Yii::t('infoweb/menu', 'Choose a {entity}', ['entity' => strtolower($v['label'])]),
-            'id' => StringHelper::basename($k).'-select2'
-        ],
-        'readonly'  => ($model->type == $model::TYPE_SYSTEM && !Yii::$app->user->can('Superadmin')) ? true : false,
-        'disabled'  => ($model->entity != $k) ? true : false,
-        'pluginOptions' => [
-            'allowClear' => true
-        ],
-    ])->label($v['label']); ?>
-
-    <?php endforeach; ?>
+    
+    <div class="form-group field-<?= $k ?>-entity_id attribute <?= $k ?>-attribute" <?php if ($model->entity != $k) : ?>style="display: none;"<?php endif; ?>>
+        <label for="<?= $k ?>-entity_id" class="control-label"><?= $v['label'] ?></label>
+        <?= Html::dropDownList('MenuItem[entity_id]', $model->entity_id, $v['data'], [
+            'class'     => 'form-control',
+            'id'        => 'menuitem-entity_id',
+            'prompt'    => Yii::t('infoweb/menu', 'Choose a {entity}', ['entity' => strtolower($v['label'])]),
+            'disabled'  => ($model->entity != $k) ? true : false,
+            'readonly'  => ($model->type == $model::TYPE_SYSTEM && !Yii::$app->user->can('Superadmin')) ? true : false,
+        ]) ?>
+        <div class="help-block"></div>
+    </div>
+        
+    <?php endforeach; ?>    
 
     <?php // Url ?>
-    <?= $form->field($model, 'url', ['options' => ['class' => 'attribute url-attribute', 'style' => ($model->entity != $model::ENTITY_URL) ? 'display: none;' : '']])->textInput([
-            'readonly'  => ($model->type == $model::TYPE_SYSTEM && !Yii::$app->user->can('Superadmin')) ? true : false
+    <div class="form-group field-menuitem-url attribute url-attribute" <?php if ($model->entity != $model::ENTITY_URL) : ?>style="display: none;"<?php endif; ?>>
+        <label for="menuitem-url" class="control-label"><?php echo Yii::t('app', 'Url'); ?></label>
+        <?= Html::input('url', 'MenuItem[url]', $model->url, [
+            'maxlength' => 255,
+            'class'     => 'form-control',
+            'id'        => 'menuitem-url',
+            'readonly'  => ($model->type == $model::TYPE_SYSTEM && !Yii::$app->user->can('Superadmin')) ? true : false,
         ]); ?>
+        <div class="help-block"></div>
+    </div>
+
+    <?php // Menu items ?>
+    <div class="form-group field-menuitem-entity_id attribute menu-item-attribute" <?php if ($model->entity != $model::ENTITY_MENU_ITEM) : ?>style="display: none;"<?php endif; ?>>
+        <label for="menuitem-entity_id" class="control-label"><?= Yii::t('infoweb/menu', 'Menu item'); ?></label>
+        <select name="MenuItem[entity_id]" class="form-control" id="menuitem-entity_id" <?php if ($model->entity != $model::ENTITY_MENU_ITEM) : ?>disabled<?php endif; ?> <?php if ($model->type == $model::TYPE_SYSTEM && !Yii::$app->user->can('Superadmin')) : ?>readonly<?php endif; ?>>
+            <option value="">-- <?php echo Yii::t('infoweb/menu', 'Choose a menu item'); ?> --</option>
+            <?php foreach (Menu::find()->all() as $menu): ?>
+            <option value="" readonly="true">* <?php echo $menu->name; ?> *</option>
+            <?php echo $menu->menu_items_select(['menu-item-id' => $model->id, 'selected' => ($model->entity == $model::ENTITY_MENU_ITEM) ? $model->entity_id : 0]); ?>
+            <?php endforeach; ?>
+        </select>
+        <div class="help-block"></div>
+    </div>
 
     <?php // None ?>
     <?= Html::hiddenInput('MenuItem[entity_id]', 0, [
@@ -62,16 +117,17 @@ use infoweb\pages\models\Page;
     ]) ?>
 
     <?php // Page anchors ?>
-    <?= $form->field($model, 'anchor', ['options' => ['class' => 'menu-item-anchor-container',
-            'style' => (($model->entity != Page::className()) || !isset($model->entityModel) || ($model->entity == Page::className() && !count($model->entityModel->htmlAnchors))) ? 'display: none;' : ''
-        ]])->dropDownList(array_merge(
-            ['' => Yii::t('app', '-- Choose an {item} --', ['item' => Yii::t('infoweb/menu', 'anchor')])],
-            ($model->entity == Page::className() && isset($model->entityModel)) ? $model->entityModel->htmlAnchors : []
-        ), [
-        'readonly'  => ($model->type == $model::TYPE_SYSTEM && !Yii::$app->user->can('Superadmin')) ? true : false,
-    ]); ?>
-
+    <div class="menu-item-anchor-container"<?php if (($model->entity != $model::ENTITY_PAGE) || !isset($model->entityModel) || ($model->entity == $model::ENTITY_PAGE && !count($model->entityModel->htmlAnchors))) : ?> style="display: none;"<?php endif; ?>>
+        <?= $form->field($model, 'anchor')->dropDownList(array_merge(
+                ['' => Yii::t('app', '-- Choose an {item} --', ['item' => Yii::t('infoweb/menu', 'anchor')])],
+                ($model->entity == $model::ENTITY_PAGE && isset($model->entityModel)) ? $model->entityModel->htmlAnchors : []
+            ), [
+            'readonly'  => ($model->type == $model::TYPE_SYSTEM && !Yii::$app->user->can('Superadmin')) ? true : false,
+        ]); ?>
+    </div>
+    
     <?php if (Yii::$app->getModule('menu')->enablePrivateMenuItems) : ?>
+        
     <?php echo $form->field($model, 'public')->widget(SwitchInput::classname(), [
         'inlineLabel' => false,
         'pluginOptions' => [
@@ -82,6 +138,7 @@ use infoweb\pages\models\Page;
         ],
         'readonly'  => ($model->type == $model::TYPE_SYSTEM && !Yii::$app->user->can('Superadmin')) ? true : false,
     ]); ?>
+    
     <?php endif; ?>
 
     <?= $form->field($model, 'active')->widget(SwitchInput::classname(), [

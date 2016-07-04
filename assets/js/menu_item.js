@@ -13,7 +13,7 @@
     menu_item.set_eventhandlers = function() {
         $(document)
             .on('change', '#menuitem-entity', menu_item.toggle_attributes)
-            .on('change', '#Page-select2', menu_item.togglePageHtmlAnchors);
+            .on('change', '#menuitem-entity_id', menu_item.togglePageHtmlAnchors);
             //.on('click', '#delete-100', menu_item.delete);
     };
     /*
@@ -117,7 +117,7 @@
         val = parts[parts.length - 1];
 
         // If the entity is a 'page', refresh the anchors dropdown and show it
-        if (val == 'Page' && $(this).val()) {
+        if (val == 'page' && $(this).val()) {
 
             var request = $.get('get-page-html-anchors', {page: $(this).val()});
 
