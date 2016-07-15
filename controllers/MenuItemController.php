@@ -57,7 +57,7 @@ class MenuItemController extends Controller
             $entityModel = Yii::createObject(Yii::$app->request->post('entity'));
 
             $response['status'] = 200;
-            $response['data'] = $entityModel->getAllForDropDownList();
+            $response['data'] = $entityModel->getAllForDropDownList(Yii::$app->request->post('entity_language'));
         }
 
         // Return response in JSON format
@@ -82,7 +82,7 @@ class MenuItemController extends Controller
 
             if(method_exists($result, 'getUrl')) {
                 $response['status'] = 200;
-                $response['url'] = parse_url($result->getUrl(false), PHP_URL_PATH);
+                $response['url'] = parse_url($result->getUrl(false, Yii::$app->request->post('entity_language')), PHP_URL_PATH);
 
                 if(isset(Yii::$app->params['developmentFolder'])) {
                     $response['url'] = str_replace(Yii::$app->params['developmentFolder'], '', $response['url']);

@@ -290,12 +290,14 @@ class MenuItem extends \yii\db\ActiveRecord
      *
      * @return  array
      */
-    public function getAllForDropDownList()
+    public function getAllForDropDownList($language = null)
     {
+        $language = ($language) ?: Yii::$app->language;
+
         $items = [];
 
         foreach (Menu::find()->all() as $menu) {
-            $items[$menu->name] = $menu->getAllForDropDownList();
+            $items[$menu->name] = $menu->getAllForDropDownList(0, $language);
         }
 
         return $items;
@@ -311,16 +313,18 @@ class MenuItem extends \yii\db\ActiveRecord
      *
      * @return  array
      */
-    public function getChildrenForDropDownList($items)
+    public function getChildrenForDropDownList($items, $language = null)
     {
+        $language = ($language) ?: Yii::$app->language;
+
         foreach ($this->getChildren()->orderBy(['position' => SORT_ASC])->all() as $child) {
             // Prepend the name for indentation
             $prepend = str_repeat('-', ($child->level) ? $child->level * 2 : $child->level);
             $prepend .= ($child->level) ? '> ' : '';
-            $items[$child->id] = "{$prepend}{$child->name}";
+            $items[$child->id] = "{$prepend}{$child->getTranslation($language)->name}";
 
             if ($child->children) {
-                $items = $child->getChildrenForDropDownList($items);
+                $items = $child->getChildrenForDropDownList($items, $language);
             }
         }
 

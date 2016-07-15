@@ -271,13 +271,15 @@ class Menu extends \yii\db\ActiveRecord
      *
      * @return  array
      */
-    public function getAllForDropDownList($parent = 0)
+    public function getAllForDropDownList($parent = 0, $language = null)
     {
+        $language = ($language) ?: Yii::$app->language;
+
         $items = [];
         $children = $this->getChildren()->where(['parent_id' => $parent])->orderBy(['position' => SORT_ASC])->all();
 
         foreach ($children as $child) {
-            $items[$child->id] = $child->name;
+            $items[$child->id] = $child->getTranslation($language)->name;
 
             if ($child->children) {
                 $items = $child->getChildrenForDropDownList($items);
