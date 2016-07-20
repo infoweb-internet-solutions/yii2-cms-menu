@@ -11,51 +11,70 @@ $(document).ready(function() {
     // Hightlight anchor
     menu_item.highlight(anchor);
 
+    /**
+     * ADD ENTITY
+     */
+    var modalElement = $('#create-entity-modal');
+    var modalBodyElement = modalElement.find('.modal-body');
 
-    // @todo Move to cms
-    $.pjax.defaults = {
-        timeout: 3000
-    };
+    $(document)
+        .on('click', '.create-entity-links-link', function(event) {
+            event.preventDefault();
 
+            modalBodyElement.html('<div style="min-height:300px;height:300px;" class="element-loading"></div>');
+            modalElement.modal('show');
 
+            $.ajax({
+                url: $(this).data('entity-create-url'),
+                context: document.body
+            }).done(function(data) {
+                modalBodyElement.html(data);
+                modalBodyElement.find('button[name="save-close"], button[name="save-add"]').hide();
+                modalElement.modal('show');
+            });
+        })
+        .on('click', '#create-entity-modal .modal-body button[name="save"]', function(event) {
+            event.preventDefault();
 
-    $(document).on('click', '#create-page-url', function(event) {
-        event.preventDefault();
-        $('#create-page-modal').modal('show');
-    });
+            CMS.addLoaderClass(modalBodyElement);
 
-    $(document).on("beforeSubmit", "#page-form", function (event) {
+            formdata = modalBodyElement.find('form').serialize();
 
-        //event.preventDefault();
-
-        var form = $(this),
-            data = form.serialize();
-
-        data.save = '';
-
-        var request = $.post(form.attr('action'), data);
-
-        request.done(function(response) {
-            if (response.status == 1) {
+            $.ajax({
+                method: "POST",
+                url: modalBodyElement.find('form').attr('action'),
+                context: document.body,
+                data: modalBodyElement.find('form').serialize() + '&saveModel=1'
+            }).done(function(response) {
                 // Update dropdown content with pjax
-                $.pjax.reload({container: '#pages-dropdown'});
+                $.pjax.reload({
+                    container: '#pjax-linkableentities'
+                }).done(function() {
+                    console.log('TEST');
 
-
-                // Update pages dropdown after pjax reload
-                $(document).on('pjax:complete', function() {
-                    // Set the pages dropdown value
-                    $('#menuitem-entity_id').val(response.id);
-                    // Update the pages dropdown
-                    $('#menuitem-entity_id').trigger('change');
+                    // Make sure we show selected entities
+                    $('#menuitem-entity').trigger('change');
                 });
 
-                // Hide modal
-                $('#create-page-modal').modal('hide');
-            }
+                if(response.status == 200) {
+                    // Set the pages dropdown value
+                    $('#menuitem-entity_id').val(response.id);
 
+                    // Update the pages dropdown
+                    $('#menuitem-entity_id').trigger('change');
+                }
+
+                CMS.removeLoaderClass(modalBodyElement);
+                modalElement.modal('hide');
+            });
+        })
+        .on('click', '#create-entity-modal .modal-body a[name="close"]', function(event) {
+            event.preventDefault();
+            modalElement.modal('hide');
+        })
+        .on("change", "#menuitem-entity", function(event) {
+            $('.create-entity-links .create-entity-links-link').addClass('hidden');
+            var entity = $(this).find('option:selected').val();
+            $('.create-entity-links .create-entity-links-link[data-entity="' + entity.split('\\').join('\\\\') + '"]').removeClass('hidden');
         });
-
-        return false;
-
-    });
 });

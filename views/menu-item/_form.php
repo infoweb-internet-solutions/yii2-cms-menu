@@ -1,7 +1,7 @@
 <?php
 
 use yii\helpers\Html;
-use yii\widgets\ActiveForm;
+use yii\bootstrap\ActiveForm;
 use yii\bootstrap\Tabs;
 ?>
 
@@ -11,6 +11,7 @@ use yii\bootstrap\Tabs;
     <?php echo $this->render('_flash_messages'); ?>
 
     <?php
+
     // Init the form
     $form = ActiveForm::begin([
         'options'                   => [
@@ -37,7 +38,8 @@ use yii\bootstrap\Tabs;
                 'model'             => $model,
                 'form'              => $form,
                 'linkableEntities'  => $linkableEntities,
-                'entityTypes'       => $entityTypes
+                'entityTypes'       => $entityTypes,
+                'allowContentDuplication' => $allowContentDuplication
             ]),
             'active'    => true,
         ],
@@ -45,37 +47,21 @@ use yii\bootstrap\Tabs;
 
     // Display the tabs
     echo Tabs::widget(['items' => $tabs]);
-    ?>
 
+    ?>
     <div class="form-group buttons">
         <?= $this->render('@infoweb/cms/views/ui/formButtons', ['model' => $model]) ?>
-    </div>
+    </div> 
 
     <?php ActiveForm::end(); ?>
 
-
-    <div class="create-page" <?php if ($model->entity != $model::ENTITY_PAGE) : ?>style="display: none;"<?php endif; ?>>
-        <?php \yii\bootstrap\Modal::begin([
-            'id' => 'create-page-modal',
-        ]); ?>
-
-        <?php // Init the form
-        $form = ActiveForm::begin([
-            'action'                    => \yii\helpers\Url::toRoute('/pages/page/create'),
-            'options'                   => [
-                'class' => 'tabbed-form',
-                'id'                        => 'page-form',
-            ],
-            'enableAjaxValidation'      => true,
-            'enableClientValidation'    => false
-        ]); ?>
-
-        <?php echo Yii::$app->runAction('pages/page/create', ['modal' => true]) ?>
-
-        <?php ActiveForm::end(); ?>
-
-        <?php \yii\bootstrap\Modal::end(); ?>
-
+    <div id="create-entity-modal" class="fade modal" role="dialog" tabindex="-1">
+        <div class="modal-dialog" style="width:70%">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <?php /* Keep blank ajax */ ?>
+                </div>
+            </div>
+        </div>
     </div>
-
 </div>
