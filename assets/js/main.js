@@ -49,23 +49,21 @@ $(document).ready(function() {
                 // Update dropdown content with pjax
                 $.pjax.reload({
                     container: '#pjax-linkableentities'
-                }).done(function() {
-                    console.log('TEST');
+                }).done(function() {                  
+                    if(response.status == 200) {
+                        $('#menuitem-entity').trigger('change');
 
-                    // Make sure we show selected entities
-                    $('#menuitem-entity').trigger('change');
+                        var entityID = $('#menuitem-entity').val();
+                        entityID = entityID.split('\\');
+                        entityID = entityID[entityID.length-1];
+
+                        // Set the pages dropdown value & update the pages dropdown
+                        $('#'+entityID+'-select2').val(response.id).trigger('change').prop('disabled', false);
+                    }
+
+                    CMS.removeLoaderClass(modalBodyElement);
+                    modalElement.modal('hide');
                 });
-
-                if(response.status == 200) {
-                    // Set the pages dropdown value
-                    $('#menuitem-entity_id').val(response.id);
-
-                    // Update the pages dropdown
-                    $('#menuitem-entity_id').trigger('change');
-                }
-
-                CMS.removeLoaderClass(modalBodyElement);
-                modalElement.modal('hide');
             });
         })
         .on('click', '#create-entity-modal .modal-body a[name="close"]', function(event) {
