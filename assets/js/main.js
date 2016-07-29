@@ -31,6 +31,10 @@ $(document).ready(function() {
                 modalBodyElement.html(data);
                 modalBodyElement.find('button[name="save-close"], button[name="save-add"]').hide();
                 modalElement.modal('show');
+
+                // Fixes: duplicateable not working but creates a new bug scrollingbar.
+                // Init the duplicateable jquery plugin:
+                //modalElement.find('[data-duplicateable="true"]').duplicateable();
             });
         })
         .on('click', '#create-entity-modal .modal-body button[name="save"]', function(event) {
