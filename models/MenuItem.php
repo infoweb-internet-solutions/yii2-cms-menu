@@ -201,7 +201,8 @@ class MenuItem extends \yii\db\ActiveRecord
 
                 // Everything else
             } else {
-                $url = $this->getEntityModel()->getUrl($includeLanguage, $excludeWebPath);
+                // Second parameter is language
+                $url = $this->getEntityModel()->getUrl($includeLanguage, null, $excludeWebPath);
 
                 // Params are set, append to the url
                 if (!empty($this->params)) {
