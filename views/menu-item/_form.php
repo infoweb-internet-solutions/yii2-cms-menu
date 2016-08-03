@@ -1,7 +1,7 @@
 <?php
 
 use yii\helpers\Html;
-use yii\widgets\ActiveForm;
+use yii\bootstrap\ActiveForm;
 use yii\bootstrap\Tabs;
 ?>
 
@@ -11,10 +11,13 @@ use yii\bootstrap\Tabs;
     <?php echo $this->render('_flash_messages'); ?>
 
     <?php
+
     // Init the form
     $form = ActiveForm::begin([
-        'id'                        => 'menu-item-form',
-        'options'                   => ['class' => 'tabbed-form'],
+        'options'                   => [
+            'class' => 'tabbed-form',
+            'id'                        => 'menu-item-form',
+        ],
         'enableAjaxValidation'      => true,
         'enableClientValidation'    => false
     ]);
@@ -35,19 +38,30 @@ use yii\bootstrap\Tabs;
                 'model'             => $model,
                 'form'              => $form,
                 'linkableEntities'  => $linkableEntities,
-                'entityTypes'       => $entityTypes
+                'entityTypes'       => $entityTypes,
+                'allowContentDuplication' => $allowContentDuplication
             ]),
+            'active'    => true,
         ],
     ];
 
     // Display the tabs
     echo Tabs::widget(['items' => $tabs]);
-    ?>
 
+    ?>
     <div class="form-group buttons">
         <?= $this->render('@infoweb/cms/views/ui/formButtons', ['model' => $model]) ?>
-    </div>
+    </div> 
 
     <?php ActiveForm::end(); ?>
 
+    <div id="create-entity-modal" class="fade modal" role="dialog" tabindex="-1">
+        <div class="modal-dialog" style="width:70%">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <?php /* Keep blank ajax */ ?>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

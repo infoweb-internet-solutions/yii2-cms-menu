@@ -48,11 +48,15 @@ class Module extends \yii\base\Module
         $this->linkableEntities = ArrayHelper::merge([
             MenuItem::className() => [
                 'label' => 'Menu item',
-                'i18nGroup' => 'infoweb/menu'
+                'i18nGroup' => 'infoweb/menu',
+                'createEntity' => false,
+                'createEntityUrl' => ''
             ],
             Page::className() => [
                 'label' => 'Page',
-                'i18nGroup' => 'infoweb/pages'
+                'i18nGroup' => 'infoweb/pages',
+                'createEntity' => true,
+                'createEntityUrl' => '/pages/page/create'
             ]
         ], $this->linkableEntities);
 
@@ -97,7 +101,9 @@ class Module extends \yii\base\Module
             // The entityModel must have the 'getUrl' and 'getAllForDropDownList' methods
             if (method_exists($entityModel, 'getUrl') && method_exists($entityModel, 'getAllForDropDownList')) {                
                 $linkableEntities[$k] = [
-                    'label' => Yii::t($entity['i18nGroup'], $entity['label'])
+                    'label' => Yii::t($entity['i18nGroup'], $entity['label']),
+                    'createEntity' => (isset($entity['createEntity'])) ? (bool) $entity['createEntity'] : false,
+                    'createEntityUrl' => (isset($entity['createEntityUrl'])) ? (string) $entity['createEntityUrl'] : ''
                 ];
             }
         }

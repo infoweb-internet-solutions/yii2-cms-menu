@@ -77,3 +77,19 @@ ol.sortable .odd {
 .table-bordered > thead > tr > td {
     border-bottom-width: 1px;
 }
+
+
+
+/**
+ * Modal
+ */
+
+.create-page .modal-dialog {
+    max-width: 1170px;
+    width: auto;
+}
+
+.create-page   .modal-header {
+    border: none;
+}
+
