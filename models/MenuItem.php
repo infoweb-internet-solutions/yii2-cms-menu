@@ -185,7 +185,7 @@ class MenuItem extends \yii\db\ActiveRecord
                     return Url::to($prefix);
                 }
 
-                $url = ''; // "{$prefix}{$page->alias->url}";
+                $url = "{$prefix}{$page->alias->url}";
 
                 // Params are set, append to the url
                 if (!empty($this->params)) {
