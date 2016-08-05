@@ -54,7 +54,9 @@ use yii\bootstrap\Tabs;
     </div> 
 
     <?php ActiveForm::end(); ?>
+</div>
 
+<?php if(Yii::$app->getModule('menu')->createEntityFromMenuItem): ?>
     <div id="create-entity-modal" class="fade modal" role="dialog" tabindex="-1">
         <div class="modal-dialog" style="width:70%">
             <div class="modal-content">
@@ -64,4 +66,4 @@ use yii\bootstrap\Tabs;
             </div>
         </div>
     </div>
-</div>
+<?php endif; ?>

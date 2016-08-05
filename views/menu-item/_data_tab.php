@@ -57,20 +57,22 @@ use yii\bootstrap\ActiveForm;
     endforeach;
     Pjax::end();
 
-    ?>
-    <div class="create-entity-links">
-        <?php foreach ($linkableEntities as $k => $v):
-            if($v['createEntity'] && trim($v['createEntityUrl']) != ''): ?>
-                <a style="margin-bottom: 17px;" href="#" class="create-entity-links-link btn btn-default hidden"
-                    data-entity="<?= Html::encode($k); ?>"
-                    data-entity-create-url="<?= Url::to([$v['createEntityUrl']]); ?>"><?php
-                    echo sprintf(Yii::t('frontend', 'Create %s'), strtolower($v['label']));
-                ?></a>
-            <?php endif;
-        endforeach; ?>
-    </div>
+    if(Yii::$app->getModule('menu')->createEntityFromMenuItem): ?>
+        <div class="create-entity-links">
+            <?php foreach ($linkableEntities as $k => $v):
+                if($v['createEntity'] && trim($v['createEntityUrl']) != ''): ?>
+                    <a style="margin-bottom: 17px;" href="#" class="create-entity-links-link btn btn-default hidden"
+                        data-entity="<?= Html::encode($k); ?>"
+                        data-entity-create-url="<?= Url::to([$v['createEntityUrl']]); ?>"><?php
+                        echo sprintf(Yii::t('frontend', 'Create %s'), strtolower($v['label']));
+                    ?></a>
+                <?php endif;
+            endforeach; ?>
+        </div>
+    <?php endif;
 
-    <?php // Url ?>
+
+    // Url ?>
     <div class="form-group field-menuitem-url attribute url-attribute" <?php if ($model->entity != $model::ENTITY_URL) : ?>style="display: none;"<?php endif; ?>>
         <label for="menuitem-url" class="control-label"><?php echo Yii::t('app', 'Url'); ?></label>
         <?= Html::input('url', 'MenuItem[url]', $model->url, [

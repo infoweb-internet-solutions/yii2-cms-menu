@@ -35,6 +35,12 @@ class Module extends \yii\base\Module
     public $allowContentDuplication = true;
 
     /**
+     * Add button to create entity in menu item.
+     * @var boolean
+     */
+    public $createEntityFromMenuItem = false;
+
+    /**
      * The entities that a menu-item can point to
      * @var array
      */
