@@ -34,7 +34,7 @@ $(document).ready(function() {
 
                 // Fixes: duplicateable not working but creates a new bug scrollingbar.
                 // Init the duplicateable jquery plugin:
-                //modalElement.find('[data-duplicateable="true"]').duplicateable();
+                modalElement.find('[data-duplicateable="true"]').duplicateable();
             });
         })
         .on('click', '#create-entity-modal .modal-body button[name="save"]', function(event) {

@@ -38,7 +38,7 @@ class Module extends \yii\base\Module
      * Add button to create entity in menu item.
      * @var boolean
      */
-    public $createEntityFromMenuItem = false;
+    public $createEntityFromMenuItem = true;
 
     /**
      * The entities that a menu-item can point to

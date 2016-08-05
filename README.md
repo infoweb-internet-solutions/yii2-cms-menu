@@ -59,7 +59,7 @@ ___
 ##### allowContentDuplication (type: `boolean`, default: `true`)
 If this option is set to `true`, the `duplicateable` jquery plugin is activated on all translateable attributes.
 ___
-##### createEntityFromMenuItem (type: `boolean`, default: `false`)
+##### createEntityFromMenuItem (type: `boolean`, default: `true`)
 If this option is set to `true`, you can for example create a page in the menu item form.
 ___
 ##### linkableEntities (type: `boolean`, default: `[]`)
