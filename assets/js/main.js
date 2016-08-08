@@ -37,37 +37,63 @@ $(document).ready(function() {
                 modalElement.find('[data-duplicateable="true"]').duplicateable();
             });
         })
-        .on('click', '#create-entity-modal .modal-body button[name="save"]', function(event) {
+        .on('submit', '#create-entity-modal .modal-body form', function(e) {
+            // Make sure we can't submit the form so we need todo ajax validation.
+            e.preventDefault(); 
+        })
+        .on('click', '#create-entity-modal .modal-body button[name="save"]', function(e) {
             event.preventDefault();
 
             CMS.addLoaderClass(modalBodyElement);
 
-            formdata = modalBodyElement.find('form').serialize();
+            var form = modalBodyElement.find('form');
+            var formaction = form.attr('action');
+            var formdata = form.serialize();
 
-            $.ajax({
-                method: "POST",
-                url: modalBodyElement.find('form').attr('action'),
-                context: document.body,
-                data: modalBodyElement.find('form').serialize() + '&saveModel=1'
-            }).done(function(response) {
-                // Update dropdown content with pjax
-                $.pjax.reload({
-                    container: '#pjax-linkableentities'
-                }).done(function() {                  
-                    if(response.status == 200) {
-                        $('#menuitem-entity').trigger('change');
+            // Below will trigger submit after validation is done (but we cancel submit above)
+            form.data('yiiActiveForm').submitting = true;
+            form.yiiActiveForm('validate');
 
-                        var entityID = $('#menuitem-entity').val();
-                        entityID = entityID.split('\\');
-                        entityID = entityID[entityID.length-1];
-
-                        // Set the pages dropdown value & update the pages dropdown
-                        $('#'+entityID+'-select2').val(response.id).trigger('change').prop('disabled', false);
-                    }
-
+            // Hook event so we can check if there are any errors.
+            form.on('afterValidate', function(ev) {
+                if(form.find('.has-error').length) {
                     CMS.removeLoaderClass(modalBodyElement);
-                    modalElement.modal('hide');
-                });
+                    CMS.showFirstFormTabWithErrors();
+                }
+                else {
+                    $.ajax({
+                        method: "POST",
+                        url: formaction+'?saveModel=1',
+                        context: document.body,
+                        data: formdata
+                    }).done(function(response) {
+                        if(response.status == 200) {
+                            // Update dropdown content with pjax
+                            $.pjax.reload({
+                                container: '#pjax-linkableentities'
+                            }).done(function() {
+                                if(response.status == 200) {
+                                    $('#menuitem-entity').trigger('change');
+
+                                    var entityID = $('#menuitem-entity').val();
+                                    entityID = entityID.split('\\');
+                                    entityID = entityID[entityID.length-1];
+
+                                    // Set the pages dropdown value & update the pages dropdown
+                                    $('#'+entityID+'-select2').val(response.id).trigger('change').prop('disabled', false);
+                                }
+
+                                CMS.removeLoaderClass(modalBodyElement);
+                                modalElement.modal('hide');
+                            });
+                        }
+                        else {
+                            // Remove loader because there is a error.
+                            CMS.removeLoaderClass(modalBodyElement);
+                            alert('Fatal error: Can\'t save the entity.');
+                        }
+                    });
+                }
             });
         })
         .on('click', '#create-entity-modal .modal-body a[name="close"]', function(event) {
